@@ -1,0 +1,12 @@
+{
+    "icon": "mdi-star",
+    "locales_show": true,
+    "theme_show": true,
+    "pages": [
+        {
+            "name": "Main",
+            "icon": "mdi-home",
+            "path": "/"
+        }
+    ]
+}

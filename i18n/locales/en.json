@@ -1,0 +1,140 @@
+{
+  "form": {
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "table": {
+    "fake_data": {
+      "title": "Fake Data",
+      "id": "ID",
+      "name": "Name",
+      "value": "Value"
+    },
+    "common": {
+      "actions": "Actions"
+    }
+  },
+  "$vuetify": {
+    "dismiss": "X",
+    "dataFooter": {
+      "itemsPerPageText": "Items per page:",
+      "itemsPerPageAll": "All",
+      "pageText": "{0}-{1} of {2}",
+      "firstPage": "First page",
+      "prevPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "root": "Pagination Navigation"
+      }
+    },
+    "noDataText": "No data available"
+  },
+  "frontend": {
+    "app": {
+      "title": "Email Platform"
+    },
+    "footer": {
+      "legal": "Legal"
+    },
+    "auth": {
+      "login_title": "Sign In",
+      "login_instructions": "Enter your credentials to access your account.",
+      "email": "Email Address",
+      "password": "Password",
+      "login_button": "Log In",
+      "no_account": "No account? Create one here.",
+      "signup_title": "Create Account",
+      "signup_instructions": [
+        "Enter your details to register.",
+        "Check your email for a verification link.",
+        "Activate your account to log in."
+      ],
+      "confirm_password": "Confirm Password",
+      "have_account": "Already have an account? Log in."
+    }
+  },
+  "auth": {
+    "login": {
+      "success": "Login successful",
+      "invalid_credentials": "Invalid email or password"
+    },
+    "logout": {
+      "success": "Logged out successfully"
+    }
+  },
+  "account": {
+    "read": {
+      "success": "Account loaded successfully"
+    },
+    "create": {
+      "success": "Account created successfully",
+      "failed": "Failed to create account"
+    },
+    "update": {
+      "success": "Account updated successfully",
+      "failed": "Failed to update account"
+    },
+    "delete": {
+      "success": "Account deleted successfully",
+      "failed": "Failed to delete account"
+    },
+    "bad_payload": "Invalid account data",
+    "create_failed": "System error: Account creation failed"
+  },
+  "role": {
+    "read": {
+      "success": "Roles loaded successfully"
+    },
+    "create": {
+      "success": "Role created successfully",
+      "failed": "Failed to create role"
+    },
+    "update": {
+      "success": "Role updated successfully",
+      "failed": "Failed to update role"
+    },
+    "delete": {
+      "success": "Role deleted successfully",
+      "failed": "Failed to delete role"
+    },
+    "bad_payload": "Invalid role data"
+  },
+  "fake_data": {
+    "read": {
+      "success": "Fake data loaded successfully"
+    },
+    "create": {
+      "success": "Fake data created successfully",
+      "failed": "Failed to create fake data"
+    },
+    "update": {
+      "success": "Fake data updated successfully",
+      "failed": "Failed to update fake data"
+    },
+    "delete": {
+      "success": "Fake data deleted successfully",
+      "failed": "Failed to delete fake data"
+    },
+    "bad_payload": "Invalid report specification data"
+  },
+  "core": {
+    "account": {
+      "create_failed": "Core Service: Account creation failed"
+    }
+  },
+  "accounts": {
+    "bad_payload": "Invalid account data",
+    "insert": {
+      "bad_payload": "Invalid account data"
+    }
+  },
+  "roles": {
+    "bad_payload": "Invalid role data",
+    "insert": {
+      "bad_payload": "Invalid role data"
+    }
+  }
+}
