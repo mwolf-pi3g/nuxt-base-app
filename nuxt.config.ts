@@ -15,11 +15,11 @@ export default defineNuxtConfig({
   ],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['nuxt-cron', 'vuetify-nuxt-module', '@nuxtjs/i18n', 'nuxt-auth-utils'//, '@nuxthub/core',
+  modules: ['nuxt-cron', 'vuetify-nuxt-module', '@nuxtjs/i18n', 'nuxt-auth-utils', '@nuxthub/core',
   ],
-  // hub: {
-  //   db: 'sqlite'
-  // },
+  hub: {
+    db: 'sqlite'
+  },
   vite: {
     optimizeDeps: {
       exclude: ['drizzle-orm', 'better-sqlite3']
