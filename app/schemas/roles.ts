@@ -1,4 +1,4 @@
-import has_perms from '~/util/has_perms'
+import has_perms from '#ba/composables/has_perms'
 
 const getHeaders = (t: any) => [
     //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
