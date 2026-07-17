@@ -1,5 +1,5 @@
 import { eq, and } from 'drizzle-orm';
-import { getValidator } from '#bs/db/validator';
+import { getValidator } from '#bs/db/validator/validator';
 
 /**
  * Filter a database table by an object, and return at most one result.

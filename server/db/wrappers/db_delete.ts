@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { getValidator } from '#bs/db/validator';
+import { getValidator } from '#bs/db/validator/validator';
 
 /**
  * Delete a record from a database table by ID

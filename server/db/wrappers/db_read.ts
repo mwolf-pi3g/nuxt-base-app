@@ -1,4 +1,4 @@
-import { getValidator } from '#bs/db/validator';
+import { getValidator } from '#bs/db/validator/validator';
 
 /**
  * Read records from a database table.
