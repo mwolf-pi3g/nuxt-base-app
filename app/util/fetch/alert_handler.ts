@@ -6,9 +6,9 @@ export const handleApiAlert = (data: any, statusCode: number) => {
     const testI18N = data?.statusMessage?.split(" ");
     const typeMap = ["info", "success", "warning", "error", "critical"]
     if (testI18N && testI18N.length === 2 && typeMap.includes(testI18N[0])) {
-      $bus.emit('alert:show', {
-        message: data.statusMessage
-      })
+      // $bus.emit('alert:show', {
+      //   message: data.statusMessage
+      // })
       return
     }
 
