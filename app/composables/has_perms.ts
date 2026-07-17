@@ -3,6 +3,7 @@ import { apiGet } from '~/util/fetch/wrappers'
 export const usePerms = () => {
     // get user roles from session
     const { user } = useUserSession()
+    const nuxtApp = useNuxtApp()
 
     const has = async (perms: string[]): Promise<boolean> => {
         const userRoleNames = (user.value as any)?.roles || []
@@ -13,7 +14,10 @@ export const usePerms = () => {
 
         // get roles from db
         try {
-            const response = await apiGet<{ data: { name: string; permissions: string[] }[] }>('/api/admin/role')
+            // const response = await apiGet<{ data: { name: string; permissions: string[] }[] }>('/api/admin/role')
+            const response = await nuxtApp.runWithContext(() => {
+                return apiGet('/api/admin/role')
+            })
             const dbRoles = response.data || []
 
             // check if user has all of the permissions
