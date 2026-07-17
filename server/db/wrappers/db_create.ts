@@ -1,4 +1,4 @@
-import { getValidator } from '../validator';
+import { getValidator } from '#bs/db/validator';
 
 /**
  * Create a new record in a database table
