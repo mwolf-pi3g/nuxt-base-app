@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">    
+import admin_current_user from '~/components/admin_current_user.vue'
 // import application from '~/metadata/tables/admin_app'
 
 const admin_ui = [
