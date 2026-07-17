@@ -2,8 +2,10 @@
   <v-container>
     <div v-for="section in admin_ui" :key="section.name">
       <div v-for="item in section.items" :key="item.name">
-        <component v-if="item.type === 'component'" :is="item.data" />
-        <Table v-if="item.type === 'table' && await has_perms(item.permissions)" :meta="item.data" />
+        <div class="mb-4">
+            <component v-if="item.type === 'component' && await has_perms(item.permissions)" :is="item.data" />
+            <Table v-if="item.type === 'table' && await has_perms(item.permissions)" :meta="item.data" />
+        </div>
       </div>
       <!-- <Table :meta="accountTableMetaFcn(t)" /> -->
     </div>
