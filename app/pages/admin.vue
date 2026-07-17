@@ -5,7 +5,7 @@
         <component v-if="item.type === 'component'" :is="item.data" />
         <!-- <Table v-if="item.type === 'table'" :meta="item.data" /> -->
       </div>
-      <Table :meta="accountTableMetaFcn(t)" />
+      <!-- <Table :meta="accountTableMetaFcn(t)" /> -->
     </div>
   </v-container>
 </template>
