@@ -1,0 +1,30 @@
+{
+    "all": [
+        "all",
+        "create",
+        "read",
+        "update",
+        "delete"
+    ],
+    "account": [
+        "all",
+        "set",
+        "create",
+        "read",
+        "update",
+        "delete"
+    ],
+    "role": [
+        "all",
+        "create",
+        "read",
+        "update",
+        "delete"
+    ],
+    "user": [
+        "all",
+        "read",
+        "update",
+        "delete"
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "roles": {
+        "admin": [
+            "all.all"
+        ],
+        "user": [
+            "user.all",
+            "report_spec.all",
+            "report_item.read",
+            "email.read"
+        ]
+    },
+    "admin_role": [
+        "admin"
+    ],
+    "default_roles": [
+        "user"
+    ]
+}
