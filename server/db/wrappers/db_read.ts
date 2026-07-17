@@ -1,4 +1,4 @@
-import { getValidator } from '#bs/db/schema';
+import { getValidator } from 'hub:db:schema';
 
 /**
  * Read records from a database table.

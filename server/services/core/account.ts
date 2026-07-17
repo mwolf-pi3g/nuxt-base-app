@@ -1,5 +1,5 @@
 import { db } from "hub:db";
-import { accounts } from "#bs/db/schema";
+import { accounts } from "hub:db:schema";
 import { zod_rules } from "#shared/rules/account";
 import { genericService } from "#bs/services/generic";
 import { scryptSync, randomBytes, createHmac } from "node:crypto";
