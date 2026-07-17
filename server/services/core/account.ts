@@ -1,12 +1,11 @@
 import { db } from "hub:db";
-import { accounts } from "#server/db/schema";
+import { accounts } from "#bs/db/schema";
 import { zod_rules } from "#shared/rules/account";
 import { genericService } from "#bs/services/generic";
-import { scryptSync, randomBytes } from "node:crypto";
+import { scryptSync, randomBytes, createHmac } from "node:crypto";
 import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbRead } from "#bs/db/wrappers/db_read";
 import { dbFindOne } from "#bs/db/wrappers/db_find_one";
-import crypto from "crypto";
 
 class accountAdminService extends genericService {
     async init() {
@@ -32,7 +31,7 @@ class accountAdminService extends genericService {
     }
 
     async sendValidationEmail(record: any) {
-        const token = crypto.createHmac('sha256', process.env.SERVER_SECRET!)
+        const token = createHmac('sha256', process.env.SERVER_SECRET!)
             .update(record.user.toString())
             .digest('hex');
         const url = `${process.env.BASE_URL}/auth/validate?user=${record.user}&token=${token}`;
