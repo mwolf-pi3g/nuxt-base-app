@@ -43,7 +43,7 @@ export const accounts = sqliteTable('accounts', {
     roles: text('roles', { mode: 'json' })
         .$type<string[]>()
         .notNull()
-        .default(['user']),
+        .default([]),
     limits: text('limits').default('free'),
     validated: integer('validated').default(0), // 0 or 1 
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
@@ -62,10 +62,10 @@ schemaValidate.accounts = sv_account;
 export const roles = sqliteTable('roles', {
     id: text('id').primaryKey(),
     name: text('name').unique().notNull(),
-    tags: text('tags', { mode: 'json' })
+    permissions: text('permissions', { mode: 'json' })
         .$type<string[]>()
         .notNull()
-        .default(['user.all']),
+        .default([]),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });

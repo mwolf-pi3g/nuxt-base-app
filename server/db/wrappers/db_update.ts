@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { getValidator } from '#server/db/schema';
+import { getValidator } from '#bs/db/schema';
 
 /**
  * Update a record in a database table by ID
