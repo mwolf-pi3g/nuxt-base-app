@@ -1,15 +1,22 @@
+import has_perms from '~/util/has_perms'
+
 const getHeaders = (t: any) => [
     //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
     { title: t('table.role.name') as string, key: 'name', get_type: "string" },
     { title: t('table.role.permissions') as string, key: 'permissions', get_type: "string" },
 ];
 
+const features: string[] = [];
+if (await has_perms(['role.create'])) features.push('create');
+if (await has_perms(['role.update'])) features.push('edit');
+if (await has_perms(['role.delete'])) features.push('delete');
+
 export default function (t: any) {
     return {
         title: t('table.role.title') as string,
         headers: getHeaders(t),
         path_base: '/api/admin/role',
-        features: [],
+        features,
         readOnMount: true
     }
 }

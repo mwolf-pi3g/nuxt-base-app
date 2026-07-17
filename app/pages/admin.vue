@@ -3,7 +3,7 @@
     <div v-for="section in admin_ui" :key="section.name">
       <div v-for="item in section.items" :key="item.name">
         <component v-if="item.type === 'component'" :is="item.data" />
-        <Table v-if="item.type === 'table'" :meta="item.data" />
+        <Table v-if="item.type === 'table' && await has_perms(item.permissions)" :meta="item.data" />
       </div>
       <!-- <Table :meta="accountTableMetaFcn(t)" /> -->
     </div>
@@ -14,7 +14,7 @@
 import admin_current_user from '~/components/admin_current_user.vue'
 import accountTableMetaFcn from '#ba/schemas/accounts'
 import roleTableMetaFcn from '#ba/schemas/roles'
-// import application from '~/metadata/tables/admin_app'
+import has_perms from '~/util/has_perms'
 
 const i18n = useI18n();
 
@@ -22,9 +22,9 @@ const admin_ui = [
 {
     name: 'administration',
     "items":[
-        {name:'admin_current_user', data:admin_current_user, type:'component', permission:'account.set', icon:'mdi-account-switch'},
-        {name:'account', data:accountTableMetaFcn(i18n.t), type:'table', permission:'account', icon:'mdi-account'},
-        {name:'role', data:roleTableMetaFcn(i18n.t), type:'table', permission:'role', icon:'mdi-role'},
+        {name:'admin_current_user', data:admin_current_user, type:'component', permissions:['account.set'], icon:'mdi-account-switch'},
+        {name:'account', data:accountTableMetaFcn(i18n.t), type:'table', permissions:['account.read'], icon:'mdi-account'},
+        {name:'role', data:roleTableMetaFcn(i18n.t), type:'table', permissions:['role.read'], icon:'mdi-role'},
     ],
 },
 // application
