@@ -2,9 +2,10 @@
   <v-container>
     <component :is="admin_ui[0]!.items[0].name" />
 
-    <div v-for="item in admin_ui[0]!.items" :key="item.name">
-      <component v-if="item.type === 'component'" :is="item.name" />
-      
+    <div v-for="section in admin_ui" :key="section.name">
+      <div v-for="item in section.items" :key="item.name">
+        <component v-if="item.type === 'component'" :is="item.name" />
+      </div>
     </div>
   </v-container>
 </template>
