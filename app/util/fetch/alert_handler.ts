@@ -1,14 +1,14 @@
 export const handleApiAlert = (data: any, statusCode: number) => {
   try {
-    // const { $bus } = useNuxtApp()
+    const { $bus } = useNuxtApp()
 
     // Check if the response matches our standard JSON structure
     const testI18N = data?.statusMessage?.split(" ");
     const typeMap = ["info", "success", "warning", "error", "critical"]
     if (testI18N && testI18N.length === 2 && typeMap.includes(testI18N[0])) {
-      // $bus.emit('alert:show', {
-      //   message: data.statusMessage
-      // })
+      $bus.emit('alert:show', {
+        message: data.statusMessage
+      })
       return
     }
 
@@ -24,9 +24,9 @@ export const handleApiAlert = (data: any, statusCode: number) => {
       type = 'error'
     }
 
-    // $bus.emit('alert:show', {
-    //   message
-    // })
+    $bus.emit('alert:show', {
+      message
+    })
   } catch (err) {
     console.error('Failed to dispatch alert:', err)
   }
