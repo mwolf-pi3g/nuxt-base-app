@@ -1,6 +1,6 @@
 // const { has } = usePerms()
 
-function has() => true;
+const has = () => true;
 
 const getHeaders = (t: any) => [
     //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
