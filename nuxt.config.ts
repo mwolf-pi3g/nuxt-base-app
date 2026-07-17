@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     name: 'nuxt-base-app',
   },
   alias: {
-    '#bs': resolve('./server')
+    '#bs': resolve('./server'),
+    '#ba': resolve('./app')
   },
   exclude: [
     "**/.data/**", ".data"

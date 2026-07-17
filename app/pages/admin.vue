@@ -12,8 +12,8 @@
 
 <script setup lang="ts">    
 import admin_current_user from '~/components/admin_current_user.vue'
-import accountTableMetaFcn from '../schemas/accounts'
-import roleTableMetaFcn from '../schemas/roles'
+import accountTableMetaFcn from '#ba/schemas/accounts'
+import roleTableMetaFcn from '#ba/schemas/roles'
 // import application from '~/metadata/tables/admin_app'
 
 // const { t } = useI18n();
