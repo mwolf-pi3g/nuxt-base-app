@@ -16,7 +16,7 @@ type SchemaOperations = {
 
 type SchemaValidate = Record<string, SchemaOperations>;
 
-const schemaValidate: SchemaValidate = {};
+export const schemaValidate: SchemaValidate = {};
 
 export const getValidator = (table: any, operation: 'insert' | 'select' | 'update') => {
     return (item: any) => {
