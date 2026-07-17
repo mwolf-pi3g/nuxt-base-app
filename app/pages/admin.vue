@@ -16,7 +16,7 @@
 import admin_current_user from '~/components/admin_current_user.vue'
 import accountTableMetaFcn from '#ba/schemas/accounts'
 import roleTableMetaFcn from '#ba/schemas/roles'
-import has_perms from '~/util/has_perms'
+import has_perms from '#ba/util/has_perms'
 
 const i18n = useI18n();
 
