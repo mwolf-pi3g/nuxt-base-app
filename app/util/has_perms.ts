@@ -2,7 +2,8 @@ import { apiGet } from '~/util/fetch/wrappers'
 
 export default async function has_perms(perms: string[]): Promise<boolean> {
     // get user roles from session
-    const { user } = useUserSession()
+    // const { user } = useUserSession()
+    const user = {}
     const userRoleNames = (user.value as any)?.roles || []
 
     if (userRoleNames.length === 0) {
@@ -65,4 +66,3 @@ export default async function has_perms(perms: string[]): Promise<boolean> {
         return false
     }
 }
-    
