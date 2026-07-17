@@ -1,4 +1,4 @@
-import { getValidator } from 'hub:db:schema';
+import { getValidator } from '../validator';
 
 /**
  * Create a new record in a database table

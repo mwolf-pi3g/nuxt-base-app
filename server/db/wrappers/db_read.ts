@@ -1,4 +1,4 @@
-import { getValidator } from 'hub:db:schema';
+import { getValidator } from '../validator';
 
 /**
  * Read records from a database table.
