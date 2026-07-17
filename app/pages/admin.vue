@@ -3,8 +3,9 @@
     <div v-for="section in admin_ui" :key="section.name">
       <div v-for="item in section.items" :key="item.name">
         <component v-if="item.type === 'component'" :is="item.data" />
-        <Table v-if="item.type === 'table'" :meta="item.data" />
+        <!-- <Table v-if="item.type === 'table'" :meta="item.data" /> -->
       </div>
+      <Table :meta="accountTableMetaFcn(t)" />
     </div>
   </v-container>
 </template>
