@@ -3,6 +3,7 @@ import { roles } from "hub:db:schema";
 import { zod_rules } from "#shared/rules/role";
 import { genericService } from "#bs/services/generic";
 import { dbFindAll } from "#bs/db/wrappers/db_find_all";
+import app_defaults from "#server/metadata/app_defaults.json";
 
 class roleService extends genericService {
     async init() {
@@ -11,11 +12,11 @@ class roleService extends genericService {
         const adminRole = await dbFindAll(db, roles, { name: 'admin' });
 
         if (userRole.length === 0) {
-            await this.create({ name: 'user', tags: ['user'] });
+            await this.create({ name: 'user', permissions: app_defaults.roles.user });
         }
 
         if (adminRole.length === 0) {
-            await this.create({ name: 'admin', tags: ['admin', 'user'] });
+            await this.create({ name: 'admin', permissions: app_defaults.roles.admin });
         }
     }
 }
