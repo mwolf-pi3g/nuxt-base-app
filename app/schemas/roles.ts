@@ -1,4 +1,4 @@
-import has_perms from '#ba/composables/has_perms'
+const { has } = usePerms()
 
 const getHeaders = (t: any) => [
     //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
@@ -7,9 +7,9 @@ const getHeaders = (t: any) => [
 ];
 
 const features: string[] = [];
-if (await has_perms(['role.create'])) features.push('create');
-if (await has_perms(['role.update'])) features.push('edit');
-if (await has_perms(['role.delete'])) features.push('delete');
+if (await has(['role.create'])) features.push('create');
+if (await has(['role.update'])) features.push('edit');
+if (await has(['role.delete'])) features.push('delete');
 
 export default function (t: any) {
     return {
