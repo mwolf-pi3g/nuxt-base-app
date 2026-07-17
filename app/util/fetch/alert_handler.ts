@@ -1,6 +1,6 @@
 export const handleApiAlert = (data: any, statusCode: number) => {
   try {
-    const { $bus } = useNuxtApp()
+    // const { $bus } = useNuxtApp()
 
     // Check if the response matches our standard JSON structure
     const testI18N = data?.statusMessage?.split(" ");
@@ -24,9 +24,9 @@ export const handleApiAlert = (data: any, statusCode: number) => {
       type = 'error'
     }
 
-    $bus.emit('alert:show', {
-      message
-    })
+    // $bus.emit('alert:show', {
+    //   message
+    // })
   } catch (err) {
     console.error('Failed to dispatch alert:', err)
   }
