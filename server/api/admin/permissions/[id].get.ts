@@ -1,18 +1,16 @@
-import permissionsJson from '#bs/metadata/permissions.json';
+import { getPermissions } from '#bs/utils/perms';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id') || '';
 
-  const rubricActions = (permissionsJson as Record<string, string[]>)[id];
+  const data = getPermissions(id);
 
-  if (!rubricActions) {
+  if (data.length === 0) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Permissions not found',
     });
   }
-
-  const data = rubricActions.map((action) => `${id}.${action}`);
 
   return {
     data,

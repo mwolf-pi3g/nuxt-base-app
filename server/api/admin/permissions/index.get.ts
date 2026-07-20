@@ -1,18 +1,11 @@
-import permissionsJson from '#bs/metadata/permissions.json';
+import { getPermissions } from '#bs/utils/perms'
 
 export default defineEventHandler(async (event) => {
-  const data: string[] = [];
-
-  for (const [rubric, actions] of Object.entries(permissionsJson)) {
-    if (Array.isArray(actions)) {
-      for (const action of actions) {
-        data.push(`${rubric}.${action}`);
-      }
-    }
-  }
+  const data = getPermissions();
 
   return {
     data,
     statusMessage: 'success permissions.read.success',
   };
 });
+
