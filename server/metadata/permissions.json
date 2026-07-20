@@ -11,9 +11,6 @@
         "name": "account",
         "children": [
             {
-                "name": "set"
-            },
-            {
                 "name": "crud",
                 "children": [
                     {
@@ -36,16 +33,21 @@
         "name": "role",
         "children": [
             {
-                "name": "create"
-            },
-            {
-                "name": "read"
-            },
-            {
-                "name": "update"
-            },
-            {
-                "name": "delete"
+                "name": "crud",
+                "children": [
+                    {
+                        "name": "create"
+                    },
+                    {
+                        "name": "read"
+                    },
+                    {
+                        "name": "update"
+                    },
+                    {
+                        "name": "delete"
+                    }
+                ]
             }
         ]
     }

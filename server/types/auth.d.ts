@@ -3,6 +3,7 @@ declare module '#auth-utils' {
     id: string;
     user: string;
     roles: string[];
+    permissions: string[];
     limits: string;
     lang: string;
     email: string;
