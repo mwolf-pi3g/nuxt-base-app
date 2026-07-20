@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    {{ user }}
     <div v-for="section in admin_ui" :key="section.name">
       <div v-for="item in section.items" :key="item.name">
         <div class="mb-4">
@@ -23,6 +24,7 @@ function has_perms(perms: string[]): boolean {
 }
 
 const i18n = useI18n();
+const { user} = useUserSession();
 
 const admin_ui = [
 {
