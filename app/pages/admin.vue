@@ -39,13 +39,11 @@ const admin_core = ref<any[]>([]);
 const userState = useState<UserState>('user', () => ({ as_user: '' }))
 
 const onSetIdent = async (item?: any) => {
-  if (!item?.id) item = { id: '54665eeb-5ef7-44e2-b8aa-808e4d02e35d', user: 'Bobs User' };
   const id = item.id;
   const name = item.user || 'Unknown User';
 
   console.log('setting ident to ' + id + ' (' + name + ')')
   if (userState.value) {
-    console.log('userState exists')
     userState.value = { ...userState.value, as_user: name }
   }
   await apiPost('/api/admin/ident/set', { id })

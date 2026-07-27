@@ -18,7 +18,7 @@ export const zod_rules = {
   roles: z.array(
     z.string({ invalid_type_error: "rules.account.roles.item.type" }),
     { invalid_type_error: "rules.account.roles.type" }
-  ).default(['user']),
+  ).default([]),
 
   limits: z.string({ invalid_type_error: "rules.account.limits.type" })
     .max(128, "rules.account.limits.too_long")

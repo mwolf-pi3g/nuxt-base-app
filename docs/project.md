@@ -27,6 +27,10 @@ default admin user: admin@admin.com / !1adminadmin
 
 ### DB
 - [ ] Default limits to json value.
+- [ ] create custom triggers for atomic ops.  Eg: on delete account, delete all related records
+    when deleting key, delete key in foreign rows.
+        roles, notification_channels
+
 - [ ] if user changes email, validated = false, resend email
 
 ## Frontend
@@ -36,11 +40,13 @@ default admin user: admin@admin.com / !1adminadmin
 - [ ] table: id get component w id tooltip.  search on both.
 - [ ] make NPM: table/form
 - [ ] make event bell icon in header.
+- [ ] when deleting account, have custom UI and log out.
 - [ ] Table: make schema prep util., derive onACTION from action: 
         MAYBE: don't make create, update, del automatic but give default fcns that can be added to schema.
 
 ### UI General
 - [ ] tooltips: all icons and buttons
+- [ ] when admin and setting identity. if reloading page, the name in the header returns to the default.
 
 ### FINAL
 - [ ] from shared schema, default to configured account "limits" and use enum for form

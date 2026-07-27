@@ -55,13 +55,17 @@ export default defineEventHandler(async (event) => {
 
   // 4. Update the session
   const session = await getUserSession(event);
-  await setUserSession(event, {
-    ...session,
+
+  // Destructure to avoid saving session ID inside the session data
+  const { id: _, ...sessionData } = session;
+  const newSession = {
+    ...sessionData,
     secure: {
-      ...session.secure,
+      ...sessionData.secure,
       as_id: id,
     },
-  });
+  };
+  await replaceUserSession(event, newSession);
 
   return {
     statusMessage: 'success identity.set.success',
