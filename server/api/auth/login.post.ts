@@ -1,6 +1,21 @@
 import { getService } from '#bs/services/core/account';
 import { permissionsByRoles } from '#bs/utils/permissions_by_roles';
 
+defineRouteMeta({
+  openAPI: {
+    tags: ['Base Auth'],
+    description: 'Authenticate user and establish session.',
+    responses: {
+      200: {
+        description: 'Success response'
+      },
+      401: {
+        description: 'Invalid credentials'
+      }
+    }
+  }
+})
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { user, password } = body;

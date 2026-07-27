@@ -41,7 +41,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 
-const password = ref(props.modelValue || '')
+const password = ref('')
 const confirmPassword = ref('')
 
 const confirmRules = [

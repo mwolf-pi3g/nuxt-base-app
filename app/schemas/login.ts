@@ -1,5 +1,5 @@
-import { zod_rules } from '#shared/rules/account'
-import { getRules } from '#shared/rules/getRules'
+import { zod_rules } from '#b/shared/rules/account'
+import { getRules } from '#b/shared/rules/getRules'
 
 const rules = getRules(zod_rules);
 

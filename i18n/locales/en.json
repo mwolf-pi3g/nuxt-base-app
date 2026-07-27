@@ -1,9 +1,84 @@
 {
+  "pages": {
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "rules": {
+    "password": {
+      "type": "Password must be a string",
+      "required": "Password is required",
+      "too_short": "Password must be at least 12 characters",
+      "too_long": "Password is too long",
+      "missing_lower": "Password must contain a lowercase letter",
+      "missing_upper": "Password must contain an uppercase letter",
+      "missing_number": "Password must contain a number",
+      "missing_special": "Password must contain a special character",
+      "mismatch": "Passwords do not match"
+    },
+    "account": {
+      "user": {
+        "type": "User identifier must be a string",
+        "invalid_email": "User identifier must be a valid email"
+      },
+      "email": {
+        "type": "Forward email must be a string",
+        "invalid": "Forward email is invalid"
+      },
+      "password": {
+        "type": "Password must be a string",
+        "too_short": "Password too short (min 12)",
+        "too_long": "Password too long"
+      },
+      "lang": {
+        "invalid": "Invalid language selected"
+      },
+      "roles": {
+        "type": "Roles must be an array",
+        "item": {
+          "type": "Role must be a string"
+        }
+      },
+      "limits": {
+        "type": "Limits must be a string"
+      },
+      "validated": {
+        "type": "Validated must be a boolean"
+      }
+    },
+    "role": {
+      "name": {
+        "type": "Role name must be a string",
+        "too_short": "Role name too short",
+        "too_long": "Role name too long"
+      },
+      "tags": {
+        "type": "Tags must be an array",
+        "item": {
+          "type": "Tag must be a string"
+        }
+      }
+    }
+  },
   "form": {
     "submit": "Submit",
     "cancel": "Cancel"
   },
   "table": {
+    "account": {
+      "title": "Account | Accounts",
+      "user": "User",
+      "lang": "Language",
+      "password": "Password",
+      "email": "Email",
+      "roles": "Roles",
+      "limits": "Limits",
+      "validated": "Validated"
+    },
+    "role": {
+      "title": "Roles",
+      "name": "Name",
+      "permissions": "Permissions"
+    },
     "fake_data": {
       "title": "Fake Data",
       "id": "ID",
@@ -136,5 +211,9 @@
     "insert": {
       "bad_payload": "Invalid role data"
     }
+  },
+  "admin": {
+    "core": "Core",
+    "app": "App"
   }
 }

@@ -1,13 +1,23 @@
 <template>
   <v-app-bar flat border>
-    <div @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
-      <v-app-bar-nav-icon :icon="header_conf.icon"></v-app-bar-nav-icon>
+
+    <div  @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
+      <v-app-bar-nav-icon :icon="app_conf.icon"></v-app-bar-nav-icon>
       <v-app-bar-title>
         {{ app_conf.name }}
       </v-app-bar-title>
     </div>
 
-    <v-spacer></v-spacer>
+    <div v-if="currentPage" class="d-flex align-center">
+      <span class="text-black font-weight-bold mx-2">&gt;</span>
+      <span class="text-primary font-weight-bold">{{ $t('pages.' + currentPage) }}</span>
+    </div>
+
+    <v-spacer />
+    <span v-if="hasPerm('ui:admin') && user" class="font-weight-bold" style="color: red;">
+      {{ userState?.as_user || user.user }}
+    </span>
+    <v-spacer />
 
     <!-- Theme Toggle -->
     <v-btn v-if="header_conf.theme_show" icon @click="toggleTheme">
@@ -31,9 +41,15 @@
     <!-- Logged in controls -->
     <div v-if="loggedIn" class="d-flex align-center">
 
-      <v-btn v-for="page in header_conf.pages" :key="page.path" icon @click="router.push(page.path)">
+      <!-- <v-btn v-for="page in header_conf.pages" :key="page.path" icon @click="router.push(page.path)">
         <v-icon>{{ page.icon }}</v-icon>
-      </v-btn>
+      </v-btn> -->
+
+      <div v-for="page in header_conf.pages" :key="page.path">
+        <v-btn v-if="!page.permissions || hasPerm(page.permissions)" icon @click="router.push(page.path)">
+          <v-icon v-tooltip="$t('pages.' + page.name)" >{{ page.icon }}</v-icon>
+        </v-btn>
+      </div>
 
       <v-menu>
         <template v-slot:activator="{ props }">
@@ -44,7 +60,10 @@
         <v-card min-width="200">
           <v-list>
             <v-list-item>
-              <v-list-item-title>{{ user?.user }} <v-icon color="primary" size="small" @click="handleLogout" class="ml-5 float-right">mdi-logout</v-icon></v-list-item-title>
+              <v-list-item-title>{{ user?.user }} 
+                <v-icon color="primary" size="small" @click="handleLogout" class="ml-1 float-right">mdi-logout</v-icon>
+                <v-icon color="primary" size="small" @click="router.push('/preferences')" class="ml-3 float-right">mdi-cog</v-icon>
+              </v-list-item-title>
             </v-list-item>
             <account_menu />
           </v-list>
@@ -58,7 +77,16 @@
 import app_conf from '~/metadata/app.json'
 import header_conf from '~/metadata/header.json'
 import { apiPost } from '~/util/fetch/wrappers'
-import { useTheme } from 'vuetify'
+import type { UserState } from '~/types/user_state'
+import hasPerm from '~/util/hasPerm'
+import { computed } from 'vue'
+
+const userState = useState<UserState>('user')
+const route = useRoute()
+const currentPage = computed(() => {
+  const page = header_conf.pages.find(p => p.path === route.path)
+  return page ? page.name : ''
+})
 
 const theme = useTheme()
 const toggleTheme = () => {

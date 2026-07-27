@@ -1,4 +1,16 @@
 
+defineRouteMeta({
+  openAPI: {
+    tags: ['Base App'],
+    description: 'Get fake data list.',
+    responses: {
+      200: {
+        description: 'Success response'
+      }
+    }
+  }
+})
+
 export default defineEventHandler(async (event) => {
   // If this were real data, we would use a service layer. 
   // See services/app/*.ts

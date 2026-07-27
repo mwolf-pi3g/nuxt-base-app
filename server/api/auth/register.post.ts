@@ -1,5 +1,17 @@
-import { getService as getAccountService } from "#bs/services/core/account"
-``
+import { getService as getAccountService } from '#bs/services/core/account';
+
+defineRouteMeta({
+  openAPI: {
+    tags: ['Base Auth'],
+    description: 'Register a new account.',
+    responses: {
+      200: {
+        description: 'Success response'
+      }
+    }
+  }
+})
+
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const service = getAccountService()

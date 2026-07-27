@@ -8,6 +8,14 @@
         ]
     },
     {
+        "name": "ui",
+        "children": [
+            {
+                "name": "admin"
+            }
+        ]
+    },
+    {
         "name": "account",
         "children": [
             {

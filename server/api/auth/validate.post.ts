@@ -1,5 +1,17 @@
 import crypto from 'crypto';
 
+defineRouteMeta({
+  openAPI: {
+    tags: ['Base Auth'],
+    description: 'Validate user token.',
+    responses: {
+      200: {
+        description: 'Success response'
+      }
+    }
+  }
+})
+
 export default defineEventHandler(async (event) => {
 
     const { user, token } = getQuery(event);

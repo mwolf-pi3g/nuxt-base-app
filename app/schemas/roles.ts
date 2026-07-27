@@ -1,22 +1,35 @@
-// const { has } = usePerms()
+import hasPerm from '#ba/util/hasPerm'
+import { apiGet } from '~/util/fetch/wrappers'
 
-const has = () => true;
+const getHeaders = async (t: any) => {
+    let permissionsList: string[] = []
+    try {
+        const res = await apiGet('/api/admin/permissions')
+        permissionsList = res?.data || []
+    } catch (e) {
+        console.error('Failed to fetch permissions for roles schema:', e)
+    }
 
-const getHeaders = (t: any) => [
-    //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
-    { title: t('table.role.name') as string, key: 'name', get_type: "string" },
-    { title: t('table.role.permissions') as string, key: 'permissions', get_type: "string" },
-];
+    return [
+        //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
+        { title: t('table.role.name') as string, key: 'name', get_type: "string", set_type: "string_line" },
+        { title: t('table.role.permissions') as string, key: 'permissions', get_type: "list_tag", set_type: "strarr_chips", enum_values: permissionsList, color_delimiter: ":" },
+        { title: t('table.common.actions'), key: 'actions', sortable: false }
+    ]
+}
 
-const features: string[] = [];
-if (await has(['role.create'])) features.push('create');
-if (await has(['role.update'])) features.push('edit');
-if (await has(['role.delete'])) features.push('delete');
+export default async function (t: any) {
+    const features: string[] = []
+    if (hasPerm(['role:crud:create'])) features.push('create')
+    if (hasPerm(['role:crud:update'])) features.push('update')
+    if (hasPerm(['role:crud:delete'])) {
+        features.push('delete')
+        features.push('deleteMany')
+    }
 
-export default function (t: any) {
     return {
         title: t('table.role.title') as string,
-        headers: getHeaders(t),
+        headers: await getHeaders(t),
         path_base: '/api/admin/role',
         features,
         readOnMount: true

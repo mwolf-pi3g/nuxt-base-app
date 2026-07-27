@@ -1,1 +1,25 @@
-{}
+{
+  "table": {
+    "account": {
+      "title": "Konten",
+      "user": "Benutzer",
+      "password": "Passwort",
+      "email": "E-Mail",
+      "roles": "Rollen",
+      "limits": "Limits",
+      "validated": "Bestätigt"
+    },
+    "role": {
+      "title": "Rollen",
+      "name": "Name",
+      "permissions": "Berechtigungen"
+    },
+    "common": {
+      "actions": "Aktionen"
+    }
+  },
+  "admin": {
+    "core": "Kern",
+    "app": "App"
+  }
+}

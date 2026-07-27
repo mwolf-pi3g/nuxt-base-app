@@ -20,8 +20,20 @@
           :header="header"
           :rules="getRules(header.key)"
         />
+        <FormSetStrarrChips
+          v-else-if="header.set_type === 'strarr_chips'"
+          v-model="formData[header.key]"
+          :header="header"
+          :rules="getRules(header.key)"
+        />
         <FormSetPasswordConfirm
           v-else-if="header.set_type === 'password_confirm'"
+          v-model="formData[header.key]"
+          :header="header"
+          :rules="getRules(header.key)"
+        />
+        <FormSetBoolean
+          v-else-if="header.set_type === 'boolean'"
           v-model="formData[header.key]"
           :header="header"
           :rules="getRules(header.key)"
@@ -60,7 +72,6 @@ const emit = defineEmits(['submit', 'cancel'])
 const { t } = useI18n()
 
 const isValid = ref(false)
-const formRef = ref(null)
 
 // Seed formData: start from initialData, then fill missing keys with header defaults
 const seedData: Record<string, any> = { ...props.initialData }

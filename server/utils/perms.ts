@@ -1,4 +1,5 @@
-import permissionsJson from '../metadata/permissions.json'
+import corePermissionsJson from '../metadata/permissions_core.json'
+import appPermissionsJson from '#server/metadata/permissions_app.json'
 
 interface PermissionNode {
     name: string;
@@ -20,6 +21,7 @@ export function getPermissions(path?: string): string[] {
         }
     }
 
+    let permissionsJson = [...corePermissionsJson, ...appPermissionsJson]
     let current: PermissionNode | PermissionNode[] = permissionsJson as PermissionNode[]
 
     if (path) {

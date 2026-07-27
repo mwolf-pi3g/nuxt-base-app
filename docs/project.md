@@ -2,12 +2,10 @@
 
 This is a Nuxt layer which is still under development.  It is used as a reference on how to implement certain functionality and as a base for other projects.  
 
-When used as a layer, initialize the db with: `npx nuxt db generate`
-
 Disclosure:  AI was used on a function by function basis, and never a "go architect and build out a subsystem" basis.  If you like it or hate it, the architecture is mine.  Feel free to point out inconsistencies or inefficiencies.  After implementing many internal websites, my goal was to create a boilerplate for reuse and maintenance purposes.
 
-Most notably the admin ui and roles is still missing as of 09.06.26.  Until I implement TanStack, there is also no caching.
 
+Until I implement TanStack, there is no API result caching.
 On the server side, db wrappers work but are inefficient.
 
 default admin user: admin@admin.com / !1adminadmin
@@ -22,48 +20,32 @@ default admin user: admin@admin.com / !1adminadmin
 ## Backend
 
 ### Routes
-- [o] verify routes are using app_conf.ts // subset moved to zod
-- [x] verify routes are using persist/mem_*
-- [x] verify routes use services, services use rules
-- [x] verify routes sending i18n errs
-- [x] add api version in routes
-- [x] all routes return i18n, data, and message
-- [x] all routes use zod for schemas
-- [ ] RBAC
-- [ ] verify routes use roles
+- [ ] Table routes: add filtering, sorting, pagination
 - [ ] send validation email on signup
 - [ ] allow sso/oauth
+- [ ] verify format of all thrown errors, make xlations for them.
 
-### Collections
-- [x] crud accounts
-- [x] crud app_data  
-- [x] crud roles
+### DB
+- [ ] Default limits to json value.
+- [ ] if user changes email, validated = false, resend email
 
 ## Frontend
 
 ### Components
-- [x] header
-- [x] footer
-- [x] notify
-- [ ] table filtering / sorting / pagination
+- [ ] table support client side filtering / sorting / pagination
+- [ ] table: id get component w id tooltip.  search on both.
 - [ ] make NPM: table/form
-
-### Pages
-- [x] landing
-- [x] login
-- [x] index
-- [x] signup
-- [ ] admin crud acct, set ident, roles
+- [ ] make event bell icon in header.
+- [ ] Table: make schema prep util., derive onACTION from action: 
+        MAYBE: don't make create, update, del automatic but give default fcns that can be added to schema.
 
 ### UI General
-- [x] mitt pubsub
-- [x] i18n
-- [x] i18n xlate error messages
-- [x] middleware: auth
-- [x] fetch wrapper
 - [ ] tooltips: all icons and buttons
 
 ### FINAL
+- [ ] from shared schema, default to configured account "limits" and use enum for form
+    also in shared zod rules
+- [ ] shared auto imported ts types
 - [ ] tighten password zod rules
 - [ ] make vitest tests for each route.
 - [ ] refactor dbFindOneAndDelete, dbFindOneAndUpdate - make difference between del and del with searchspec
@@ -72,5 +54,4 @@ default admin user: admin@admin.com / !1adminadmin
 ### Other
 - [ ] forms: multiple getRules - refactor
 - [ ] test on mobile
-- [ ] RBAC/Admin/tanstack pages (see above)
-- [ ] verify notify et. al. is i18ned
+

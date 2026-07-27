@@ -9,7 +9,8 @@ export default defineNuxtConfig({
   },
   alias: {
     '#bs': resolve('./server'),
-    '#ba': resolve('./app')
+    '#ba': resolve('./app'),
+    '#b': resolve('.')
   },
   exclude: [
     "**/.data/**", ".data"
@@ -20,6 +21,11 @@ export default defineNuxtConfig({
   ],
   hub: {
     db: 'sqlite'
+  },
+  nitro: {
+    experimental: {
+      openAPI: true
+    }
   },
   vite: {
     optimizeDeps: {

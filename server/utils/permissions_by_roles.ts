@@ -4,19 +4,19 @@ import { dbFindAll } from '#bs/db/wrappers/db_find_all'
 import { getPermissions } from '#bs/utils/perms'
 
 /**
- * Given an array of role names, look them up in the database,
+ * Given an array of role IDs, look them up in the database,
  * resolve their permissions (expanding globs like "account:*" into
  * every leaf permission), and return a sorted, deduplicated array
  * of concrete (non-glob) permission strings.
  */
-export async function permissionsByRoles(roleNames: string[]): Promise<string[]> {
-    if (!roleNames || roleNames.length === 0) return []
+export async function permissionsByRoles(roleIds: string[]): Promise<string[]> {
+    if (!roleIds || roleIds.length === 0) return []
 
     const allLeafPerms = new Set<string>()
 
-    // Fetch each role from the DB by name
-    for (const roleName of roleNames) {
-        const matches = await dbFindAll(db, roles, { name: roleName })
+    // Fetch each role from the DB by ID
+    for (const roleId of roleIds) {
+        const matches = await dbFindAll(db, roles, { id: roleId })
         if (matches.length === 0) continue
 
         const role = matches[0]

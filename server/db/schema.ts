@@ -15,7 +15,6 @@ export const accounts = sqliteTable('accounts', {
     validated: integer('validated').default(0), // 0 or 1 
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-    // validatedAt: text('validated_at').notNull(),
 });
 
 // --- Roles Table ---

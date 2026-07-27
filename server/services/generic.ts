@@ -44,8 +44,9 @@ export class genericService {
             const rule = this.zod_rules[key as keyof typeof this.zod_rules];
             if (mode === 'update' && !val[key]) continue;
             const result = rule.safeParse(val[key]);
+
             if (!result.success) {
-                console.log("validation error", result.error);
+                console.log(`validation error: ${key}`, result.error);
                 throw createError({ status: 422, statusMessage: `error ${this.table_name}.bad_payload` });
             }
         }
@@ -68,9 +69,16 @@ export class genericService {
         }
     }
 
-    async create(body: any) {
+    async create(body: any, hooks?: any) {
         const payload = this.addOwner({ ...body });
         this.validate(payload);
+
+        if (hooks?.postValidate) {
+            for (const key of Object.keys(hooks.postValidate)) {
+                payload[key] = await hooks.postValidate[key](payload[key]);
+            }
+        }
+
         try {
             return await dbCreate(this.db, this.table, payload);
         } catch (e) {
@@ -81,9 +89,18 @@ export class genericService {
         }
     }
 
-    async update(id: string, body: any) {
+    async update(id: string, body: any, hooks?: any) {
         const payload = this.addOwner({ ...body });
         this.validate(payload, 'update');
+
+        if (hooks?.postValidate) {
+            for (const key of Object.keys(hooks.postValidate)) {
+                if (payload[key]) {
+                    payload[key] = await hooks.postValidate[key](payload[key]);
+                }
+            }
+        }
+
         const searchSpec = this.addOwner({ id });
         try {
             return await dbFindOneAndUpdate(this.db, this.table, searchSpec, payload);

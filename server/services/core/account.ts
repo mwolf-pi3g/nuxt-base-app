@@ -1,27 +1,31 @@
 import { db } from "hub:db";
-import { accounts } from "hub:db:schema";
-import { zod_rules } from "#shared/rules/account";
+import { accounts, roles } from "hub:db:schema";
+import { zod_rules } from "#bs/../shared/rules/account";
 import { genericService } from "#bs/services/generic";
 import { scryptSync, randomBytes, createHmac } from "node:crypto";
-import { dbCreate } from "#bs/db/wrappers/db_create";
+import { dbJsonFindAllAndDelete } from "#bs/db/wrappers/db_json_find_all_and_delete";
 import { dbRead } from "#bs/db/wrappers/db_read";
 import { dbFindOne } from "#bs/db/wrappers/db_find_one";
+import { dbFindAll } from "#bs/db/wrappers/db_find_all";
 
 class accountAdminService extends genericService {
     async init() {
         // Seeding Admin Account
         const existingAccounts = await dbRead(db, accounts);
+        const adminRole = await dbFindAll(db, roles, { name: 'admin' }); // should exist by default
+        const adminRoleId = adminRole[0]?.id;
+
         // FIXME: stupid way of forming query
-        const adminExists = existingAccounts.some((u: any) => u.roles.includes('admin'));
+        const adminExists = existingAccounts.some((u: any) => u.roles.includes(adminRoleId));
 
         if (!adminExists) {
             const adminRecord = {
                 user: 'admin@admin.com',
                 password: '!1adminadmin',
                 lang: 'en',
-                validated: true,
-                roles: ['admin'],
-                limits: 'free'
+                validated: 1,
+                roles: [adminRoleId],
+                limits: 'basic'
             }
 
             console.log('--- DEFAULT ADMIN NOT FOUND ---');
@@ -47,35 +51,48 @@ class accountAdminService extends genericService {
         return `${salt}:${hash}`;
     }
 
+    async verifyRoles(body: any) {
+        if (body && body.roles !== undefined && body.roles !== null) {
+            if (!Array.isArray(body.roles) || !body.roles.every((r: any) => typeof r === 'string')) {
+                throw createError({
+                    status: 400,
+                    statusMessage: 'error accounts.roles.invalid_type'
+                });
+            }
+            const dbRoles = await dbRead(db, roles);
+            const dbRoleIds = dbRoles.map((r: any) => r.id);
+            const allExist = body.roles.every((r: string) => dbRoleIds.includes(r));
+            if (!allExist) {
+                throw createError({
+                    status: 400,
+                    statusMessage: 'error accounts.roles.invalid_role'
+                });
+            }
+        }
+    }
+
+    async deleteRoles(roleIds: string[]) {
+        const count = await dbJsonFindAllAndDelete(db, accounts, { roles: roleIds });
+        return count;
+    }
+
     // Override create 
     async create(body: any) {
-        const domain = process.env.EMAIL_DOMAIN || 'localhost';
+        await this.verifyRoles(body);
 
+        const domain = process.env.EMAIL_DOMAIN || 'localhost';
         // Generate a random 16-character email-legal string
         const randomPrefix = randomBytes(8).toString('hex');
-        const generatedEmail = `${randomPrefix}@${domain}`;
+        const email = `${randomPrefix}@${domain}`;
 
-        // Merge overrides
-        const account = {
-            ...body,
-            email: generatedEmail,
-        };
+        const record = await super.create({ ...body, email }, { postValidate: { password: this.hashPass } });
+        await this.sendValidationEmail(record);
+        return record;
 
-        this.validate(account);
-        account.password = this.hashPass(account.password);
-        account.validated = account.validated ? 1 : 0;
-        try {
-            const record = await dbCreate(db, accounts, account);
-            console.log('Account created:', record);
-            await this.sendValidationEmail(record);
-            return record;
-        } catch (error) {
-            console.error('Error creating account:', error);
-            throw createError({
-                status: 500,
-                statusMessage: 'error core.account.create_failed'
-            });
-        }
+    }
+
+    async update(id: string, body: any) {
+        return await super.update(id, body, { postValidate: { password: this.hashPass } });
     }
 
     async authenticate(user: string, password: string) {
