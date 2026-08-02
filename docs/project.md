@@ -16,8 +16,14 @@ default admin user: admin@admin.com / !1adminadmin
 - frontend / backend metadata json files for app config
 - Integrated server cron
 - basic login/out persisted with nuxt hub => drizzle => sqlite
+- 150+ notification services via Apprise
 
 ## Backend
+
+### Notifications
+- [ ] Apprise add icon and overflow params to url in service call
+- [ ] Apprise add click => url to email
+- [ ] Apprise: If text too long, send as attachment
 
 ### Routes
 - [ ] Table routes: add filtering, sorting, pagination
@@ -38,6 +44,8 @@ default admin user: admin@admin.com / !1adminadmin
 ### Components
 - [ ] table support client side filtering / sorting / pagination
 - [ ] table: id get component w id tooltip.  search on both.
+- [ ] forms: add default to schema and then remove seeddata hardcoding in form.vue
+- [ ] in notifications.vue make sure dynamic rules are i18n
 - [ ] make NPM: table/form
 - [ ] make event bell icon in header.
 - [ ] when deleting account, have custom UI and log out.

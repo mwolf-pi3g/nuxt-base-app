@@ -13,18 +13,17 @@ defineRouteMeta({
 })
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event)
-    const service = getAccountService()
+  const body = await readBody(event)
+  const service = getAccountService()
 
 
-    console.log(body)
-    const record = await service.create({
-        user: body.user,
-        password: body.password,
-    })
+  const record = await service.create({
+    user: body.user,
+    password: body.password,
+  })
 
-    return {
-        status: 'success',
-        statusMessage: 'success account.create.success'
-    }
+  return {
+    status: 'success',
+    statusMessage: 'success account.create.success'
+  }
 })

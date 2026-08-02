@@ -25,8 +25,9 @@
 </template>
 
 <script setup lang="ts">    
-import accountsTableMetaFcn from '#ba/schemas/accounts'
-import rolesTableMetaFcn from '#ba/schemas/roles'
+import accountsTableMetaFcn from '#ba/schemas/admin/accounts'
+import rolesTableMetaFcn from '#ba/schemas/admin/roles'
+import notificationsMetaFcn from '#ba/schemas/admin/notifications'
 import hasPerm from '#ba/util/hasPerm'
 import AdminApp from '~/components/admin_app.vue'
 import { apiPost } from '~/util/fetch/wrappers'
@@ -54,8 +55,9 @@ onMounted(async () => {
   {
       "name": 'administration',
       "items": [
-          {name:'account', data:await accountsTableMetaFcn(i18n.t, {onSetIdent}), type:'table', permissions:['account.crud.read'], icon:'mdi-account'},
-          {name:'role', data:await rolesTableMetaFcn(i18n.t), type:'table', permissions:['role.crud.read'], icon:'mdi-role'},
+          { name:'account', data:await accountsTableMetaFcn(i18n.t, {onSetIdent}), type:'table', permissions:['account.crud.read'], icon:'mdi-account'},
+          { name:'role', data:await rolesTableMetaFcn(i18n.t), type:'table', permissions:['role.crud.read'], icon:'mdi-role'},
+          { name: 'notifications', data: notificationsMetaFcn(i18n.t), type: 'table', permissions: ['notification.crud.read'], icon: 'mdi-bell-outline' }
       ],
   }
  ]

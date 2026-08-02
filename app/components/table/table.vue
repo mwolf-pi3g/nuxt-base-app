@@ -49,7 +49,9 @@
           <v-btn class="my-4" icon color="primary" variant="tonal" @click="tab = 'table'">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <FormWrapper class="mt-4" v-if="showForm" :key="editingItem ? editingItem.id : 'new'" :headers="formData"
+          <!-- <FormWrapper class="mt-4" v-if="showForm" :key="editingItem ? editingItem.id : 'new'" :headers="formData"
+            :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" /> -->
+          <FormWrapper class="mt-4" v-if="showForm" :headers="formData"
             :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" />
         </v-tabs-window-item>
       </v-tabs-window>

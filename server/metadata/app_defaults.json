@@ -3,7 +3,8 @@
         "admin": [
             "identity.*",
             "account.crud.*",
-            "role.crud.*"
+            "role.crud.*",
+            "notification.crud.*"
         ],
         "user": []
     },

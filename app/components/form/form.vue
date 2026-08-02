@@ -1,6 +1,6 @@
 <template>
   <component :is="noCard ? 'div' : 'v-card'" :variant="noCard ? undefined : 'outlined'" :class="noCard ? '' : 'pa-4 mt-4'">
-    <v-form v-model="isValid" ref="formRef" @submit.prevent="submit">
+    <v-form v-model="isValid" @submit.prevent="submit">
       <template v-for="header in headers" :key="header.key">
         <FormSetStringLine
           v-if="header.set_type === 'string_line'"
@@ -38,13 +38,20 @@
           :header="header"
           :rules="getRules(header.key)"
         />
+
+        <FormSetForm
+          v-else-if="header.set_type === 'form' && resolvedSchemas[header.key]"
+          v-model="resolvedSchemas[header.key]"
+          :initial-data="formData[header.key]"
+          :header="header"
+          @valid="v => nestedValids[header.key] = v"
+        />
       </template>
-      
-      <div class="d-flex justify-end mt-4">
+      <div v-if="!noSubmit" class="d-flex justify-end mt-4">
         <v-btn v-if="cancelBtn" variant="text" class="me-2" @click="$emit('cancel')">
           {{ t('form.cancel') }}
         </v-btn>
-        <v-btn color="primary" type="submit" :disabled="!isValid" :loading="loading">
+        <v-btn color="primary" type="submit" :disabled="!isFormValid" :loading="loading">
           {{ t('form.submit') }}
         </v-btn>
       </div>
@@ -53,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const props = withDefaults(defineProps<{
@@ -62,19 +69,23 @@ const props = withDefaults(defineProps<{
   cancelBtn?: boolean
   loading?: boolean
   noCard?: boolean
+  noSubmit?: boolean
 }>(), {
   cancelBtn: true,
   loading: false,
-  noCard: false
+  noCard: false,
+  noSubmit: false
 })
 
-const emit = defineEmits(['submit', 'cancel'])
+
+
+const emit = defineEmits(['submit', 'cancel', 'valid'])
 const { t } = useI18n()
 
 const isValid = ref(false)
 
 // Seed formData: start from initialData, then fill missing keys with header defaults
-const seedData: Record<string, any> = { ...props.initialData }
+const seedData = props.initialData && typeof props.initialData === 'object' ? props.initialData : {}
 props.headers.forEach(h => {
   if (h.key && seedData[h.key] === undefined && h.set_type) {
     if (h.default !== undefined) {
@@ -83,12 +94,52 @@ props.headers.forEach(h => {
       seedData[h.key] = ''
     } else if (h.select_type === 'multiple') {
       seedData[h.key] = []
+    } else if (h.set_type === 'form') {
+      seedData[h.key] = {}
     } else {
       seedData[h.key] = null
     }
   }
 })
+
 const formData = reactive(seedData)
+const resolvedSchemas = reactive<Record<string, any>>({})
+const nestedValids = reactive<Record<string, boolean>>({})
+
+const isFormValid = computed(() => {
+  if (!isValid.value) return false
+  for (const header of props.headers) {
+    if (header.set_type === 'form' && resolvedSchemas[header.key]) {
+      if (nestedValids[header.key] !== true) {
+        return false
+      }
+    }
+  }
+  return true
+})
+
+watch(isValid, (newValid) => {
+  emit('valid', newValid)
+}, { immediate: true })
+
+// deal with nested forms.  
+watch(
+  [() => props.headers, () => formData],
+  async () => {
+    for (const header of props.headers) {
+      if (header.set_type === 'form') {
+        if (!('value' in header)) {
+          resolvedSchemas[header.key] = formData[header.key];
+        } else if (typeof header.value === 'function') {
+          resolvedSchemas[header.key] = await header.value(header, formData);
+        } else {
+          resolvedSchemas[header.key] = header.value;
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 const getRules = (key: string) => {
   const rules = props.headers.find((h: any) => h.key === key)?.rules;
@@ -103,8 +154,8 @@ const getRules = (key: string) => {
 }
 
 const submit = () => {
-    if (isValid.value) {
-        emit('submit', { ...formData })
-    }
+  if (isFormValid.value && !props.noSubmit) {
+    emit('submit', { ...formData })
+  }
 }
 </script>

@@ -39,7 +39,6 @@ class accountAdminService extends genericService {
             .update(record.user.toString())
             .digest('hex');
         const url = `${process.env.BASE_URL}/auth/validate?user=${record.user}&token=${token}`;
-        console.log('Validation URL:', url);
         // FIXME: send email
     }
 

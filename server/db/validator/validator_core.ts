@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod';
-import { accounts, roles } from 'hub:db:schema';
+import { accounts, roles, notificationChannels } from 'hub:db:schema';
 
 const sv_account = {
     insert: createInsertSchema(accounts).omit({ createdAt: true, updatedAt: true }),
@@ -13,7 +13,14 @@ const sv_role = {
     update: createUpdateSchema(roles).omit({ createdAt: true, updatedAt: true })
 }
 
+const sv_notification_channel = {
+    insert: createInsertSchema(notificationChannels).omit({ createdAt: true, updatedAt: true }),
+    select: createSelectSchema(notificationChannels),
+    update: createUpdateSchema(notificationChannels).omit({ createdAt: true, updatedAt: true }),
+}
+
 export default {
     accounts: sv_account,
-    roles: sv_role
+    roles: sv_role,
+    notification_channels: sv_notification_channel
 }

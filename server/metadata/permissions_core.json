@@ -38,6 +38,28 @@
         ]
     },
     {
+        "name": "notification",
+        "children": [
+            {
+                "name": "crud",
+                "children": [
+                    {
+                        "name": "create"
+                    },
+                    {
+                        "name": "read"
+                    },
+                    {
+                        "name": "update"
+                    },
+                    {
+                        "name": "delete"
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "name": "role",
         "children": [
             {
