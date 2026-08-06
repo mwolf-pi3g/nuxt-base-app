@@ -20,13 +20,33 @@ export const schemaValidate: SchemaValidate = { ...core, ...app };
 
 export const getValidator = (table: any, operation: 'insert' | 'select' | 'update') => {
     return (item: any) => {
-        const validation = schemaValidate[getTableName(table)]?.[operation]?.safeParse(item);
-
-        if (!(validation?.success)) {
-            console.log("reason", validation?.error);
+        const tableName = getTableName(table);
+        const tableValidator = schemaValidate[tableName];
+        
+        if (!tableValidator) {
+            console.log(`Validator error: table '${tableName}' has no validator registered in schemaValidate.`);
             throw createError({
                 statusCode: 400,
-                statusMessage: `error ${getTableName(table)}.${operation}.bad_payload`
+                statusMessage: `error ${tableName}.${operation}.bad_payload`
+            });
+        }
+        
+        const opValidator = tableValidator[operation];
+        if (!opValidator) {
+            console.log(`Validator error: table '${tableName}' has no '${operation}' validator registered.`);
+            throw createError({
+                statusCode: 400,
+                statusMessage: `error ${tableName}.${operation}.bad_payload`
+            });
+        }
+
+        const validation = opValidator.safeParse(item);
+
+        if (!validation.success) {
+            console.log(`Validation failed for table '${tableName}', operation '${operation}':`, JSON.stringify(validation.error.format(), null, 2));
+            throw createError({
+                statusCode: 400,
+                statusMessage: `error ${tableName}.${operation}.bad_payload`
             });
         }
         return validation.data;

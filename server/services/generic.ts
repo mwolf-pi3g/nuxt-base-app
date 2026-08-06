@@ -4,6 +4,8 @@ import { dbFindAll } from "#bs/db/wrappers/db_find_all";
 import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbFindOneAndUpdate } from "#bs/db/wrappers/db_find_one_and_update";
 import { dbFindOneAndDelete } from "#bs/db/wrappers/db_find_one_and_delete";
+import { accounts } from "hub:db:schema";
+import appDefaults from "#server/metadata/app_defaults.json";
 
 export class genericService {
     db: any;
@@ -53,6 +55,38 @@ export class genericService {
         return true;
     }
 
+    async prepopulate() {
+        if (!this.user_id) return;
+
+        const exampleContent = appDefaults?.example_content;
+        if (!exampleContent) return;
+
+        const tableKey = this.table_name;
+        const contentForTable = (exampleContent as any)[tableKey];
+        if (!contentForTable) return;
+
+        let userLang = 'en';
+        try {
+            const account = await dbFindOne(this.db, accounts, { id: this.user_id });
+            if (account && account.lang) {
+                userLang = account.lang;
+            }
+        } catch (e) {
+            console.error("Failed to retrieve user language preference", e);
+        }
+
+        let itemsToCopy = contentForTable[userLang];
+        if (!itemsToCopy && userLang !== 'en') {
+            itemsToCopy = contentForTable['en'];
+        }
+
+        if (itemsToCopy && Array.isArray(itemsToCopy)) {
+            for (const item of itemsToCopy) {
+                await this.create({ ...item });
+            }
+        }
+    }
+
     async read(id?: string) {
         try {
             if (id) {
@@ -60,7 +94,12 @@ export class genericService {
                 return await dbFindOne(this.db, this.table, searchSpec);
             }
             const searchSpec = this.addOwner({});
-            return await dbFindAll(this.db, this.table, searchSpec);
+            let results = await dbFindAll(this.db, this.table, searchSpec);
+            if (results.length === 0) {
+                await this.prepopulate();
+                results = await dbFindAll(this.db, this.table, searchSpec);
+            }
+            return results;
         } catch (e) {
             throw createError({
                 status: 500,
@@ -71,6 +110,7 @@ export class genericService {
 
     async create(body: any, hooks?: any) {
         const payload = this.addOwner({ ...body });
+
         this.validate(payload);
 
         if (hooks?.postValidate) {
@@ -78,6 +118,7 @@ export class genericService {
                 payload[key] = await hooks.postValidate[key](payload[key]);
             }
         }
+        console.log("after hooks: ", payload, this.user_id);
 
         try {
             return await dbCreate(this.db, this.table, payload);

@@ -1,4 +1,38 @@
 {
+  "form": {
+    "apprise": {
+      "template": "Vorlage",
+      "schema": "Schema",
+      "host": "Host",
+      "port": "Port",
+      "user": "Benutzer",
+      "password": "Passwort",
+      "pass": "Passwort",
+      "topic": "Thema",
+      "targets": "Ziele",
+      "token": "Token",
+      "channel": "Kanal",
+      "apikey": "API-Schlüssel",
+      "bot_token": "Bot-Token",
+      "chat_id": "Chat-ID",
+      "webhook": "Webhook-URL",
+      "webhook_url": "Webhook-URL"
+    }
+  },
+  "rules": {
+    "apprise": {
+      "number": {
+        "min": "Muss mindestens {min} sein",
+        "max": "Darf höchstens {max} sein"
+      },
+      "string": {
+        "min": "Muss mindestens 1 Zeichen lang sein",
+        "max": "Darf höchstens 64 Zeichen lang sein",
+        "regex": "Ungültiges Format"
+      },
+      "invalid": "Ungültige Eingabe"
+    }
+  },
   "table": {
     "account": {
       "title": "Konten",

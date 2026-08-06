@@ -57,11 +57,42 @@
           "type": "Tag must be a string"
         }
       }
+    },
+    "apprise": {
+      "number": {
+        "min": "Must be at least {min}",
+        "max": "Must be at most {max}"
+      },
+      "string": {
+        "min": "Must be at least 1 character",
+        "max": "Must be at most 64 characters",
+        "regex": "Invalid format"
+      },
+      "invalid": "Invalid input"
     }
   },
   "form": {
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "apprise": {
+      "template": "Template",
+      "schema": "Schema",
+      "host": "Host",
+      "port": "Port",
+      "user": "User",
+      "hostname": "Hostname",
+      "password": "Password",
+      "pass": "Password",
+      "topic": "Topic",
+      "targets": "Targets",
+      "token": "Token",
+      "channel": "Channel",
+      "apikey": "API Key",
+      "bot_token": "Bot Token",
+      "chat_id": "Chat ID",
+      "webhook": "Webhook URL",
+      "webhook_url": "Webhook URL"
+    }
   },
   "table": {
     "account": {
@@ -84,6 +115,21 @@
       "id": "ID",
       "name": "Name",
       "value": "Value"
+    },
+    "notification_channels": {
+      "title": "Notification Channels",
+      "name": "Name",
+      "provider": "Provider",
+      "config": "Configuration",
+      "type": "Type",
+      "is_default": "Is Default",
+      "created_at": "Created At",
+      "add_whatsapp": "Add Whatsapp",
+      "set_default": "Set default"
+    },
+    "common": {
+      "owner": "Owner",
+      "actions": "Actions"
     },
     "common": {
       "actions": "Actions"

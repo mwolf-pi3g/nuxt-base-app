@@ -41,19 +41,35 @@
     <!-- Logged in controls -->
     <div v-if="loggedIn" class="d-flex align-center">
 
-      <!-- <v-btn v-for="page in header_conf.pages" :key="page.path" icon @click="router.push(page.path)">
-        <v-icon>{{ page.icon }}</v-icon>
-      </v-btn> -->
-
-      <div v-for="page in header_conf.pages" :key="page.path">
-        <v-btn v-if="!page.permissions || hasPerm(page.permissions)" icon @click="router.push(page.path)">
-          <v-icon v-tooltip="$t('pages.' + page.name)" >{{ page.icon }}</v-icon>
-        </v-btn>
+      <div v-for="page in header_conf.pages" :key="page.name">
+        <template v-if="page.children && page.children.length > 0">
+          <v-speed-dial location="bottom center" transition="scale-transition">
+            <template v-slot:activator="{ props: activatorProps }">
+              <v-btn icon v-bind="activatorProps">
+                <v-icon v-tooltip="page.name">{{ page.icon }}</v-icon>
+              </v-btn>
+            </template>
+            <template v-for="child in page.children" :key="child.path">
+              <v-btn
+                v-if="!child.permissions || hasPerm(child.permissions)"
+                icon
+                @click="router.push(child.path)"
+              >
+                <v-icon v-tooltip="child.name">{{ child.icon }}</v-icon>
+              </v-btn>
+            </template>
+          </v-speed-dial>
+        </template>
+        <template v-else>
+          <v-btn v-if="!page.permissions || hasPerm(page.permissions)" icon @click="router.push(page.path)">
+            <v-icon v-tooltip="$t('pages.' + page.name)" >{{ page.icon }}</v-icon>
+          </v-btn>
+        </template>
       </div>
 
       <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn icon v-bind="props">
+        <template v-slot:activator="{ props: activatorProps }">
+          <v-btn icon v-bind="activatorProps">
             <v-icon>mdi-account</v-icon>
           </v-btn>
         </template>
@@ -84,8 +100,14 @@ import { computed } from 'vue'
 const userState = useState<UserState>('user')
 const route = useRoute()
 const currentPage = computed(() => {
-  const page = header_conf.pages.find(p => p.path === route.path)
-  return page ? page.name : ''
+  for (const page of header_conf.pages) {
+    if (page.path === route.path) return page.name;
+    if (page.children) {
+      const child = page.children.find(c => c.path === route.path);
+      if (child) return child.name;
+    }
+  }
+  return '';
 })
 
 const theme = useTheme()
