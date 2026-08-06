@@ -8,6 +8,12 @@
           :header="header"
           :rules="getRules(header.key)"
         />
+        <FormSetStringArea
+          v-else-if="header.set_type === 'string_area'"
+          v-model="formData[header.key]"
+          :header="header"
+          :rules="getRules(header.key)"
+        />
         <FormSetEnumTag
           v-else-if="header.set_type === 'enum' && header.select_type === 'multiple'"
           v-model="formData[header.key]"
@@ -34,6 +40,12 @@
         />
         <FormSetBoolean
           v-else-if="header.set_type === 'boolean'"
+          v-model="formData[header.key]"
+          :header="header"
+          :rules="getRules(header.key)"
+        />
+        <FormSetInteger
+          v-else-if="header.set_type === 'integer'"
           v-model="formData[header.key]"
           :header="header"
           :rules="getRules(header.key)"

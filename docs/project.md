@@ -18,6 +18,8 @@ default admin user: admin@admin.com / !1adminadmin
 - basic login/out persisted with nuxt hub => drizzle => sqlite
 - 150+ notification services via Apprise
 
+# TODO
+
 ## Backend
 
 ### Notifications
@@ -30,13 +32,14 @@ default admin user: admin@admin.com / !1adminadmin
 - [ ] send validation email on signup
 - [ ] allow sso/oauth
 - [ ] verify format of all thrown errors, make xlations for them.
+- [ ] If perms change, push immediately. no logout/login
+
 
 ### DB
-- [ ] Default limits to json value.
+- [ ] Default limits to notification config json value.
 - [ ] create custom triggers for atomic ops.  Eg: on delete account, delete all related records
     when deleting key, delete key in foreign rows.
         roles, notification_channels
-
 - [ ] if user changes email, validated = false, resend email
 
 ## Frontend
@@ -45,10 +48,11 @@ default admin user: admin@admin.com / !1adminadmin
 - [ ] table support client side filtering / sorting / pagination
 - [ ] table: id get component w id tooltip.  search on both.
 - [ ] forms: add default to schema and then remove seeddata hardcoding in form.vue
-- [ ] in notifications.vue make sure dynamic rules are i18n
-- [ ] make NPM: table/form
-- [ ] make event bell icon in header.
+- [ ] make NPM: table/form/notificatoins
+- [ ] update documentation
+- [ ] make event bell icon in header for logs.
 - [ ] when deleting account, have custom UI and log out.
+- [ ] for all keys that are unique to a form setter, put in {options:{}}
 - [ ] Table: make schema prep util., derive onACTION from action: 
         MAYBE: don't make create, update, del automatic but give default fcns that can be added to schema.
 
@@ -64,8 +68,6 @@ default admin user: admin@admin.com / !1adminadmin
 - [ ] make vitest tests for each route.
 - [ ] refactor dbFindOneAndDelete, dbFindOneAndUpdate - make difference between del and del with searchspec
 - [ ] use abortsignal on socket listeners  -make sure cleaned up
-
-### Other
 - [ ] forms: multiple getRules - refactor
 - [ ] test on mobile
 
