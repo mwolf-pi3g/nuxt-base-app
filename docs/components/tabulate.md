@@ -68,8 +68,8 @@ Renders the value directly inside a standard text `span`.
 * **Props**: `model: string`
 
 ### B. TableGetEnum (`get_type: 'enum'`)
-Outputs the single-select value in a text `span`.
-* **Props**: `model: string`
+Outputs the single-select value, or joined comma-separated values if the model is an array, inside a text `span`.
+* **Props**: `model: string | string[]`
 
 ### C. TableGetEnumTag (`get_type: 'enum_tag'`)
 Accepts an index array of booleans (`boolean[]`) representing which options are selected. It displays active options as compact, colored chip badges.

@@ -4,10 +4,6 @@ export const zod_rules = {
   user: z.string({ invalid_type_error: "rules.account.user.type" })
     .email("rules.account.user.invalid_email"),
 
-  email: z.string({ invalid_type_error: "rules.account.email.type" })
-    .email("rules.account.email.invalid")
-    .optional(),
-
   password: z.string({ invalid_type_error: "rules.account.password.type" })
     .min(12, "rules.account.password.too_short")
     .max(128, "rules.account.password.too_long"),

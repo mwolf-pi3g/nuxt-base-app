@@ -32,7 +32,7 @@
               </div>
 
               <TableGetString v-else-if="header.get_type === 'string'" :model="item[header.key]" />
-              <TableGetEnum v-else-if="header.get_type === 'enum'" :model="item[header.key]" />
+              <TableGetEnum v-else-if="header.get_type === 'enum'" :model="item[header.key]", :enum_values="header.enum_values" />
               <TableGetEnumTag v-else-if="header.get_type === 'enum_tag'" :model="item[header.key]"
                 :enum-values="header.enum_values" />
               <TableGetListTag v-else-if="header.get_type === 'list_tag'" :model="item[header.key]" :color_delimiter="header.color_delimiter" :enum_values="header.enum_values"/>

@@ -67,15 +67,16 @@ Renders a multi-line text input text area (`v-textarea`).
 ### C. FormSetEnum (`set_type: 'enum'`)
 Renders a single-select dropdown selection (`v-select`).
 * **Specific Keys**:
-  * `enum_values` *(string[] | string, required)*:
+  * `enum_values` *(string[] | string | Function, required)*:
     * An array of raw options, or
-    * An i18n translation path (string) resolving to an array of values.
+    * An i18n translation path (string) resolving to an array of values, or
+    * An asynchronous function: `(header, formData) => Promise<any[]>` or synchronous function: `(header, formData) => any[]`.
 
 ### D. FormSetEnumTag (`set_type: 'enum'` with `select_type: 'multiple'`)
 Renders a multi-select dropdown targeting array storage where selections are mapped to/from a boolean array.
 * **Specific Keys**:
   * `select_type` *(string, required)*: Must be set to `'multiple'` to route to this sub-component.
-  * `enum_values` *(string[] | string, required)*: Array or translation path of selectable choices.
+  * `enum_values` *(string[] | string | Function, required)*: Array, translation path, or callback function of selectable choices.
 * **State Behavior**: Exposes the choice values via an internal index mapper and communicates with the parent using `boolean[]` representing selection indices.
 
 ### E. FormSetStrarrChips (`set_type: 'strarr_chips'`)

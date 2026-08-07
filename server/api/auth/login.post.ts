@@ -34,8 +34,7 @@ export default defineEventHandler(async (event) => {
       roles: account.roles,
       permissions,
       limits: account.limits,
-      lang: account.lang,
-      email: account.email
+      lang: account.lang
     },
     loggedInAt: new Date().toISOString()
   });

@@ -17,19 +17,19 @@
         <FormSetEnumTag
           v-else-if="header.set_type === 'enum' && header.select_type === 'multiple'"
           v-model="formData[header.key]"
-          :header="header"
+          :header="getResolvedHeader(header)"
           :rules="getRules(header.key)"
         />
         <FormSetEnum
           v-else-if="header.set_type === 'enum'"
           v-model="formData[header.key]"
-          :header="header"
+          :header="getResolvedHeader(header)"
           :rules="getRules(header.key)"
         />
         <FormSetStrarrChips
           v-else-if="header.set_type === 'strarr_chips'"
           v-model="formData[header.key]"
-          :header="header"
+          :header="getResolvedHeader(header)"
           :rules="getRules(header.key)"
         />
         <FormSetPasswordConfirm
@@ -134,7 +134,9 @@ watch(isValid, (newValid) => {
   emit('valid', newValid)
 }, { immediate: true })
 
-// deal with nested forms.  
+const resolvedEnumValues = reactive<Record<string, any[]>>({})
+
+// deal with nested forms and dynamic enum_values.  
 watch(
   [() => props.headers, () => formData],
   async () => {
@@ -148,10 +150,24 @@ watch(
           resolvedSchemas[header.key] = header.value;
         }
       }
+
+      if (typeof header.enum_values === 'function') {
+        resolvedEnumValues[header.key] = await header.enum_values(header, formData);
+      }
     }
   },
   { immediate: true, deep: true }
 )
+
+const getResolvedHeader = (header: any) => {
+  if (typeof header.enum_values === 'function') {
+    return {
+      ...header,
+      enum_values: resolvedEnumValues[header.key] || []
+    };
+  }
+  return header;
+}
 
 const getRules = (key: string) => {
   const rules = props.headers.find((h: any) => h.key === key)?.rules;

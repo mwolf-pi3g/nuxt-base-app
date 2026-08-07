@@ -6,7 +6,6 @@ declare module '#auth-utils' {
     permissions: string[];
     limits: string;
     lang: string;
-    email: string;
   }
 
   interface UserSession {

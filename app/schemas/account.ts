@@ -22,11 +22,7 @@ const getHeaders = async (t: any) => {
                 (v: string) => zod_rules.user.safeParse(v).success || t('account.user.invalid_email')
             ]
         },
-        {
-            title: t('table.account.email') as string,
-            key: 'email',
-            get_type: "string",
-        },
+
         {
             title: t('table.account.password') || 'Password',
             key: 'password',

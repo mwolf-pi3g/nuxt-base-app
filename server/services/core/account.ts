@@ -79,12 +79,12 @@ class accountAdminService extends genericService {
     async create(body: any) {
         await this.verifyRoles(body);
 
-        const domain = process.env.EMAIL_DOMAIN || 'localhost';
-        // Generate a random 16-character email-legal string
-        const randomPrefix = randomBytes(8).toString('hex');
-        const email = `${randomPrefix}@${domain}`;
+        // const domain = process.env.EMAIL_DOMAIN || 'localhost';
+        // // Generate a random 16-character email-legal string
+        // const randomPrefix = randomBytes(8).toString('hex');
+        // const email = `${randomPrefix}@${domain}`;
 
-        const record = await super.create({ ...body, email }, { postValidate: { password: this.hashPass } });
+        const record = await super.create(body, { postValidate: { password: this.hashPass } });
         await this.sendValidationEmail(record);
         return record;
 
