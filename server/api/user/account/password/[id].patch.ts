@@ -20,7 +20,7 @@ defineRouteMeta({
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event);
-  const userId = session.secure?.as_id || session.user?.id;
+  const userId = session.user?.id;
 
   if (!userId) {
     throw createError({

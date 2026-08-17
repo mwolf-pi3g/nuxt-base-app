@@ -2,8 +2,15 @@
   <component :is="noCard ? 'div' : 'v-card'" :variant="noCard ? undefined : 'outlined'" :class="noCard ? '' : 'pa-4 mt-4'">
     <v-form v-model="isValid" @submit.prevent="submit">
       <template v-for="header in headers" :key="header.key">
+        <component
+          v-if="customRegistry[header.set_type]"
+          :is="customRegistry[header.set_type]"
+          v-model="formData[header.key]"
+          :header="getResolvedHeader(header)"
+          :rules="getRules(header.key)"
+        />
         <FormSetStringLine
-          v-if="header.set_type === 'string_line'"
+          v-else-if="header.set_type === 'string_line'"
           v-model="formData[header.key]"
           :header="header"
           :rules="getRules(header.key)"
@@ -12,12 +19,6 @@
           v-else-if="header.set_type === 'string_area'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
-        />
-        <FormSetEnumTag
-          v-else-if="header.set_type === 'enum' && header.select_type === 'multiple'"
-          v-model="formData[header.key]"
-          :header="getResolvedHeader(header)"
           :rules="getRules(header.key)"
         />
         <FormSetEnum
@@ -72,8 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, shallowReactive } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { Component } from 'vue'
+
+const customRegistry = shallowReactive<Record<string, Component>>({})
+
+const register = (type: string, component: Component) => {
+  customRegistry[type] = component
+}
 
 const props = withDefaults(defineProps<{
   headers: any[]
@@ -186,4 +194,8 @@ const submit = () => {
     emit('submit', { ...formData })
   }
 }
+
+defineExpose({
+  register
+})
 </script>

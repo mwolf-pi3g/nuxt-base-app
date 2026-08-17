@@ -51,7 +51,7 @@
           </v-btn>
           <!-- <FormWrapper class="mt-4" v-if="showForm" :key="editingItem ? editingItem.id : 'new'" :headers="formData"
             :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" /> -->
-          <FormWrapper class="mt-4" v-if="showForm" :headers="formData"
+          <FormWrapper ref="formRef" :key="editingItem ? editingItem.id : 'new'" class="mt-4" v-if="showForm" :headers="formData"
             :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" />
         </v-tabs-window-item>
       </v-tabs-window>
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import FormWrapper from '~/components/form/form.vue'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { apiGet, apiDelete, apiPost, apiPatch } from '~/util/fetch/wrappers'
 
 const props = defineProps<{
@@ -77,6 +77,12 @@ const props = defineProps<{
   };
   model?: any[];
 }>()
+
+const formRef = ref<any>(null)
+
+defineExpose({
+  formulate: formRef
+})
 
 const tab = ref('table')
 const localModel = ref(props.model);

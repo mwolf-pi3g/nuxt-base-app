@@ -2,9 +2,12 @@
   <v-app-bar flat border>
 
     <div  @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
-      <v-app-bar-nav-icon :icon="app_conf.icon"></v-app-bar-nav-icon>
+      <v-avatar v-if="app_conf.icon && app_conf.icon.startsWith('/')" class="mx-3" size="36" rounded="0">
+        <v-img :src="app_conf.icon"></v-img>
+      </v-avatar>
+      <v-app-bar-nav-icon v-else :icon="app_conf.icon"></v-app-bar-nav-icon>
       <v-app-bar-title>
-        {{ app_conf.name }}
+        <b>{{ app_conf.name }}</b>
       </v-app-bar-title>
     </div>
 
@@ -20,7 +23,7 @@
     <v-spacer />
 
     <!-- Theme Toggle -->
-    <v-btn v-if="header_conf.theme_show" icon @click="toggleTheme">
+    <v-btn v-if="loggedIn &&header_conf.theme_show" icon @click="toggleTheme">
       <v-icon>{{ theme.global.current.value.dark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
     </v-btn>
 

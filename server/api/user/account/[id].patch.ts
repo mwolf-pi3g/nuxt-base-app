@@ -17,7 +17,7 @@ defineRouteMeta({
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event);
-  const userId = session.secure?.as_id || session.user?.id;
+  const userId = session.user?.id;
 
   const { user, lang } = await readBody(event);
   const accountService = getService(userId);
