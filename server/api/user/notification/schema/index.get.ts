@@ -1,7 +1,9 @@
+import { getServiceNoAuth } from '#bs/services/core/notification';
+
 defineRouteMeta({
   openAPI: {
     tags: ['Base User'],
-    description: 'Get Apprise notification schema details.',
+    description: 'Get notification schema details from all registered providers.',
     responses: {
       200: {
         description: 'Success response'
@@ -10,7 +12,7 @@ defineRouteMeta({
         description: 'Not authorized'
       },
       500: {
-        description: 'Apprise service error'
+        description: 'Notification service error'
       }
     }
   }
@@ -18,7 +20,8 @@ defineRouteMeta({
 
 export default defineEventHandler(async (event) => {
   try {
-    return await getNotificationSchemas();
+    const notificationService = await getServiceNoAuth();
+    return await notificationService.getSchemas();
   } catch (error: any) {
     throw createError({
       statusCode: 500,

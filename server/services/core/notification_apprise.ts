@@ -1,5 +1,3 @@
-import { getNotificationSchemas } from "#bs/utils/getNotificationSchemas";
-
 function getExtensionFromMime(mimeType: string): string {
     const map: Record<string, string> = {
         'text/plain': 'txt',
@@ -23,6 +21,33 @@ function getExtensionFromMime(mimeType: string): string {
 }
 
 export class Apprise {
+    static async getSchemas(): Promise<any[]> {
+        const appriseUrl = process.env.APPRISE_URL || 'http://localhost';
+        const url = `${appriseUrl.replace(/\/$/, '')}/details`;
+
+        try {
+            const res = await $fetch<any>(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (res && res.version && res.version !== '1.12.0') {
+                console.warn(
+                    `Apprise version ${res.version} detected. Only version 1.12.0 has been tested.`
+                );
+            }
+
+            if (res && Array.isArray(res.schemas)) {
+                return res.schemas;
+            }
+            return [];
+        } catch (error) {
+            console.error("Failed to fetch Apprise schemas", error);
+            return [];
+        }
+    }
+
     static getFormattedAppriseUrl(channel: any): string {
         if (!channel) return '';
         const config = channel.config || channel;
@@ -86,8 +111,7 @@ export class Apprise {
 
         try {
             if (attachmentItems.length > 0) {
-                const schemasObj = await getNotificationSchemas();
-                const schemas = schemasObj?.schemas || [];
+                const schemas = await Apprise.getSchemas();
                 const channelType = channel?.type;
                 const found = schemas.find((item: any) => item && item.service_name === channelType);
 

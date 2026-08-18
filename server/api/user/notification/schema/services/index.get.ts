@@ -1,7 +1,9 @@
+import { getServiceNoAuth } from '#bs/services/core/notification';
+
 defineRouteMeta({
   openAPI: {
     tags: ['Base User'],
-    description: 'Get list of all notification service names.',
+    description: 'Get notification service names grouped by provider.',
     responses: {
       200: {
         description: 'Success response'
@@ -10,16 +12,26 @@ defineRouteMeta({
         description: 'Not authorized'
       },
       500: {
-        description: 'Apprise service error'
+        description: 'Notification service error'
       }
     }
   }
 })
 
 export default defineEventHandler(async (event) => {
-  const schemasObj = await $fetch<any>('/api/user/notification/schema', {
-    headers: getHeaders(event),
-  });
-  const schemas = schemasObj?.schemas || [];
-  return schemas.map((s: any) => s.service_name);
+  const notificationService = await getServiceNoAuth();
+  const allSchemas = await notificationService.getSchemas();
+  const result: Record<string, string[]> = {};
+
+  for (const [provider, schemas] of Object.entries(allSchemas)) {
+    if (Array.isArray(schemas)) {
+      result[provider] = schemas
+        .map((s: any) => s?.service_name)
+        .filter(Boolean);
+    } else {
+      result[provider] = [];
+    }
+  }
+
+  return result;
 });

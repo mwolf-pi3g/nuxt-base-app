@@ -55,18 +55,20 @@ const generateZodRules = (token: any) => {
 const schemaCache: Record<string, any> = {};
 
 const getChannelConfigSchema = async (header: any, row: any) => {
-  if (row?.provider !== 'Apprise' || !row?.type) {
+  if (!row?.provider || !row?.type) {
     return [];
   }
 
+  const providerLower = row.provider.toLowerCase();
+  const cacheKey = `${providerLower}:${row.type}`;
   const { apiGet } = await import('~/util/fetch/wrappers');
 
   try {
-    let res = schemaCache[row.type];
+    let res = schemaCache[cacheKey];
     if (!res) {
-      res = await apiGet(`/api/user/notification/schema/${encodeURIComponent(row.type)}`);
+      res = await apiGet(`/api/user/notification/schema/services/${encodeURIComponent(providerLower)}/${encodeURIComponent(row.type)}`);
       if (res && res.details) {
-        schemaCache[row.type] = res;
+        schemaCache[cacheKey] = res;
       }
     }
     if (!res || !res.details) {
@@ -88,7 +90,7 @@ const getChannelConfigSchema = async (header: any, row: any) => {
     const schemaHeaders: any[] = [];
 
     schemaHeaders.push({
-      title: t('form.apprise.template'),
+      title: t('form.notification.services.template'),
       key: 'template',
       set_type: 'enum',
       enum_values: templates
@@ -112,7 +114,7 @@ const getChannelConfigSchema = async (header: any, row: any) => {
       }
 
       const item: any = {
-        title: t("form.apprise." + (token.name.toLowerCase())),
+        title: t("form.notification.services." + (token.name.toLowerCase())),
         key: key,
         set_type: set_type,
         rules: [generateZodRules(token)]

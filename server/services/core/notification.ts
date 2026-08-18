@@ -5,15 +5,35 @@ import { dbFindAll } from "#bs/db/wrappers/db_find_all";
 
 class notificationService extends genericService {
     providers: Record<string, any> = {};
+    schemas: Record<string, any[]> | null = null;
 
     constructor(db: any, table: any, zod_rules: any, user_id?: string) {
         super(db, table, zod_rules, user_id);
         this.providers = {};
+        this.schemas = null;
     }
 
     registerProvider(name: string, providerClass: any) {
         if (!name || !providerClass) return;
         this.providers[name.toLowerCase()] = providerClass;
+    }
+
+    async getSchemas(forceRefresh = false): Promise<Record<string, any[]>> {
+        if (!forceRefresh && this.schemas) {
+            return this.schemas;
+        }
+
+        const result: Record<string, any[]> = {};
+        for (const [name, provider] of Object.entries(this.providers)) {
+            if (provider && typeof provider.getSchemas === 'function') {
+                result[name] = await provider.getSchemas();
+            } else {
+                result[name] = [];
+            }
+        }
+
+        this.schemas = result;
+        return this.schemas;
     }
 
     cleanConfigKeys(config: any, template: string) {
@@ -35,14 +55,14 @@ class notificationService extends genericService {
     }
 
     async create(body: any, hooks?: any) {
-        if (body?.provider === 'Apprise' && body?.config?.template) {
+        if (body?.provider?.toLowerCase() === 'apprise' && body?.config?.template) {
             this.cleanConfigKeys(body.config, body.config.template);
         }
         return super.create(body, hooks);
     }
 
     async update(id: string, body: any, hooks?: any) {
-        if (body?.provider === 'Apprise' && body?.config?.template) {
+        if (body?.provider?.toLowerCase() === 'apprise' && body?.config?.template) {
             this.cleanConfigKeys(body.config, body.config.template);
         }
         return super.update(id, body, hooks);

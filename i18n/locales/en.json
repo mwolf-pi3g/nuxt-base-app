@@ -74,24 +74,26 @@
   "form": {
     "submit": "Submit",
     "cancel": "Cancel",
-    "apprise": {
-      "template": "Template",
-      "schema": "Schema",
-      "host": "Host",
-      "port": "Port",
-      "user": "User",
-      "hostname": "Hostname",
-      "password": "Password",
-      "pass": "Password",
-      "topic": "Topic",
-      "targets": "Targets",
-      "token": "Token",
-      "channel": "Channel",
-      "apikey": "API Key",
-      "bot_token": "Bot Token",
-      "chat_id": "Chat ID",
-      "webhook": "Webhook URL",
-      "webhook_url": "Webhook URL"
+    "notification": {
+      "services": {
+        "template": "Template",
+        "schema": "Schema",
+        "host": "Host",
+        "port": "Port",
+        "user": "User",
+        "hostname": "Hostname",
+        "password": "Password",
+        "pass": "Password",
+        "topic": "Topic",
+        "targets": "Targets",
+        "token": "Token",
+        "channel": "Channel",
+        "apikey": "API Key",
+        "bot_token": "Bot Token",
+        "chat_id": "Chat ID",
+        "webhook": "Webhook URL",
+        "webhook_url": "Webhook URL"
+      }
     }
   },
   "table": {

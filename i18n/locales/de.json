@@ -1,22 +1,24 @@
 {
   "form": {
-    "apprise": {
-      "template": "Vorlage",
-      "schema": "Schema",
-      "host": "Host",
-      "port": "Port",
-      "user": "Benutzer",
-      "password": "Passwort",
-      "pass": "Passwort",
-      "topic": "Thema",
-      "targets": "Ziele",
-      "token": "Token",
-      "channel": "Kanal",
-      "apikey": "API-Schlüssel",
-      "bot_token": "Bot-Token",
-      "chat_id": "Chat-ID",
-      "webhook": "Webhook-URL",
-      "webhook_url": "Webhook-URL"
+    "notification": {
+      "services": {
+        "template": "Vorlage",
+        "schema": "Schema",
+        "host": "Host",
+        "port": "Port",
+        "user": "Benutzer",
+        "password": "Passwort",
+        "pass": "Passwort",
+        "topic": "Thema",
+        "targets": "Ziele",
+        "token": "Token",
+        "channel": "Kanal",
+        "apikey": "API-Schlüssel",
+        "bot_token": "Bot-Token",
+        "chat_id": "Chat-ID",
+        "webhook": "Webhook-URL",
+        "webhook_url": "Webhook-URL"
+      }
     }
   },
   "rules": {
