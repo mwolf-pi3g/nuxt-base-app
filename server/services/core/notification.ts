@@ -2,40 +2,30 @@ import { db } from "hub:db";
 import { notificationChannels } from "#bs/db/schema";
 import { genericService } from "#bs/services/generic";
 import { dbFindAll } from "#bs/db/wrappers/db_find_all";
+import { notificationProviderRegistry } from "#bs/utils/notifications_provider_registry";
 
 class notificationService extends genericService {
-    providers: Record<string, any> = {};
-    schemas: Record<string, any[]> | null = null;
-
     constructor(db: any, table: any, zod_rules: any, user_id?: string) {
         super(db, table, zod_rules, user_id);
-        this.providers = {};
-        this.schemas = null;
     }
 
+    get providers(): Record<string, any> {
+        return notificationProviderRegistry.providers;
+    }
+
+    // set providers(val: Record<string, any>) {
+    //     notificationProviderRegistry.providers = val;
+    // }
+
     registerProvider(name: string, providerClass: any) {
-        if (!name || !providerClass) return;
-        this.providers[name.toLowerCase()] = providerClass;
+        notificationProviderRegistry.registerProvider(name, providerClass);
     }
 
     async getSchemas(forceRefresh = false): Promise<Record<string, any[]>> {
-        if (!forceRefresh && this.schemas) {
-            return this.schemas;
-        }
-
-        const result: Record<string, any[]> = {};
-        for (const [name, provider] of Object.entries(this.providers)) {
-            if (provider && typeof provider.getSchemas === 'function') {
-                result[name] = await provider.getSchemas();
-            } else {
-                result[name] = [];
-            }
-        }
-
-        this.schemas = result;
-        return this.schemas;
+        return await notificationProviderRegistry.getSchemas(this.providers, forceRefresh);
     }
 
+    // removes any keys in config that are not in the template
     cleanConfigKeys(config: any, template: string) {
         if (!config || !template) return;
 
@@ -54,7 +44,30 @@ class notificationService extends genericService {
         }
     }
 
+    validateProvider(providerName?: string, required = true) {
+        if (!providerName) {
+            if (required) {
+                throw createError({
+                    status: 400,
+                    statusMessage: `error notification_channels.provider.missing`
+                });
+            }
+            return;
+        }
+
+        const normalized = providerName.toLowerCase();
+        if (!this.providers[normalized]) {
+            console.log(`Provider ${providerName} not found`);
+            console.log(`Available providers: ${Object.keys(this.providers).join(', ')}`);
+            throw createError({
+                status: 400,
+                statusMessage: `error notification_channels.invalid_provider`
+            });
+        }
+    }
+
     async create(body: any, hooks?: any) {
+        this.validateProvider(body?.provider, true);
         if (body?.provider?.toLowerCase() === 'apprise' && body?.config?.template) {
             this.cleanConfigKeys(body.config, body.config.template);
         }
@@ -62,6 +75,7 @@ class notificationService extends genericService {
     }
 
     async update(id: string, body: any, hooks?: any) {
+        this.validateProvider(body?.provider, false);
         if (body?.provider?.toLowerCase() === 'apprise' && body?.config?.template) {
             this.cleanConfigKeys(body.config, body.config.template);
         }
@@ -98,29 +112,9 @@ class notificationService extends genericService {
     }
 }
 
-// Pre-instantiated singleton instance exported using ES Node module caching pattern
-const notificationServiceInstance = new notificationService(db, notificationChannels, {});
-
-const getServiceNoAuthFn = async (owner_id?: string) => {
-    if (owner_id) notificationServiceInstance.user_id = owner_id;
-    return notificationServiceInstance;
-};
-
-export const getServiceNoAuth = new Proxy(getServiceNoAuthFn, {
-    get(target, prop, receiver) {
-        if (prop in target) {
-            return (target as any)[prop];
-        }
-        const value = Reflect.get(notificationServiceInstance, prop, notificationServiceInstance);
-        if (typeof value === 'function') {
-            return value.bind(notificationServiceInstance);
-        }
-        return value;
-    },
-    set(target, prop, value, receiver) {
-        return Reflect.set(notificationServiceInstance, prop, value, notificationServiceInstance);
-    }
-}) as typeof getServiceNoAuthFn & notificationService;
+export const getServiceNoAuth = (owner_id?: string) => {
+    return new notificationService(db, notificationChannels, {}, owner_id);
+}
 
 export const getService = async (event: any = null) => {
     const session = await getUserSession(event);

@@ -2,8 +2,7 @@
 
 This is a Nuxt layer which is still under development.  It is used as a reference on how to implement certain functionality and as a base for other projects.  
 
-Disclosure:  AI was used on a function by function basis, and never a "go architect and build out a subsystem" basis.  If you like it or hate it, the architecture is mine.  Feel free to point out inconsistencies or inefficiencies.  After implementing many internal websites, my goal was to create a boilerplate for reuse and maintenance purposes.
-
+Disclosure:  AI was used to create individual functions.  Feel free to point out inconsistencies or inefficiencies.  After implementing many internal websites, my goal was to create a boilerplate for reuse and maintenance purposes.
 
 Until I implement TanStack, there is no API result caching.
 On the server side, db wrappers work but are inefficient.
@@ -23,13 +22,11 @@ default admin user: admin@admin.com / !1adminadmin
 ## Backend
 
 ### Notifications
-- [ ] Apprise add icon and overflow params to url in service call
 - [ ] Apprise add click => url to email
 - [ ] Apprise: If text too long, send as attachment
 
 ### Routes
 - [ ] Table routes: add filtering, sorting, pagination
-- [ ] send validation email on signup
 - [ ] allow sso/oauth
 - [ ] verify format of all thrown errors, make xlations for them.
 - [ ] If perms change, push immediately. no logout/login

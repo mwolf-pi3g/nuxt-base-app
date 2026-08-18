@@ -33,7 +33,7 @@ export const notificationChannels = sqliteTable('notification_channels', {
     id: text('id').primaryKey(),
     owner_id: text('owner_id').notNull(),
     name: text('name').notNull(),
-    provider: text('provider', { enum: ["Apprise", "Email"] }).notNull(),
+    provider: text('provider').notNull(),
     type: text('type').notNull(),
     config: text('config', { mode: 'json' }).$type<any>().notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),

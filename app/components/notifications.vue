@@ -76,7 +76,23 @@ const getChannelConfigSchema = async (header: any, row: any) => {
     }
 
     const templates = res.details.templates || [];
-    const configData = row[header.key] || {};
+    if (!row[header.key]) {
+      row[header.key] = {};
+    }
+    const configData = row[header.key];
+
+    const trackerKey = `_last_schema_type`;
+    const currentSchemaType = `${providerLower}:${row.type}`;
+    if (row[trackerKey] !== undefined && row[trackerKey] !== currentSchemaType) {
+      for (const k of Object.keys(configData)) {
+        delete configData[k];
+      }
+    }
+    row[trackerKey] = currentSchemaType;
+
+    if (!configData.template || !templates.includes(configData.template)) {
+      configData.template = templates[0] || '';
+    }
     const chosenTemplate = configData.template || templates[0] || '';
 
     const templateTokens = new Set<string>();
@@ -121,7 +137,43 @@ const getChannelConfigSchema = async (header: any, row: any) => {
       };
 
       if (set_type === 'enum' && token.values) {
-        item.enum_values = token.values;
+        if (token.conditional_field) {
+          const parentKey = token.conditional_field;
+          item.enum_values = (header: any, formData: any) => {
+            const parentVal = formData ? formData[parentKey] : undefined;
+
+            const trackerKey = `_last_${parentKey}_for_${key}`;
+            if (formData && formData[trackerKey] !== parentVal) {
+              const oldParent = formData[trackerKey];
+              formData[trackerKey] = parentVal;
+              if (oldParent !== undefined) {
+                formData[key] = '';
+              }
+            }
+
+            if (!parentVal) return [];
+            const valuesMap = token.values || {};
+            const list = valuesMap[parentVal] || [];
+            if (Array.isArray(list)) {
+              const options = list.map((val: any) => {
+                if (typeof val === 'object' && val !== null) return val;
+                return { title: val, value: val };
+              });
+
+              if (formData && formData[key]) {
+                const exists = options.some((opt: any) => opt.value === formData[key] || opt === formData[key]);
+                if (!exists) {
+                  formData[key] = '';
+                }
+              }
+
+              return options;
+            }
+            return [];
+          };
+        } else {
+          item.enum_values = token.values;
+        }
       }
 
       schemaHeaders.push(item);
