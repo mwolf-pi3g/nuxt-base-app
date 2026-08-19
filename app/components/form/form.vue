@@ -15,6 +15,12 @@
           :header="header"
           :rules="getRules(header.key)"
         />
+        <FormSetStringSecret
+          v-else-if="header.set_type === 'string_secret'"
+          v-model="formData[header.key]"
+          :header="header"
+          :rules="getRules(header.key)"
+        />
         <FormSetStringArea
           v-else-if="header.set_type === 'string_area'"
           v-model="formData[header.key]"
@@ -110,7 +116,7 @@ props.headers.forEach(h => {
   if (h.key && seedData[h.key] === undefined && h.set_type) {
     if (h.default !== undefined) {
       seedData[h.key] = Array.isArray(h.default) ? [...h.default] : h.default
-    } else if (h.set_type === 'string_line') {
+    } else if (h.set_type === 'string_line' || h.set_type === 'string_secret') {
       seedData[h.key] = ''
     } else if (h.select_type === 'multiple') {
       seedData[h.key] = []

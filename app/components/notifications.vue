@@ -124,7 +124,7 @@ const getChannelConfigSchema = async (header: any, row: any) => {
       } else if (token.type === 'choice:int' || token.type === 'choice:string') {
         set_type = 'enum';
       } else if (token.type === 'int' || token.type === 'list:string' || token.type === 'string') {
-        set_type = 'string_line';
+        set_type = token.private === true ? 'string_secret' : 'string_line';
       } else {
         continue;
       }
