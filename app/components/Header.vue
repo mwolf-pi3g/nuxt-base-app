@@ -41,6 +41,9 @@
       </v-list>
     </v-menu>
 
+    <!-- User Events Bell -->
+    <UserEvents v-if="loggedIn" />
+
     <!-- Logged in controls -->
     <div v-if="loggedIn" class="d-flex align-center">
 

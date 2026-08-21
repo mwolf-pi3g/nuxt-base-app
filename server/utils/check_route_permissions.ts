@@ -5,7 +5,7 @@ function checkSinglePerm(userPerms: string[], req: string): boolean {
   const normReq = req.replace(/:/g, '.')
 
   for (const perm of userPerms) {
-    if (perm === '*' || perm === 'all' || perm === 'all.all') return true
+    if (perm === '*') return true
 
     const normPerm = perm.replace(/:/g, '.')
 
@@ -40,7 +40,7 @@ export async function checkRoutePermissions(event: H3Event, requiredPermissions:
   if (!userPerms || !Array.isArray(userPerms) || userPerms.length === 0) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Not authorized',
+      statusMessage: 'error auth.not_authorized',
     })
   }
 
@@ -49,7 +49,7 @@ export async function checkRoutePermissions(event: H3Event, requiredPermissions:
   if (!authorized) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Not authorized',
+      statusMessage: 'error auth.not_authorized',
     })
   }
 

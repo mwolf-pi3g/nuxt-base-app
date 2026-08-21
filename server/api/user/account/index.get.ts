@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const accountService = getService();
+  const accountService = await getService();
   const { id, user, lang, roles, limits, validated } = await accountService.read(userId);
 
   return {

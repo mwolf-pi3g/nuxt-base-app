@@ -122,6 +122,7 @@ class accountAdminService extends genericService {
     }
 }
 
-export const getService = () => {
-    return new accountAdminService(db, accounts, zod_rules);
+export const getService = async (ctx?: any) => {
+    const ownerId = await resolveServiceContext(ctx);
+    return new accountAdminService(db, accounts, zod_rules, ownerId);
 }

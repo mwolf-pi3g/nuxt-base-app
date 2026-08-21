@@ -11,7 +11,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const { $bus } = useNuxtApp()
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 interface SnackbarMessage {
   text: string
@@ -36,7 +36,8 @@ const handleShow = (payload: any) => {
   const testI18N = text?.split(" ");
   if (testI18N && testI18N.length === 2 && Object.keys(typeMap).includes(testI18N[0])) {
     type = testI18N[0];
-    text = t(testI18N[1]);
+    const key = testI18N[1];
+    text = te(key) ? t(key) : key;
   }
 
   const config = typeMap[type] || typeMap.info

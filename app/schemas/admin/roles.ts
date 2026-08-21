@@ -4,7 +4,7 @@ import { apiGet } from '~/util/fetch/wrappers'
 const getHeaders = async (t: any) => {
     let permissionsList: string[] = []
     try {
-        const res = await apiGet('/api/admin/permissions')
+        const res = await apiGet('/api/user/permissions')
         permissionsList = res?.data || []
     } catch (e) {
         console.error('Failed to fetch permissions for roles schema:', e)

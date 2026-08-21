@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // 3. Verify that the account exists
-  const accountService = getService();
+  const accountService = await getService();
   let account;
   try {
     account = await accountService.read(id);

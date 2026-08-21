@@ -1,6 +1,6 @@
 defineRouteMeta({
   openAPI: {
-    tags: ['Base Admin'],
+    tags: ['User Permissions'],
     description: 'Get permission detail by key/id.',
     responses: {
       200: {

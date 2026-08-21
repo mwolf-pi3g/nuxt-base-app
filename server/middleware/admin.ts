@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     //     if (!session.user || !session.user.roles.includes('admin')) {
     //         throw createError({
     //             statusCode: 403,
-    //             statusMessage: 'Not authorized'
+    //             statusMessage: 'error auth.not_authorized'
     //         });
     //     }
     // }

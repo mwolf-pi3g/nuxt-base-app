@@ -4,6 +4,6 @@
 
 <script setup lang="ts">
 defineProps<{
-  model: string
+  model: string | number | null | undefined
 }>()
 </script>

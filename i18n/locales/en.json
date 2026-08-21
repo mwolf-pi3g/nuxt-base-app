@@ -258,10 +258,32 @@
     "bad_payload": "Invalid role data",
     "insert": {
       "bad_payload": "Invalid role data"
+    },
+    "permissions": {
+      "invalid_type": "Permissions must be an array of strings",
+      "invalid_permission": "One or more permissions are invalid"
     }
   },
   "admin": {
     "core": "Core",
     "app": "App"
+  },
+  "events": {
+    "title": "Notifications",
+    "mark_all_read": "Mark all read",
+    "no_events": "No notifications"
+  },
+  "user_events": {
+    "read": {
+      "success": "User events loaded successfully",
+      "not_logged_in": "Not authorized to read user events"
+    },
+    "update": {
+      "success": "User events updated successfully",
+      "not_logged_in": "Not authorized to update user events"
+    },
+    "id": {
+      "required": "Event ID is required"
+    }
   }
 }

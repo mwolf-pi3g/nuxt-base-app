@@ -1,6 +1,6 @@
 defineRouteMeta({
   openAPI: {
-    tags: ['Base Admin'],
+    tags: ['User Permissions'],
     description: 'Get all permissions.',
     responses: {
       200: {
@@ -11,7 +11,8 @@ defineRouteMeta({
 })
 
 export default defineEventHandler(async (event) => {
-  const data = (globalThis as any).permissions || [];
+  const raw = (globalThis as any).permissions || [];
+  const data = ['*', ...raw.filter((p: string) => p !== '*')];
 
   return {
     data,

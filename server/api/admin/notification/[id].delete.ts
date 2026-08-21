@@ -1,4 +1,4 @@
-import { getAdminService } from '#bs/services/core/notification';
+import { getService } from '#bs/services/core/notification';
 
 defineRouteMeta({
   openAPI: {
@@ -18,7 +18,7 @@ defineRouteMeta({
 export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['notification.crud.delete']);
   const id = getRouterParam(event, 'id') || '';
-  const service = getAdminService();
+  const service = await getService({ isAdmin: true });
   await service.delete(id);
 
   return {

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 
 // --- Accounts Table ---
 export const accounts = sqliteTable('accounts', {
@@ -39,3 +39,19 @@ export const notificationChannels = sqliteTable('notification_channels', {
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
+
+// --- User Events Table ---
+export const userEvents = sqliteTable('user_events', {
+    id: text('id').primaryKey(),
+    owner_id: text('owner_id').notNull(),
+    level: text('level').notNull(),
+    message: text('message').notNull(),
+    metadata: text('metadata', { mode: 'json' })
+        .$type<Record<string, any>>()
+        .default({}),
+    read: integer('read').default(0), // 0 or 1 
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+}, (table) => [
+    index('user_events_owner_id_idx').on(table.owner_id),
+    index('user_events_created_at_idx').on(table.createdAt)
+]);

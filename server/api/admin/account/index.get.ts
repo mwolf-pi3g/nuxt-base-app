@@ -19,7 +19,7 @@ defineRouteMeta({
 export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['account.crud.read']);
 
-  const service = getService();
+  const service = await getService();
 
   return {
     data: await service.read(),

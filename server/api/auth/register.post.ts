@@ -14,7 +14,7 @@ defineRouteMeta({
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const service = getAccountService()
+  const service = await getAccountService()
 
 
   const record = await service.create({

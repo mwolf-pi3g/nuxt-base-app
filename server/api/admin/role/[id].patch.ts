@@ -19,7 +19,7 @@ defineRouteMeta({
 export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['role.crud.update']);
 
-  const service = getService();
+  const service = await getService();
   const id = getRouterParam(event, 'id') || '';
 
   const body = await readBody(event);

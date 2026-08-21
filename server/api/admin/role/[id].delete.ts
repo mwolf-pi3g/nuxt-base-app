@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['role.crud.delete']);
 
   const id = getRouterParam(event, 'id') || '';
-  const service = getService();
+  const service = await getService();
   await service.delete(id);
 
   return {

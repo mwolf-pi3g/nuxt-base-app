@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const userId = session.user?.id;
 
   const { user, lang } = await readBody(event);
-  const accountService = getService(userId);
+  const accountService = await getService(userId);
   const updated = await accountService.update(userId, { user, lang });
 
   return {

@@ -3,7 +3,7 @@ function checkSinglePerm(userPerms: string[], req: string): boolean {
   const normReq = req.replace(/:/g, '.')
 
   for (const perm of userPerms) {
-    if (perm === '*' || perm === 'all' || perm === 'all.all') return true
+    if (perm === '*') return true
 
     const normPerm = perm.replace(/:/g, '.')
 

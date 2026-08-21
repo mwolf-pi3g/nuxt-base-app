@@ -1,4 +1,4 @@
-import { getServiceNoAuth } from '#bs/services/core/notification';
+import { getService } from '#bs/services/core/notification';
 
 defineRouteMeta({
   openAPI: {
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const notificationService = await getServiceNoAuth();
+  const notificationService = await getService(event);
   const allSchemas = await notificationService.getSchemas();
 
   const providerSchemas = allSchemas[provider.toLowerCase()];

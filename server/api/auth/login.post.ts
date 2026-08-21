@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { user, password } = body;
 
-  const accountService = getService();
+  const accountService = await getService();
   const account = await accountService.authenticate(user, password);
 
   // Resolve role names into concrete permission strings

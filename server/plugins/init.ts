@@ -6,14 +6,14 @@ export default defineNitroPlugin(async (_nitroApp) => {
   try {
     // Check if permissions global state is set, if not initialize it
     if (!(globalThis as any).permissions) {
-      (globalThis as any).permissions = getPermissions();
+      (globalThis as any).permissions = ['*', ...getPermissions()];
     }
 
     // Create the initial admin structure with specific overrides
-    const roleService = getRoleService();
+    const roleService = await getRoleService();
     await roleService.init();
 
-    const accountService = getAccountService();
+    const accountService = await getAccountService();
     await accountService.init();
 
   } catch (e: any) {

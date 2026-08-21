@@ -54,8 +54,36 @@
       "actions": "Aktionen"
     }
   },
+  "roles": {
+    "bad_payload": "Ungültige Rollendaten",
+    "insert": {
+      "bad_payload": "Ungültige Rollendaten"
+    },
+    "permissions": {
+      "invalid_type": "Berechtigungen müssen ein Array von Zeichenketten sein",
+      "invalid_permission": "Eine oder mehrere Berechtigungen sind ungültig"
+    }
+  },
   "admin": {
     "core": "Kern",
     "app": "App"
+  },
+  "events": {
+    "title": "Benachrichtigungen",
+    "mark_all_read": "Alle als gelesen markieren",
+    "no_events": "Keine Benachrichtigungen"
+  },
+  "user_events": {
+    "read": {
+      "success": "Benutzer-Ereignisse erfolgreich geladen",
+      "not_logged_in": "Nicht berechtigt, Benutzer-Ereignisse zu lesen"
+    },
+    "update": {
+      "success": "Benutzer-Ereignisse erfolgreich aktualisiert",
+      "not_logged_in": "Nicht berechtigt, Benutzer-Ereignisse zu aktualisieren"
+    },
+    "id": {
+      "required": "Ereignis-ID ist erforderlich"
+    }
   }
 }

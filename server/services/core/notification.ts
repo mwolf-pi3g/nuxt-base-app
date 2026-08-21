@@ -82,7 +82,7 @@ class notificationService extends genericService {
         return super.update(id, body, hooks);
     }
 
-    async sendItems(id: string, title: string, items: Array<{ content: string; mime_type?: string }> | string) {
+    async sendItems(id: string, title: string, items: Array<{ content: string; mime_type?: string; metadata?: any }> | string, extraOptions?: Record<string, any>) {
         const record = await dbFindAll(
             this.db,
             this.table,
@@ -97,7 +97,8 @@ class notificationService extends genericService {
         }
 
         const options = {
-            channel
+            channel,
+            ...extraOptions
         };
 
         const providerName = (channel?.provider || channel?.type || '').toLowerCase();
@@ -112,15 +113,7 @@ class notificationService extends genericService {
     }
 }
 
-export const getServiceNoAuth = (owner_id?: string) => {
-    return new notificationService(db, notificationChannels, {}, owner_id);
-}
-
-export const getService = async (event: any = null) => {
-    const session = await getUserSession(event);
-    return new notificationService(db, notificationChannels, {}, session.user?.id);
-}
-
-export const getAdminService = () => {
-    return new notificationService(db, notificationChannels, {});
+export const getService = async (ctx?: any) => {
+    const ownerId = await resolveServiceContext(ctx);
+    return new notificationService(db, notificationChannels, {}, ownerId);
 }

@@ -2,30 +2,31 @@ export const handleApiAlert = (data: any, statusCode: number) => {
   try {
     const { $bus } = useNuxtApp()
 
-    // Check if the response matches our standard JSON structure
-    const testI18N = data?.statusMessage?.split(" ");
+    const rawMessage = data?.statusMessage || data?.message
     const typeMap = ["info", "success", "warning", "error", "critical"]
-    if (testI18N && testI18N.length === 2 && typeMap.includes(testI18N[0])) {
-      $bus.emit('alert:show', {
-        message: data.statusMessage
-      })
-      return
-    }
 
-    // Fallback: Use response message or hardcoded fallback, mapping status codes
-    const message = data?.message || (statusCode >= 400 ? 'Request failed' : 'Request successful')
-    let type = 'info'
+    let messageToEmit = ''
 
-    if (statusCode >= 200 && statusCode < 300) {
-      type = 'success'
-    } else if (statusCode >= 300 && statusCode < 500) {
-      type = 'warning'
-    } else if (statusCode >= 500) {
-      type = 'error'
+    if (rawMessage && typeof rawMessage === 'string') {
+      const parts = rawMessage.trim().split(" ")
+      if (parts.length === 2 && typeMap.includes(parts[0])) {
+        messageToEmit = rawMessage
+      } else {
+        let level = 'info'
+        if (statusCode >= 200 && statusCode < 300) level = 'success'
+        else if (statusCode >= 300 && statusCode < 500) level = 'warning'
+        else if (statusCode >= 500) level = 'error'
+
+        messageToEmit = `${level} ${rawMessage}`
+      }
+    } else {
+      const level = statusCode >= 400 ? 'error' : 'success'
+      const key = statusCode >= 400 ? 'request.failed' : 'request.success'
+      messageToEmit = `${level} ${key}`
     }
 
     $bus.emit('alert:show', {
-      message
+      message: messageToEmit
     })
   } catch (err) {
     console.error('Failed to dispatch alert:', err)

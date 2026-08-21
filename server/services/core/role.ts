@@ -30,7 +30,7 @@ class roleService extends genericService {
                 });
             }
             const allowed = (globalThis as any).permissions || [];
-            const allAllowed = body.permissions.every((p: string) => allowed.includes(p));
+            const allAllowed = body.permissions.every((p: string) => p === '*' || allowed.includes(p));
             if (!allAllowed) {
                 throw createError({
                     status: 400,
@@ -52,12 +52,13 @@ class roleService extends genericService {
 
     async delete(id: string) {
         const result = await super.delete(id);
-        const accountService = getAccountService();
+        const accountService = await getAccountService();
         await accountService.deleteRoles([id]);
         return result;
     }
 }
 
-export const getService = () => {
-    return new roleService(db, roles, zod_rules);
+export const getService = async (ctx?: any) => {
+    const ownerId = await resolveServiceContext(ctx);
+    return new roleService(db, roles, zod_rules, ownerId);
 }

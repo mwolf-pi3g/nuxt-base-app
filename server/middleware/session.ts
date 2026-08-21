@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
         if (!session.user) {
             throw createError({
                 statusCode: 403,
-                statusMessage: 'Not authorized'
+                statusMessage: 'error auth.not_authorized'
             });
         }
     }
