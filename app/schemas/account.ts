@@ -12,29 +12,29 @@ const getHeaders = async (t: any) => {
 
     return [
         {
-            title: t('table.account.user') as string,
+            title: 'table.account.user',
             key: 'user',
             get_type: "string",
             set_type: "string_line",
             actions: ["update"],
             rules: [
-                (v: string) => !!v || t('rules.invalid_field'),
-                (v: string) => zod_rules.user.safeParse(v).success || t('account.user.invalid_email')
+                (v: string) => !!v || 'rules.invalid_field',
+                (v: string) => zod_rules.user.safeParse(v).success || 'account.user.invalid_email'
             ]
         },
 
         {
-            title: t('table.account.password') || 'Password',
+            title: 'table.account.password',
             key: 'password',
             set_type: 'password_confirm',
             actions: ["setPassword"],
             rules: [
-                (v: string) => !!v || t('rules.password.required'),
-                (v: string) => zod_rules.password.safeParse(v).success || t('account.password.too_short')
+                (v: string) => !!v || 'rules.password.required',
+                (v: string) => zod_rules.password.safeParse(v).success || 'account.password.too_short'
             ]
         },
         {
-            title: t('table.account.lang') as string,
+            title: 'table.account.lang',
             key: 'lang',
             get_type: "string",
             set_type: "enum",
@@ -42,23 +42,23 @@ const getHeaders = async (t: any) => {
             actions: ["update"]
         },
         {
-            title: t('table.account.roles') as string,
+            title: 'table.account.roles',
             key: 'roles',
             get_type: "list_tag",
             enum_values: rolesList, color_delimiter: ":"
         },
         {
-            title: t('table.account.limits') as string,
+            title: 'table.account.limits',
             key: 'limits',
             get_type: "string"
         },
         {
-            title: t('table.account.validated') as string,
+            title: 'table.account.validated',
             key: 'validated',
             get_type: "boolean"
         },
         {
-            title: t('table.common.actions'),
+            title: 'table.common.actions',
             key: 'actions',
             sortable: false
         }
@@ -68,7 +68,7 @@ const getHeaders = async (t: any) => {
 export default async function (t: any, callbacks?: any) {
 
     return {
-        title: t('table.account.title', 1),
+        title: ['table.account.title', 1],
         headers: await getHeaders(t),
         path_base: '/api/user/account',
         features: ['update', 'delete', 'singular'],

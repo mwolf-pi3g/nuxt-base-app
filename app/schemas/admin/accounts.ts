@@ -13,23 +13,22 @@ const getHeaders = async (t: any) => {
     }
 
     return [
-        //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
         {
-            title: t('table.account.user') as string, key: 'user', get_type: "string", set_type: "string_line", rules: [
-                (v: string) => !!v || t('rules.invalid_field'),
-                (v: string) => zod_rules.user.safeParse(v).success || t('account.user.invalid_email')
+            title: 'table.account.user', key: 'user', get_type: "string", set_type: "string_line", rules: [
+                (v: string) => !!v || 'rules.invalid_field',
+                (v: string) => zod_rules.user.safeParse(v).success || 'account.user.invalid_email'
             ]
         },
         {
-            title: t('table.account.password'), key: 'password', set_type: 'password_confirm', actions: ["create"], rules: [
-                (v: string) => !!v || t('rules.password.required'),
-                (v: string) => zod_rules.password.safeParse(v).success || t('account.password.too_short')
+            title: 'table.account.password', key: 'password', set_type: 'password_confirm', actions: ["create"], rules: [
+                (v: string) => !!v || 'rules.password.required',
+                (v: string) => zod_rules.password.safeParse(v).success || 'account.password.too_short'
             ]
         },
-        { title: t('table.account.roles') as string, key: 'roles', get_type: "list_tag", set_type: "strarr_chips", enum_values: rolesList, color_delimiter: ":" },
-        { title: t('table.account.limits') as string, key: 'limits', get_type: "string", set_type: "string_line" },
-        { title: t('table.account.validated') as string, key: 'validated', get_type: "boolean", set_type: "boolean", set_as_number: true },
-        { title: t('table.common.actions'), key: 'actions', sortable: false },
+        { title: 'table.account.roles', key: 'roles', get_type: "list_tag", set_type: "strarr_chips", enum_values: rolesList, color_delimiter: ":" },
+        { title: 'table.account.limits', key: 'limits', get_type: "string", set_type: "string_line" },
+        { title: 'table.account.validated', key: 'validated', get_type: "boolean", set_type: "boolean", set_as_number: true },
+        { title: 'table.common.actions', key: 'actions', sortable: false },
     ]
 }
 
@@ -43,7 +42,7 @@ export default async function (t: any, callbacks?: SchemaCallbacks) {
     }
 
     return {
-        title: t('table.account.title', 2) as string,
+        title: ['table.account.title', 2],
         headers: await getHeaders(t),
         path_base: '/api/admin/account',
         features,

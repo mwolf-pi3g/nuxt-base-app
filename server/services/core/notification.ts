@@ -111,6 +111,14 @@ class notificationService extends genericService {
 
         return await provider.sendItems(title, items, options);
     }
+
+    async export(id?: string, stripFields: string[] = ['id', 'owner_id', 'createdAt', 'updatedAt'], transformFields: string[] = []) {
+        return super.export(stripFields, transformFields, id);
+    }
+
+    async import(payload: any, transformFields: string[] = []) {
+        return super.import(payload, transformFields);
+    }
 }
 
 export const getService = async (ctx?: any) => {

@@ -17,7 +17,7 @@ defineRouteMeta({
 
 export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['notification.crud.create']);
-  const service = await getService({ isAdmin: true });
+  const service = await getService();
 
   const body = await readBody(event);
 

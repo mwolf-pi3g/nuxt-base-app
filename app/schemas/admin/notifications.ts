@@ -2,11 +2,11 @@ import hasPerm from '#ba/util/hasPerm'
 import type { SchemaCallbacks } from '#ba/types/schema_callbacks'
 
 const getHeaders = (t: any) => [
-    { title: t('table.common.owner') as string, key: 'owner_id', get_type: "string", set_type: "string_line", rules: [(v: string) => !!v || t('rules.invalid_field')] },
-    { title: t('table.notification_channels.type') as string, key: 'type', get_type: 'string' },
-    // { title: t('table.notification_channels.is_default') as string, key: 'is_default', get_type: 'string' },
-    { title: t('table.notification_channels.created_at') as string, key: 'createdAt', get_type: 'short_date' },
-    { title: t('table.common.actions') as string, key: 'actions', align: 'end', sortable: false }
+    { title: 'table.common.owner', key: 'owner_id', get_type: "string", set_type: "string_line", rules: [(v: string) => !!v || 'rules.invalid_field'] },
+    { title: 'table.notification_channels.type', key: 'type', get_type: 'string' },
+    // { title: 'table.notification_channels.is_default', key: 'is_default', get_type: 'string' },
+    { title: 'table.notification_channels.created_at', key: 'createdAt', get_type: 'short_date' },
+    { title: 'table.common.actions', key: 'actions', align: 'end', sortable: false }
 ];
 
 export default function (t: any, callbacks?: SchemaCallbacks) {
@@ -19,7 +19,7 @@ export default function (t: any, callbacks?: SchemaCallbacks) {
     }
 
     return {
-        title: t('table.notification_channels.title') as string,
+        title: 'table.notification_channels.title',
         headers: getHeaders(t),
         path_base: '/api/admin/notification',
         features,

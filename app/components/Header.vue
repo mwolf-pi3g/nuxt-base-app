@@ -1,11 +1,11 @@
 <template>
   <v-app-bar flat border>
 
-    <div  @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
-      <v-avatar v-if="app_conf.icon && app_conf.icon.startsWith('/')" class="mx-3" size="36" rounded="0">
+    <div @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
+      <v-avatar v-if="app_conf.icon && app_conf.icon.startsWith('/')" class="mx-3" size="36" rounded="0" :class="{ 'icon-breathing': activeRequests > 0 }">
         <v-img :src="app_conf.icon"></v-img>
       </v-avatar>
-      <v-app-bar-nav-icon v-else :icon="app_conf.icon"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-else :icon="app_conf.icon" :class="{ 'icon-breathing': activeRequests > 0 }"></v-app-bar-nav-icon>
       <v-app-bar-title>
         <b>{{ app_conf.name }}</b>
       </v-app-bar-title>
@@ -101,7 +101,27 @@ import header_conf from '~/metadata/header.json'
 import { apiPost } from '~/util/fetch/wrappers'
 import type { UserState } from '~/types/user_state'
 import hasPerm from '~/util/hasPerm'
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+
+const { $bus } = useNuxtApp()
+const activeRequests = ref(0)
+
+const onLoadingStart = () => {
+  activeRequests.value++
+}
+const onLoadingStop = () => {
+  activeRequests.value = Math.max(0, activeRequests.value - 1)
+}
+
+onMounted(() => {
+  $bus.on('loading:start', onLoadingStart)
+  $bus.on('loading:stop', onLoadingStop)
+})
+
+onUnmounted(() => {
+  $bus.off('loading:start', onLoadingStart)
+  $bus.off('loading:stop', onLoadingStop)
+})
 
 const userState = useState<UserState>('user')
 const route = useRoute()
@@ -137,3 +157,20 @@ const handleLogout = async () => {
 }
 
 </script>
+
+<style scoped>
+.icon-breathing {
+  animation: breathe 1.2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.92);
+  }
+}
+</style>

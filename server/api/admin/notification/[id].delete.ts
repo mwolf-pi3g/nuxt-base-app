@@ -18,7 +18,7 @@ defineRouteMeta({
 export default defineEventHandler(async (event) => {
   await checkRoutePermissions(event, ['notification.crud.delete']);
   const id = getRouterParam(event, 'id') || '';
-  const service = await getService({ isAdmin: true });
+  const service = await getService();
   await service.delete(id);
 
   return {

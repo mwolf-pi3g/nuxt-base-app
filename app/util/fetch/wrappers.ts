@@ -1,13 +1,17 @@
 import { handleApiAlert } from './alert_handler';
 
 export const apiGet = async <T = any>(url: string) => {
+  const { $bus } = useNuxtApp();
   try {
+    $bus.emit('loading:start');
     const res = await $fetch<T>(url, { method: 'GET' });
-    handleApiAlert(res, 200);
+    // handleApiAlert(res, 200);
     return res;
   } catch (error: any) {
     handleApiAlert(error.data, error.statusCode || 500);
     throw error;
+  } finally {
+    $bus.emit('loading:stop');
   }
 }
 

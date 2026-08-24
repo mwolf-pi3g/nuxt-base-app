@@ -106,7 +106,7 @@ const props = withDefaults(defineProps<{
 
 
 const emit = defineEmits(['submit', 'cancel', 'valid'])
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const isValid = ref(false)
 
@@ -189,8 +189,8 @@ const getRules = (key: string) => {
   const ruleList = Array.isArray(rules) ? rules : [rules];
   // Wrap each rule so any string result (i18n key) is translated
   return ruleList.map((rule: any) => (v: any) => {
-    const result = rule(v);
-    if (typeof result === 'string') return t(result);
+    const result = typeof rule === 'function' ? rule(v) : rule;
+    if (typeof result === 'string') return te(result) ? t(result) : result;
     return result;
   });
 }

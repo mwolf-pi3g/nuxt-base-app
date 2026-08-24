@@ -5,7 +5,7 @@
         <v-tabs-window-item value="table">
           <v-toolbar flat color="transparent">
             <div class="font-weight-bold text-headline-medium text-primary">
-              {{ meta.title }}
+              {{ translateTitle(meta.title) }}
             </div>  
             <div v-show="selected.length > 1 && hasDeleteMany" class="ms-1">
               <v-btn icon color="error" variant="text" @click="onDeleteMany">
@@ -93,6 +93,15 @@ const formSubmitCallback = ref<any>(null)
 const action = ref<string>('')
 const i18n = useI18n();
 
+const translateTitle = (val: string | [string, ...any[]] | undefined) => {
+  if (!val) return '';
+  if (Array.isArray(val)) {
+    const [key, ...args] = val;
+    return i18n.te(key) ? i18n.t(key, ...args) : key;
+  }
+  return typeof val === 'string' && i18n.te(val) ? i18n.t(val) : val;
+}
+
 const hasSingular = computed(() => props.meta.features?.includes('singular'))
 const hasCreate = computed(() => props.meta.features?.includes('create'))
 const hasDeleteMany = computed(() => props.meta.features?.includes('deleteMany'))
@@ -100,17 +109,22 @@ const hasAnyMany = computed(() => props.meta.features?.some(f => f.endsWith('Man
 
 
 const formData = computed(() => {
-  if (!action.value) return props.meta.headers;
-  return props.meta.headers?.filter(h => {
-    if (h.actions && !h.actions.includes(action.value)) return false;
-    else return true;
-  })
+  const headers = !action.value
+    ? props.meta.headers
+    : props.meta.headers?.filter(h => !h.actions || h.actions.includes(action.value));
+  return headers?.map(h => ({
+    ...h,
+    title: translateTitle(h.title)
+  }));
 })
 
 const tableData = computed(() => {
-  return props.meta.headers?.filter(h => {
-    return h.get_type || h.key === 'actions';
-  });
+  return props.meta.headers
+    ?.filter(h => h.get_type || h.key === 'actions')
+    .map(h => ({
+      ...h,
+      title: translateTitle(h.title)
+    }));
 })
 
 const loadData = async () => {

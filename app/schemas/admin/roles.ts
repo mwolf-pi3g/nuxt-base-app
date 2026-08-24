@@ -12,9 +12,9 @@ const getHeaders = async (t: any) => {
 
     return [
         //{ title: t('table.email.messageId') as string, key: 'messageId', get_type: "string" },
-        { title: t('table.role.name') as string, key: 'name', get_type: "string", set_type: "string_line" },
-        { title: t('table.role.permissions') as string, key: 'permissions', get_type: "list_tag", set_type: "strarr_chips", enum_values: permissionsList, color_delimiter: ":" },
-        { title: t('table.common.actions'), key: 'actions', sortable: false }
+        { title: 'table.role.name', key: 'name', get_type: "string", set_type: "string_line" },
+        { title: 'table.role.permissions', key: 'permissions', get_type: "list_tag", set_type: "strarr_chips", enum_values: permissionsList, color_delimiter: ":" },
+        { title: 'table.common.actions', key: 'actions', sortable: false }
     ]
 }
 
@@ -28,7 +28,7 @@ export default async function (t: any) {
     }
 
     return {
-        title: t('table.role.title') as string,
+        title: 'table.role.title',
         headers: await getHeaders(t),
         path_base: '/api/admin/role',
         features,

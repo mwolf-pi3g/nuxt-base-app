@@ -21,17 +21,17 @@ const getHeaders = async (t: any, callbacks: any) => {
     };
 
     return [
-        { title: t('table.notification_channels.name') as string, key: 'name', get_type: 'string', set_type: 'string_line' },
-        { title: t('table.notification_channels.provider') as string, key: 'provider', get_type: 'string', set_type: 'enum', enum_values: providers },
-        { title: t('table.notification_channels.type') as string, key: 'type', get_type: 'string', set_type: 'enum', enum_values: getTypesForProvider },
-        { title: t('table.notification_channels.config') as string, key: 'config', set_type: 'form', value: callbacks?.getChannelConfigSchema },
-        { title: t('table.common.actions') as string, key: 'actions', sortable: false }
+        { title: 'table.notification_channels.name', key: 'name', get_type: 'string', set_type: 'string_line' },
+        { title: 'table.notification_channels.provider', key: 'provider', get_type: 'string', set_type: 'enum', enum_values: providers },
+        { title: 'table.notification_channels.type', key: 'type', get_type: 'string', set_type: 'enum', enum_values: getTypesForProvider },
+        { title: 'table.notification_channels.config', key: 'config', set_type: 'form', value: callbacks?.getChannelConfigSchema },
+        { title: 'table.common.actions', key: 'actions', sortable: false }
     ];
 };
 
 export default async function (t: any, callbacks?: { onAddWhatsapp?: () => void, onSetDefault?: (item: any) => void, form?: any }) {
     return {
-        title: t('table.notification_channels.title') as string,
+        title: 'table.notification_channels.title',
         path_base: '/api/user/notification',
         readOnMount: true,
         features: ['create', "update", 'delete'],

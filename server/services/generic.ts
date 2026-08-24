@@ -35,7 +35,7 @@ export class genericService {
 
     // All user routes need to pass the constructor a user_id
     addOwner(searchSpec: any) {
-        if (this.user_id) {
+        if (this.user_id && this.table && 'owner_id' in this.table) {
             searchSpec.owner_id = this.user_id;
         }
         return searchSpec;
@@ -164,5 +164,107 @@ export class genericService {
             });
         }
     }
+
+    async export(
+        stripFields: string[] = ['id', 'owner_id', 'createdAt', 'updatedAt'],
+        transformFields: string[] = [],
+        id?: string,
+        transformMap?: Record<string, { exportKey?: string; fn: (val: any, record: any) => Promise<any> | any }>
+    ) {
+        const rawData = await this.read(id);
+        if (!rawData) return null;
+
+        const isSingle = !Array.isArray(rawData);
+        const items: any[] = isSingle ? [rawData] : rawData;
+
+        const exportedData = await Promise.all(items.map(async (item: any) => {
+            const result = { ...item };
+
+            for (const field of stripFields) {
+                delete result[field];
+            }
+
+            for (const field of transformFields) {
+                if (transformMap && transformMap[field]) {
+                    const { exportKey, fn } = transformMap[field];
+                    const transformedVal = await fn(result[field], item);
+                    const targetKey = exportKey || field;
+                    if (exportKey && exportKey !== field) {
+                        delete result[field];
+                    }
+                    result[targetKey] = transformedVal;
+                }
+            }
+
+            return result;
+        }));
+
+        return {
+            version: CURRENT_API_VERSION,
+            table: this.table_name,
+            timestamp: new Date().toISOString(),
+            data: isSingle ? exportedData[0] : exportedData
+        };
+    }
+
+    async import(
+        payload: any,
+        transformFields: string[] = [],
+        transformMap?: Record<string, { importKey?: string; fn: (val: any, record: any) => Promise<any> | any }>
+    ) {
+        if (!payload) {
+            throw createError({
+                status: 400,
+                statusMessage: `error ${this.table_name}.import_empty`
+            });
+        }
+
+        let rawItems: any[];
+        let payloadVersion = CURRENT_API_VERSION;
+
+        if (typeof payload === 'object' && payload !== null && 'version' in payload && 'data' in payload) {
+            payloadVersion = payload.version;
+            if (payloadVersion !== CURRENT_API_VERSION) {
+                throw createError({
+                    status: 400,
+                    statusMessage: `error ${this.table_name}.unsupported_version:${payloadVersion}`
+                });
+            }
+            rawItems = Array.isArray(payload.data) ? payload.data : [payload.data];
+        } else {
+            rawItems = Array.isArray(payload) ? payload : [payload];
+        }
+
+        const isSingleInput = typeof payload === 'object' && payload !== null && 'version' in payload
+            ? !Array.isArray(payload.data)
+            : !Array.isArray(payload);
+
+        const importedResults = await Promise.all(rawItems.map(async (item: any) => {
+            const record = { ...item };
+
+            delete record.id;
+            delete record.owner_id;
+            delete record.createdAt;
+            delete record.updatedAt;
+
+            for (const field of transformFields) {
+                if (transformMap && transformMap[field]) {
+                    const { importKey, fn } = transformMap[field];
+                    const sourceKey = importKey || field;
+                    const sourceVal = record[sourceKey];
+                    const resolvedVal = await fn(sourceVal, record);
+                    record[field] = resolvedVal;
+                    if (importKey && importKey !== field) {
+                        delete record[sourceKey];
+                    }
+                }
+            }
+
+            return await this.create(record);
+        }));
+
+        return isSingleInput ? importedResults[0] : importedResults;
+    }
 }
+export const CURRENT_API_VERSION = "v0.1";
 

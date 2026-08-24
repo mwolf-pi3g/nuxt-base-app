@@ -5,21 +5,21 @@ export default (t: any) => {
     headers: [
       {
         key: 'user',
-        title: t('frontend.auth.email'),
+        title: 'frontend.auth.email',
         set_type: 'string_line',
         type: 'email',
         rules: [
-          (v: string) => !!v || t('rules.invalid_field'),
-          (v: string) => zod_rules.user.safeParse(v).success || t('account.user.invalid_email')
+          (v: string) => !!v || 'rules.invalid_field',
+          (v: string) => zod_rules.user.safeParse(v).success || 'account.user.invalid_email'
         ]
       },
       {
         key: 'password',
-        title: t('frontend.auth.password'),
+        title: 'frontend.auth.password',
         set_type: 'password_confirm',
         rules: [
-          (v: string) => !!v || t('rules.password.required'),
-          (v: string) => zod_rules.password.safeParse(v).success || t('account.password.too_short')
+          (v: string) => !!v || 'rules.password.required',
+          (v: string) => zod_rules.password.safeParse(v).success || 'account.password.too_short'
         ]
       }
     ]

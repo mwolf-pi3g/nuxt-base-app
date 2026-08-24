@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const accountService = await getService();
+  const accountService = await getService(event);
   await accountService.update(userId, { password });
 
   return {

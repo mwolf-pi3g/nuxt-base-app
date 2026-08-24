@@ -19,8 +19,15 @@ export default defineEventHandler(async (event) => {
   const session = await getUserSession(event);
   const userId = session.user?.id;
 
+  if (!userId) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'error account.update.not_logged_in',
+    });
+  }
+
   const { user, lang } = await readBody(event);
-  const accountService = await getService(userId);
+  const accountService = await getService(event);
   const updated = await accountService.update(userId, { user, lang });
 
   return {
