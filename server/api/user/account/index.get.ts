@@ -27,10 +27,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const accountService = await getService(event);
-  const { id, user, lang, roles, limits, validated } = await accountService.read(userId);
+  const { id, user, lang, roles, limits, validated, cron_active } = await accountService.read(userId);
 
   return {
-    data: [{ id, user, lang, roles, limits, validated }],
+    data: [{ id, user, lang, roles, limits, validated, cron_active }],
     statusMessage: 'success account.read.success',
   };
 });

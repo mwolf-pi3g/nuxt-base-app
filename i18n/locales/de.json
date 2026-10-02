@@ -33,6 +33,35 @@
         "regex": "Ungültiges Format"
       },
       "invalid": "Ungültige Eingabe"
+    },
+    "account": {
+      "user": {
+        "type": "Benutzer muss ein String sein",
+        "invalid_email": "Ungültige E-Mail-Adresse"
+      },
+      "password": {
+        "type": "Passwort muss ein String sein",
+        "too_short": "Passwort zu kurz",
+        "too_long": "Passwort zu lang"
+      },
+      "lang": {
+        "invalid": "Ungültige Sprache ausgewählt"
+      },
+      "roles": {
+        "type": "Rollen müssen ein Array sein",
+        "item": {
+          "type": "Rolle muss ein String sein"
+        }
+      },
+      "limits": {
+        "type": "Limits muss ein String sein"
+      },
+      "validated": {
+        "type": "Bestätigt muss ein boolescher Wert sein"
+      },
+      "cron_active": {
+        "type": "Cron aktiv muss ein boolescher Wert sein"
+      }
     }
   },
   "table": {
@@ -43,7 +72,8 @@
       "email": "E-Mail",
       "roles": "Rollen",
       "limits": "Limits",
-      "validated": "Bestätigt"
+      "validated": "Bestätigt",
+      "cron_active": "Cron aktiv"
     },
     "role": {
       "title": "Rollen",
@@ -51,7 +81,13 @@
       "permissions": "Berechtigungen"
     },
     "common": {
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "last_run": "Zuletzt ausgeführt",
+      "inactive": "Inaktiv"
+    },
+    "automation": {
+      "active": "Aktiv",
+      "last_issue": "Letztes Problem"
     }
   },
   "roles": {
@@ -85,5 +121,37 @@
     "id": {
       "required": "Ereignis-ID ist erforderlich"
     }
+  },
+  "automation": {
+    "active": "Aktiv",
+    "last_issue": "Letztes Problem"
+  },
+  "common": {
+    "last_run": "Zuletzt ausgeführt",
+    "inactive": "Inaktiv",
+    "howto": "Anleitung",
+    "toggle_theme": "Design wechseln",
+    "logout": "Abmelden",
+    "pin": "Leiste anheften",
+    "unpin": "Leiste lösen"
+  },
+  "dashboard": {
+    "last_issue": "Letztes Problem",
+    "no_recent_automations": "Keine kürzlich ausgeführten Automatisierungen"
+  },
+  "frontend": {
+    "dashboard": {
+      "last_issue": "Letztes Problem",
+      "no_recent_automations": "Keine kürzlich ausgeführten Automatisierungen"
+    }
+  },
+  "pages": {
+    "howto": "Anleitung",
+    "Core": "Hauptbereich",
+    "Advanced": "Erweitert",
+    "Repositories": "Repositories",
+    "Preferences": "Einstellungen",
+    "notifications": "Benachrichtigungen",
+    "account": "Konto"
   }
 }

@@ -28,6 +28,7 @@ const getHeaders = async (t: any) => {
         { title: 'table.account.roles', key: 'roles', get_type: "list_tag", set_type: "strarr_chips", enum_values: rolesList, color_delimiter: ":" },
         { title: 'table.account.limits', key: 'limits', get_type: "string", set_type: "string_line" },
         { title: 'table.account.validated', key: 'validated', get_type: "boolean", set_type: "boolean", set_as_number: true },
+        { title: 'table.account.cron_active', key: 'cron_active', get_type: "boolean", set_type: "boolean", set_as_number: true },
         { title: 'table.common.actions', key: 'actions', sortable: false },
     ]
 }

@@ -1,7 +1,14 @@
 {
   "pages": {
     "dashboard": "Dashboard",
-    "admin": "Admin"
+    "admin": "Admin",
+    "howto": "How To",
+    "Core": "Core",
+    "Advanced": "Advanced",
+    "Repositories": "Repositories",
+    "Preferences": "Preferences",
+    "notifications": "Notifications",
+    "account": "Account"
   },
   "rules": {
     "password": {
@@ -43,6 +50,9 @@
       },
       "validated": {
         "type": "Validated must be a boolean"
+      },
+      "cron_active": {
+        "type": "Cron Active must be a boolean"
       }
     },
     "role": {
@@ -105,7 +115,8 @@
       "email": "Email",
       "roles": "Roles",
       "limits": "Limits",
-      "validated": "Validated"
+      "validated": "Validated",
+      "cron_active": "Cron Active"
     },
     "role": {
       "title": "Roles",
@@ -130,11 +141,13 @@
       "set_default": "Set default"
     },
     "common": {
-      "owner": "Owner",
-      "actions": "Actions"
+      "actions": "Actions",
+      "last_run": "Last run",
+      "inactive": "Inactive"
     },
-    "common": {
-      "actions": "Actions"
+    "automation": {
+      "active": "Active",
+      "last_issue": "Last issue"
     }
   },
   "$vuetify": {
@@ -177,6 +190,10 @@
       ],
       "confirm_password": "Confirm Password",
       "have_account": "Already have an account? Log in."
+    },
+    "dashboard": {
+      "last_issue": "Last issue",
+      "no_recent_automations": "No Recent Automations Run"
     }
   },
   "auth": {
@@ -285,5 +302,22 @@
     "id": {
       "required": "Event ID is required"
     }
+  },
+  "automation": {
+    "active": "Active",
+    "last_issue": "Last issue"
+  },
+  "common": {
+    "last_run": "Last run",
+    "inactive": "Inactive",
+    "howto": "How To",
+    "toggle_theme": "Toggle Theme",
+    "logout": "Logout",
+    "pin": "Pin Drawer",
+    "unpin": "Unpin Drawer"
+  },
+  "dashboard": {
+    "last_issue": "Last issue",
+    "no_recent_automations": "No Recent Automations Run"
   }
 }

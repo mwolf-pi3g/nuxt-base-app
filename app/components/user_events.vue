@@ -4,7 +4,7 @@
       <v-btn icon v-bind="props" class="mx-1">
         <v-badge
           :model-value="unreadCount > 0"
-          :content="unreadCount"
+          :content="badgeContent"
           :color="mostSevereColor"
           location="top end"
           offset-x="3"
@@ -130,6 +130,7 @@ const filterLevels = ref({
 
 const toggleLevel = (level: 'info' | 'warn' | 'error') => {
   filterLevels.value[level] = !filterLevels.value[level]
+  fetchEvents()
 }
 
 // Unread event logic & severity calculation for top bell badge
@@ -138,6 +139,14 @@ const unreadEvents = computed(() => {
 })
 
 const unreadCount = computed(() => unreadEvents.value.length)
+
+// If 100 items retrieved and unread count is >= 100, show 100+
+const badgeContent = computed(() => {
+  if (unreadCount.value >= 100) {
+    return '100+'
+  }
+  return unreadCount.value
+})
 
 const mostSevereColor = computed(() => {
   const unread = unreadEvents.value
@@ -150,16 +159,8 @@ const mostSevereColor = computed(() => {
   return 'info'
 })
 
-// Filtered event list based on toggled levels
-const filteredEvents = computed(() => {
-  return events.value.filter(e => {
-    const lvl = e.level?.toLowerCase() || 'info'
-    if (lvl === 'error' && !filterLevels.value.error) return false
-    if ((lvl === 'warn' || lvl === 'warning') && !filterLevels.value.warn) return false
-    if (lvl !== 'error' && lvl !== 'warn' && lvl !== 'warning' && !filterLevels.value.info) return false
-    return true
-  })
-})
+// Filtered event list from server search
+const filteredEvents = computed(() => events.value)
 
 const hasUnreadInFiltered = computed(() => {
   return filteredEvents.value.some(e => !e.read)
@@ -196,9 +197,30 @@ const getEventColor = (level: string) => {
 }
 
 const fetchEvents = async () => {
+  const activeLevels: string[] = []
+  if (filterLevels.value.info) activeLevels.push('info')
+  if (filterLevels.value.warn) {
+    activeLevels.push('warn')
+    activeLevels.push('warning')
+  }
+  if (filterLevels.value.error) activeLevels.push('error')
+
+  if (activeLevels.length === 0) {
+    events.value = []
+    loading.value = false
+    return
+  }
+
   try {
     loading.value = true
-    const res = await apiGet('/api/user/event')
+    const queryParams = new URLSearchParams({
+      limit: '100',
+      sortBy: 'createdAt',
+      sortDir: 'desc',
+      level: activeLevels.join(',')
+    })
+
+    const res = await apiGet(`/api/user/event/search?${queryParams.toString()}`)
     if (res?.data && Array.isArray(res.data)) {
       events.value = res.data
     }

@@ -80,9 +80,7 @@ const props = defineProps<{
 
 const formRef = ref<any>(null)
 
-defineExpose({
-  formulate: formRef
-})
+
 
 const tab = ref('table')
 const localModel = ref(props.model);
@@ -188,6 +186,28 @@ const onUpdate = async (id: string, data: any) => {
   await apiPatch(`${props.meta.path_base}/${id}`, data)
 }
 
+const openCreate = () => {
+  if (hasCreate.value) {
+    onActionClick({ action: 'create', onFormSubmit: onCreate })
+  }
+}
+
+const openEdit = async (target: any) => {
+  if (props.meta.readOnMount && (!localModel.value || localModel.value.length === 0)) {
+    await loadData()
+  }
+  let item = null
+  if (target && typeof target === 'object') {
+    item = localModel.value?.find((i: any) => (target.id && i.id === target.id) || (target.name && i.name === target.name) || (target.title && i.title === target.title)) || target
+  } else if (typeof target === 'string') {
+    item = localModel.value?.find((i: any) => i.id === target || i.name === target || i.title === target)
+  }
+  if (item) {
+    onActionClick({ action: 'update', onFormSubmit: onUpdate }, item)
+  }
+}
+
+
 const formReset = () => {
   tab.value = 'table'
   showForm.value = false
@@ -226,5 +246,12 @@ onMounted(async () => {
   if (props.meta.readOnMount && !props.model) {
     localModel.value = await loadData()
   }
+})
+defineExpose({
+  formulate: formRef,
+  openCreate,
+  openEdit,
+  loadData,
+  localModel
 })
 </script>

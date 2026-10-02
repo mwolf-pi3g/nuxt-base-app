@@ -26,9 +26,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { user, lang } = await readBody(event);
+  const { user, lang, cron_active } = await readBody(event);
   const accountService = await getService(event);
-  const updated = await accountService.update(userId, { user, lang });
+  const updatePayload: Record<string, any> = { user, lang };
+  if (cron_active !== undefined) {
+    updatePayload.cron_active = cron_active;
+  }
+  const updated = await accountService.update(userId, updatePayload);
 
   return {
     data: updated,

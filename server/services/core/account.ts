@@ -24,6 +24,7 @@ class accountAdminService extends genericService {
                 password: '!1adminadmin',
                 lang: 'en',
                 validated: 1,
+                cron_active: 1,
                 roles: [adminRoleId],
                 limits: 'basic'
             }

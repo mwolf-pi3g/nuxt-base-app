@@ -1,6 +1,5 @@
 <template>
   <v-app-bar flat border>
-
     <div @click="router.push('/')" style="cursor: pointer;" class="d-flex align-center">
       <v-avatar v-if="app_conf.icon && app_conf.icon.startsWith('/')" class="mx-3" size="36" rounded="0" :class="{ 'icon-breathing': activeRequests > 0 }">
         <v-img :src="app_conf.icon"></v-img>
@@ -22,13 +21,8 @@
     </span>
     <v-spacer />
 
-    <!-- Theme Toggle -->
-    <v-btn v-if="loggedIn &&header_conf.theme_show" icon @click="toggleTheme">
-      <v-icon>{{ theme.global.current.value.dark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-    </v-btn>
-
     <!-- Language Selector -->
-    <v-menu v-if="header_conf.locales_show">
+    <v-menu v-if="nav_conf.locales_show !== false">
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
           <v-icon>mdi-translate</v-icon>
@@ -42,120 +36,56 @@
     </v-menu>
 
     <!-- User Events Bell -->
-    <UserEvents v-if="loggedIn" />
-
-    <!-- Logged in controls -->
-    <div v-if="loggedIn" class="d-flex align-center">
-
-      <div v-for="page in header_conf.pages" :key="page.name">
-        <template v-if="page.children && page.children.length > 0">
-          <v-speed-dial location="bottom center" transition="scale-transition">
-            <template v-slot:activator="{ props: activatorProps }">
-              <v-btn icon v-bind="activatorProps">
-                <v-icon v-tooltip="page.name">{{ page.icon }}</v-icon>
-              </v-btn>
-            </template>
-            <template v-for="child in page.children" :key="child.path">
-              <v-btn
-                v-if="!child.permissions || hasPerm(child.permissions)"
-                icon
-                @click="router.push(child.path)"
-              >
-                <v-icon v-tooltip="child.name">{{ child.icon }}</v-icon>
-              </v-btn>
-            </template>
-          </v-speed-dial>
-        </template>
-        <template v-else>
-          <v-btn v-if="!page.permissions || hasPerm(page.permissions)" icon @click="router.push(page.path)">
-            <v-icon v-tooltip="$t('pages.' + page.name)" >{{ page.icon }}</v-icon>
-          </v-btn>
-        </template>
-      </div>
-
-      <v-menu>
-        <template v-slot:activator="{ props: activatorProps }">
-          <v-btn icon v-bind="activatorProps">
-            <v-icon>mdi-account</v-icon>
-          </v-btn>
-        </template>
-        <v-card min-width="200">
-          <v-list>
-            <v-list-item>
-              <v-list-item-title>{{ user?.user }} 
-                <v-icon color="primary" size="small" @click="handleLogout" class="ml-1 float-right">mdi-logout</v-icon>
-                <v-icon color="primary" size="small" @click="router.push('/preferences')" class="ml-3 float-right">mdi-cog</v-icon>
-              </v-list-item-title>
-            </v-list-item>
-            <account_menu />
-          </v-list>
-        </v-card>
-      </v-menu>
+    <div v-if="loggedIn" class="mr-4 d-flex align-center">
+      <UserEvents />
     </div>
   </v-app-bar>
 </template>
 
 <script setup lang="ts">
-import app_conf from '~/metadata/app.json'
-import header_conf from '~/metadata/header.json'
-import { apiPost } from '~/util/fetch/wrappers'
-import type { UserState } from '~/types/user_state'
-import hasPerm from '~/util/hasPerm'
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import app_conf from '~/metadata/app.json';
+import nav_conf from '~/metadata/app_nav.json';
+import type { UserState } from '~/types/user_state';
+import hasPerm from '~/util/hasPerm';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 
-const { $bus } = useNuxtApp()
-const activeRequests = ref(0)
+const { $bus } = useNuxtApp();
+const activeRequests = ref(0);
 
 const onLoadingStart = () => {
-  activeRequests.value++
-}
+  activeRequests.value++;
+};
 const onLoadingStop = () => {
-  activeRequests.value = Math.max(0, activeRequests.value - 1)
-}
+  activeRequests.value = Math.max(0, activeRequests.value - 1);
+};
 
 onMounted(() => {
-  $bus.on('loading:start', onLoadingStart)
-  $bus.on('loading:stop', onLoadingStop)
-})
+  $bus.on('loading:start', onLoadingStart);
+  $bus.on('loading:stop', onLoadingStop);
+});
 
 onUnmounted(() => {
-  $bus.off('loading:start', onLoadingStart)
-  $bus.off('loading:stop', onLoadingStop)
-})
+  $bus.off('loading:start', onLoadingStart);
+  $bus.off('loading:stop', onLoadingStop);
+});
 
-const userState = useState<UserState>('user')
-const route = useRoute()
+const userState = useState<UserState>('user');
+const route = useRoute();
+const router = useRouter();
+const { setLocale, locales } = useI18n();
+const { loggedIn, user } = useUserSession();
+
 const currentPage = computed(() => {
-  for (const page of header_conf.pages) {
+  if (route.path === '/dashboard') return 'dashboard';
+  for (const page of nav_conf.pages) {
     if (page.path === route.path) return page.name;
     if (page.children) {
-      const child = page.children.find(c => c.path === route.path);
+      const child = page.children.find((c: any) => c.path === route.path);
       if (child) return child.name;
     }
   }
   return '';
-})
-
-const theme = useTheme()
-const toggleTheme = () => {
-  const setTheme = theme.global.current.value.dark ? 'light' : 'dark'
-  theme.global.name.value = setTheme
-}
-
-const { setLocale, locales } = useI18n()
-const { loggedIn, user, clear} = useUserSession()
-const router = useRouter()
-
-const handleLogout = async () => {
-  try {
-    await apiPost('/api/auth/logout', {})
-  } catch (err) {
-    // API failure handled by global notifier
-  }
-  await clear()
-  router.push('/landing')
-}
-
+});
 </script>
 
 <style scoped>

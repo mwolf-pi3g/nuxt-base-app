@@ -6,6 +6,7 @@ declare module '#auth-utils' {
     permissions: string[];
     limits: string;
     lang: string;
+    cron_active?: number;
   }
 
   interface UserSession {

@@ -23,5 +23,9 @@ export const zod_rules = {
 
   validated: z.union([z.literal(0), z.literal(1)], {
     errorMap: () => ({ message: "rules.account.validated.type" })
-  }).default(0)
+  }).default(0),
+
+  cron_active: z.union([z.literal(0), z.literal(1)], {
+    errorMap: () => ({ message: "rules.account.cron_active.type" })
+  }).default(1)
 };

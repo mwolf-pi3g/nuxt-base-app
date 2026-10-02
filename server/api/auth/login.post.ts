@@ -34,7 +34,8 @@ export default defineEventHandler(async (event) => {
       roles: account.roles,
       permissions,
       limits: account.limits,
-      lang: account.lang
+      lang: account.lang,
+      cron_active: account.cron_active
     },
     loggedInAt: new Date().toISOString()
   });

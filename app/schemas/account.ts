@@ -58,6 +58,14 @@ const getHeaders = async (t: any) => {
             get_type: "boolean"
         },
         {
+            title: 'table.account.cron_active',
+            key: 'cron_active',
+            get_type: "boolean",
+            set_type: "boolean",
+            set_as_number: true,
+            actions: ["update"]
+        },
+        {
             title: 'table.common.actions',
             key: 'actions',
             sortable: false

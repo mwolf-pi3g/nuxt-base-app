@@ -1,6 +1,7 @@
 import { getTableName } from "drizzle-orm";
 import { dbFindOne } from "#bs/db/wrappers/db_find_one";
 import { dbFindAll } from "#bs/db/wrappers/db_find_all";
+import { dbSearch } from "#bs/db/wrappers/db_search";
 import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbFindOneAndUpdate } from "#bs/db/wrappers/db_find_one_and_update";
 import { dbFindOneAndDelete } from "#bs/db/wrappers/db_find_one_and_delete";
@@ -107,6 +108,41 @@ export class genericService {
             });
         }
     }
+
+    async search(searchSpec: any = {}, options: any = {}) {
+        let spec: Record<string, any>;
+        if (Array.isArray(searchSpec)) {
+            spec = { id: searchSpec };
+        } else if (typeof searchSpec === "object" && searchSpec !== null) {
+            spec = { ...searchSpec };
+        } else if (typeof searchSpec === "string") {
+            spec = { id: searchSpec };
+        } else {
+            spec = {};
+        }
+        if (this.user_id && this.table && "owner_id" in this.table) {
+            spec.owner_id = this.user_id;
+        }
+        if (options?.user_id && this.table && "owner_id" in this.table) {
+            spec.owner_id = options.user_id;
+        }
+        if (options?.userId && this.table && "owner_id" in this.table) {
+            spec.owner_id = options.userId;
+        }
+
+        try {
+            return await dbSearch(this.db, this.table, spec, options);
+        } catch (e: any) {
+            if (e.statusCode || e.status) {
+                throw e;
+            }
+            throw createError({
+                status: 500,
+                statusMessage: `error ${this.table_name}.search_failed`
+            });
+        }
+    }
+
 
     async create(body: any, hooks?: any) {
         const payload = this.addOwner({ ...body });
