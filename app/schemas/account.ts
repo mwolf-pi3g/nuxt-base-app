@@ -1,5 +1,5 @@
 import { zod_rules } from '#b/shared/rules/account';
-import { apiGet } from '~/util/fetch/wrappers'
+import { apiGet } from '~/utils/fetch/wrappers'
 
 const getHeaders = async (t: any) => {
     let rolesList: any[] = []

@@ -46,7 +46,7 @@
 import app_conf from '~/metadata/app.json';
 import nav_conf from '~/metadata/app_nav.json';
 import type { UserState } from '~/types/user_state';
-import hasPerm from '~/util/hasPerm';
+import hasPerm from '~/utils/hasPerm';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const { $bus } = useNuxtApp();

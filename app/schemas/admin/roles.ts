@@ -1,5 +1,5 @@
-import hasPerm from '#ba/util/hasPerm'
-import { apiGet } from '~/util/fetch/wrappers'
+import hasPerm from '#ba/utils/hasPerm'
+import { apiGet } from '~/utils/fetch/wrappers'
 
 const getHeaders = async (t: any) => {
     let permissionsList: string[] = []

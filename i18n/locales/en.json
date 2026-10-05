@@ -3,12 +3,13 @@
     "dashboard": "Dashboard",
     "admin": "Admin",
     "howto": "How To",
-    "Core": "Core",
     "Advanced": "Advanced",
     "Repositories": "Repositories",
     "Preferences": "Preferences",
     "notifications": "Notifications",
-    "account": "Account"
+    "account": "Account",
+    "artifacts": "Artifacts",
+    "Basic": "Basic"
   },
   "rules": {
     "password": {
@@ -102,7 +103,8 @@
         "bot_token": "Bot Token",
         "chat_id": "Chat ID",
         "webhook": "Webhook URL",
-        "webhook_url": "Webhook URL"
+        "webhook_url": "Webhook URL",
+        "subfolder": "Subfolder"
       }
     }
   },
@@ -148,6 +150,20 @@
     "automation": {
       "active": "Active",
       "last_issue": "Last issue"
+    },
+    "artifacts": {
+      "title": "Artifacts",
+      "id": "File",
+      "extension": "Type",
+      "size": "Size (Bytes)",
+      "updatedAt": "Modified",
+      "view": "View File",
+      "download": "Download File"
+    },
+    "email": {
+      "staging": "Staging",
+      "set_staging": "Set as Staging Item",
+      "clear_staging": "Remove from Staging"
     }
   },
   "$vuetify": {
@@ -319,5 +335,16 @@
   "dashboard": {
     "last_issue": "Last issue",
     "no_recent_automations": "No Recent Automations Run"
+  },
+  "artifacts": {
+    "read": {
+      "success": "Artifacts loaded successfully"
+    },
+    "delete": {
+      "success": "Artifact deleted successfully"
+    },
+    "not_found": "Artifact not found",
+    "forbidden_path": "Access to artifact path is forbidden",
+    "missing_path": "Artifact path is required"
   }
 }

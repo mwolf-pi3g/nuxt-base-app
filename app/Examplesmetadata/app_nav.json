@@ -3,7 +3,7 @@
     "theme_show": true,
     "pages": [
         {
-            "name": "Core",
+            "name": "Basic",
             "children": [
                 {
                     "name": "dashboard",
@@ -32,7 +32,7 @@
                 },
                 {
                     "name": "notifications",
-                    "icon": "mdi-bell-outline",
+                    "icon": "mdi-message-outline",
                     "path": "/notifications"
                 },
                 {
@@ -64,9 +64,9 @@
             "name": "Preferences",
             "children": [
                 {
-                    "name": "accounts",
+                    "name": "account",
                     "icon": "mdi-account-cog-outline",
-                    "path": "/accounts"
+                    "path": "/account"
                 }
             ]
         }

@@ -7,9 +7,20 @@
             <div class="font-weight-bold text-headline-medium text-primary">
               {{ translateTitle(meta.title) }}
             </div>  
-            <div v-show="selected.length > 1 && hasDeleteMany" class="ms-1">
-              <v-btn icon color="error" variant="text" @click="onDeleteMany">
+            <div v-show="selected.length > 0" class="d-flex align-center ms-2 ga-1">
+              <v-btn v-if="selected.length > 1 && hasDeleteMany" icon color="error" variant="text" @click="onDeleteMany">
                 <v-icon>mdi-delete</v-icon>
+              </v-btn>
+              <v-btn
+                v-for="(action, i) in meta.customMulti"
+                :key="i"
+                icon
+                :color="action.color"
+                variant="text"
+                :title="action.tooltip"
+                @click="onCustomMultiClick(action)"
+              >
+                <v-icon>{{ action.icon }}</v-icon>
               </v-btn>
             </div>
 
@@ -62,7 +73,7 @@
 <script setup lang="ts">
 import FormWrapper from '~/components/form/form.vue'
 import { ref, computed, onMounted, watch } from 'vue'
-import { apiGet, apiDelete, apiPost, apiPatch } from '~/util/fetch/wrappers'
+import { apiGet, apiDelete, apiPost, apiPatch } from '~/utils/fetch/wrappers'
 
 const props = defineProps<{
   meta: {
@@ -74,6 +85,7 @@ const props = defineProps<{
     read_options?: string;
     customAdd?: any[];
     customActions?: any[];
+    customMulti?: any[];
   };
   model?: any[];
 }>()
@@ -103,7 +115,7 @@ const translateTitle = (val: string | [string, ...any[]] | undefined) => {
 const hasSingular = computed(() => props.meta.features?.includes('singular'))
 const hasCreate = computed(() => props.meta.features?.includes('create'))
 const hasDeleteMany = computed(() => props.meta.features?.includes('deleteMany'))
-const hasAnyMany = computed(() => props.meta.features?.some(f => f.endsWith('Many')))
+const hasAnyMany = computed(() => props.meta.features?.some(f => f.endsWith('Many')) || (props.meta.customMulti && props.meta.customMulti.length > 0))
 
 
 const formData = computed(() => {
@@ -166,6 +178,15 @@ const onDelete = async (item: any) => {
     console.error(e)
   }
 }
+
+
+const onCustomMultiClick = async (actionSpec: any) => {
+  if (actionSpec.onClick) {
+    await actionSpec.onClick(selected.value);
+    selected.value = [];
+    await loadData();
+  }
+};
 
 const onDeleteMany = async () => {
   if (!confirm(`Are you sure you want to delete ${selected.value.length} items?`)) return
@@ -248,6 +269,7 @@ onMounted(async () => {
   }
 })
 defineExpose({
+  selected,
   formulate: formRef,
   openCreate,
   openEdit,

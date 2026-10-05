@@ -28,9 +28,9 @@
 import accountsTableMetaFcn from '#ba/schemas/admin/accounts'
 import rolesTableMetaFcn from '#ba/schemas/admin/roles'
 import notificationsMetaFcn from '#ba/schemas/admin/notifications'
-import hasPerm from '#ba/util/hasPerm'
+import hasPerm from '#ba/utils/hasPerm'
 import AdminApp from '~/components/admin_app.vue'
-import { apiPost } from '~/util/fetch/wrappers'
+import { apiPost } from '~/utils/fetch/wrappers'
 import type { UserState } from '~/types/user_state'
 
 const tab = ref('core')

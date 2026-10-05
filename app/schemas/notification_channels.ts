@@ -1,4 +1,4 @@
-import { apiGet } from "~/util/fetch/wrappers";
+import { apiGet } from "~/utils/fetch/wrappers";
 
 const getHeaders = async (t: any, callbacks: any) => {
     const servicesRes = await apiGet('/api/user/notification/schema/services') || {};
@@ -15,7 +15,11 @@ const getHeaders = async (t: any, callbacks: any) => {
     const getTypesForProvider = (_header: any, formData: any) => {
         const selectedProvider = formData?.provider?.toLowerCase();
         if (selectedProvider && normalizedServices[selectedProvider]) {
-            return normalizedServices[selectedProvider];
+            const allowed = normalizedServices[selectedProvider];
+            if (formData && (!formData.type || !allowed.includes(formData.type))) {
+                formData.type = allowed[0] || '';
+            }
+            return allowed;
         }
         return Object.values(normalizedServices).flat();
     };

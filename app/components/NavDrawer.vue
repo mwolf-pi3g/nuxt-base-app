@@ -120,9 +120,9 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import defaultNavConf from '~/metadata/app_nav.json';
-import { apiPost } from '~/util/fetch/wrappers';
+import { apiPost } from '~/utils/fetch/wrappers';
 import type { UserState } from '~/types/user_state';
-import hasPerm from '~/util/hasPerm';
+import hasPerm from '~/utils/hasPerm';
 
 const navConf = defaultNavConf;
 const { t } = useI18n();

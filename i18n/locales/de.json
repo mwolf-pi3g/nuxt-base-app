@@ -17,7 +17,8 @@
         "bot_token": "Bot-Token",
         "chat_id": "Chat-ID",
         "webhook": "Webhook-URL",
-        "webhook_url": "Webhook-URL"
+        "webhook_url": "Webhook-URL",
+        "subfolder": "Unterordner"
       }
     }
   },
@@ -88,6 +89,20 @@
     "automation": {
       "active": "Aktiv",
       "last_issue": "Letztes Problem"
+    },
+    "artifacts": {
+      "title": "Artefakte",
+      "id": "Datei",
+      "extension": "Typ",
+      "size": "Größe (Bytes)",
+      "updatedAt": "Geändert am",
+      "view": "Datei anzeigen",
+      "download": "Datei herunterladen"
+    },
+    "email": {
+      "staging": "Staging",
+      "set_staging": "Als Staging-Element markieren",
+      "clear_staging": "Aus Staging entfernen"
     }
   },
   "roles": {
@@ -147,11 +162,23 @@
   },
   "pages": {
     "howto": "Anleitung",
-    "Core": "Hauptbereich",
     "Advanced": "Erweitert",
     "Repositories": "Repositories",
     "Preferences": "Einstellungen",
     "notifications": "Benachrichtigungen",
-    "account": "Konto"
+    "account": "Konto",
+    "artifacts": "Artefakte",
+    "Basic": "Basis"
+  },
+  "artifacts": {
+    "read": {
+      "success": "Artefakte erfolgreich geladen"
+    },
+    "delete": {
+      "success": "Artefakt erfolgreich gelöscht"
+    },
+    "not_found": "Artefakt nicht gefunden",
+    "forbidden_path": "Zugriff auf Artefaktpfad verboten",
+    "missing_path": "Artefaktpfad ist erforderlich"
   }
 }

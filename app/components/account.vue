@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import accountMetaFcn from '#ba/schemas/account';
-import { apiPatch } from '~/util/fetch/wrappers';
+import { apiPatch } from '~/utils/fetch/wrappers';
 
 const { t } = useI18n();
 const meta = ref<any>(null);

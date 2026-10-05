@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { apiPost } from '~/util/fetch/wrappers'
+import { apiPost } from '~/utils/fetch/wrappers'
 import Form from '~/components/form/form.vue'
 import getSchema from '~/schemas/login'
 

@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { apiGet, apiPost } from '~/util/fetch/wrappers';
+import { apiGet, apiPost } from '~/utils/fetch/wrappers';
 
 const { t } = useI18n();
 

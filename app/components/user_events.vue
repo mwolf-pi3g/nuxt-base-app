@@ -103,7 +103,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { apiGet, apiPost } from '~/util/fetch/wrappers'
+import { apiGet, apiPost } from '~/utils/fetch/wrappers'
 
 interface UserEventItem {
   id: string

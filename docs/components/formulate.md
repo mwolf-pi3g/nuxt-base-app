@@ -1,150 +1,161 @@
-# Schema-Driven Form Component (`FormWrapper`) Documentation
+# Schema-Driven Form Components Documentation
 
-The `FormWrapper` component (`app/components/form/form.vue`) is a highly dynamic, configuration-driven form builder powered by Vuetify. It automatically renders form inputs, controls state binding, and executes translations and validation rules based on a JSON-like schema (headers).
-
----
-
-## 1. What It Does
-* **Automatic Layout Generation**: Iterates through a schema array (`headers`) to render appropriate input fields based on control types (`set_type`).
-* **State Management**: Seed and bind values reactively using a local `formData` object. Supports default fallbacks.
-* **Nested Forms Support**: Allows nesting child forms within the parent layout, coordinating validity checks across all sub-forms.
-* **Validation & Localized Errors**: Translates validation messages dynamically on submit/input using `vue-i18n`.
+The base layer provides two primary form components for managing schema-driven data input:
+1. **`FormWrapper` (`app/components/form/form.vue`)**: The core schema-driven form rendering engine.
+2. **`FormCreate` (`app/components/form/form_create.vue`)**: A standalone creation container that wraps `FormWrapper` and handles `POST [path_base]` API submission automatically.
 
 ---
 
-## 2. Component Interface (Props & Events)
+## 1. Core Form Engine: `FormWrapper` (`form.vue`)
 
-### Props
-| Prop Name | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `headers` | `any[]` | *Required* | The form schema specifying field names, keys, types, rules, and options. |
-| `initialData` | `any` | `undefined` | Key-value pairs representing pre-existing values to seed the form. |
-| `cancelBtn` | `boolean` | `true` | Show or hide the Cancel action button. |
-| `loading` | `boolean` | `false` | Sets a loading state (e.g. spinner on the Submit button). |
-| `noCard` | `boolean` | `false` | Renders form controls inside a simple `div` container instead of a bordered `v-card`. |
-| `noSubmit` | `boolean` | `false` | Disables the default footer actions (Submit/Cancel) – useful for sub-form mode. |
+The `FormWrapper` component dynamically builds forms using Vuetify 3 inputs based on the `set_type` specified in your header schemas.
 
-### Events
-* `@submit`: Emits the copy of `formData` when all rules are satisfied and the form is valid.
-* `@cancel`: Emits when the cancel button is clicked.
-* `@valid`: Emits a `boolean` signifying whether the form validation state has changed.
-
----
-
-## 3. General Schema Configuration Keys
-
-Every object inside the `headers` array represents a form field:
+### Component Interface (Props & Emits)
 
 ```typescript
-interface SchemaHeader {
-  title: string;              // Input label (translated or raw text)
-  key: string;                // Field key name in the persisted object / API payload
-  set_type: string;           // Input component selector (e.g. 'string_line')
-  default?: any;              // Fallback value if no initialData is present
-  rules?: Array<(v: any) => boolean | string>; // Synchronous Zod / callback validation rules
-}
+// Props
+defineProps<{
+  headers: SchemaHeader[]; // Field configurations containing set_type and validation rules
+  initialData?: any;       // Initial data object for seeding values (edit mode)
+  cancelBtn?: boolean;     // Show cancel button (defaults to true)
+  loading?: boolean;       // Display loading state on submit button
+  noCard?: boolean;        // Render inside a plain <div> instead of a <v-card>
+  noSubmit?: boolean;      // Hide default submit/cancel button row
+}>()
+
+// Emits
+defineEmits<{
+  (e: 'submit', data: any): void; // Emitted with sanitized payload when form is submitted
+  (e: 'cancel'): void;            // Emitted when cancel button is clicked
+  (e: 'valid', isValid: boolean): void; // Emitted whenever form validation state changes
+}>()
+```
+
+### Custom Component Registry (`customRegistry`)
+You can register custom field types dynamically on `FormWrapper` using `register(type, component)`:
+
+```typescript
+const formRef = ref();
+formRef.value.register('custom_picker', MyCustomPickerComponent);
 ```
 
 ---
 
-## 4. Sub-components & Specialized Configuration Keys
+## 2. Standalone Creation Component: `FormCreate` (`form_create.vue`)
 
-Formulate divides fields into discrete components nested under `app/components/form/set/`.
+`FormCreate` is a turnkey component for standalone creation views (e.g. in dashboard split panels, dialogs, or dedicated creation views) that eliminates duplicate API submission boilerplate.
 
-### A. FormSetStringLine (`set_type: 'string_line'`)
-Renders a standard single-line text input field (`v-text-field`).
-* **Specific Keys**:
-  * `type` *(string, optional)*: Overrides input type (e.g., `'text'`, `'number'`, `'password'`). Defaults to `'text'`.
-  * `default` *(string, optional)*: Fallback default string (defaults to `''`).
+### Component Interface
 
-### B. FormSetStringArea (`set_type: 'string_area'`)
-Renders a multi-line text input text area (`v-textarea`).
-* **Specific Keys**:
-  * `rows` *(number, optional)*: Height of the textarea in lines. Defaults to `3`.
-  * `auto_grow` *(boolean, optional)*: Enables auto-growing input height. Defaults to `true`.
-  * `default` *(string, optional)*: Fallback default string (defaults to `''`).
+```typescript
+defineProps<{
+  meta: {
+    title?: string | [string, ...any[]]; // Form title displayed on card
+    path_base: string;                  // API endpoint for POST requests (e.g. '/api/v0.1/app/automation')
+    headers: SchemaHeader[];            // Complete schema headers array
+  };
+  initialData?: any;                    // Initial data (optional)
+  cancelBtn?: boolean;                  // Display cancel button (default: true)
+  noCard?: boolean;                     // Render without wrapping v-card (default: false)
+}>()
 
-### C. FormSetEnum (`set_type: 'enum'`)
-Renders a single-select dropdown selection (`v-select`).
-* **Specific Keys**:
-  * `enum_values` *(string[] | string | Function, required)*:
-    * An array of raw options, or
-    * An i18n translation path (string) resolving to an array of values, or
-    * An asynchronous function: `(header, formData) => Promise<any[]>` or synchronous function: `(header, formData) => any[]`.
+defineEmits<{
+  (e: 'created', response: any): void;  // Emitted upon successful API creation
+  (e: 'submit', response: any): void;   // Emitted upon submission
+  (e: 'cancel'): void;                  // Emitted on cancellation
+  (e: 'valid', isValid: boolean): void; // Validation state changes
+}>()
+```
 
-### D. FormSetEnumTag (`set_type: 'enum'` with `select_type: 'multiple'`)
-Renders a multi-select dropdown targeting array storage where selections are mapped to/from a boolean array.
-* **Specific Keys**:
-  * `select_type` *(string, required)*: Must be set to `'multiple'` to route to this sub-component.
-  * `enum_values` *(string[] | string | Function, required)*: Array, translation path, or callback function of selectable choices.
-* **State Behavior**: Exposes the choice values via an internal index mapper and communicates with the parent using `boolean[]` representing selection indices.
+### Usage Example
+```vue
+<template>
+  <FormCreate
+    ref="formCreateRef"
+    :meta="automationMeta"
+    @created="onCreated"
+    @cancel="showCreate = false"
+  />
+</template>
 
-### E. FormSetStrarrChips (`set_type: 'strarr_chips'`)
-Renders a multi-select combobox suitable for entering and managing arrays of strings (e.g., tags, roles, targets). Selected items are rendered as customizable colored chips.
-* **Specific Keys**:
-  * `enum_values` *(any[], optional)*: Predefined options. If not supplied, defaults to selected values.
-  * `color_delimiter` *(string, optional)*: Splits choice labels to dynamically derive a hash-based color (via `strColor` utility) for styling the chip. Show up to 3 chips before rendering a `(+N)` indicator.
+<script setup lang="ts">
+import FormCreate from '#ba/components/form/form_create.vue';
+import automationMetaFcn from '~/schemas/automation';
+import myCustomChooser from '~/components/my_custom_chooser.vue';
 
-### F. FormSetPasswordConfirm (`set_type: 'password_confirm'`)
-Renders two adjacent password input fields: Primary and Confirmation.
-* **Behavior**: Binds/emits the primary password value on update. The confirmation input has built-in verification rules (`rules.password.required` and `rules.password.mismatch`). The parent form remains invalid unless both passwords match.
+const formCreateRef = ref();
+const automationMeta = ref();
 
-### G. FormSetBoolean (`set_type: 'boolean'`)
-Renders a standard checkbox input toggle (`v-checkbox`).
-* **Specific Keys**:
-  * `set_as_number` *(boolean, optional)*: If set to `true`, emits `1` or `0` to parent state instead of `true` or `false`.
+onMounted(async () => {
+  automationMeta.value = await automationMetaFcn(useI18n().t);
+});
 
-### H. FormSetInteger (`set_type: 'integer'`)
-Renders a numeric stepper input field (`v-number-input`).
-* **Specific Keys**:
-  * `min` *(number, optional)*: The minimum allowed value.
-  * `max` *(number, optional)*: The maximum allowed value.
-  * `step` *(number, optional)*: The step interval. Defaults to `1`.
+// Register custom fields if needed
+watch(formCreateRef, (instance) => {
+  if (instance) {
+    instance.register('automation_task_chooser', myCustomChooser);
+  }
+});
 
-### I. FormSetForm (`set_type: 'form'`)
-Renders a nested sub-form container, enabling dynamic forms whose structures depend on prior field states (e.g., showing provider-specific settings dynamically).
-* **Specific Keys**:
-  * `value` *(Array | Function, required)*:
-    * A static schema array, or
-    * A function/callback: `(header, formData) => Promise<any[]>` or `(header, formData) => any[]`.
-* **State Behavior**: Watches the parent's `formData` reactively and regenerates the schema. Validity updates of the child form are bubble-emitted to parent `isFormValid` calculations.
+const onCreated = (res: any) => {
+  console.log('Created record:', res);
+};
+</script>
+```
 
 ---
 
-## 5. Usage Example
+## 3. Sub-components (`set_type` Registry)
 
-Below is a configuration illustrating different fields, including a dynamic sub-form:
+The form engine matches `header.set_type` to specialized input components located in `app/components/form/set/`:
+
+### A. FormSetStringLine (`set_type: 'string_line'`)
+Single-line text input using `v-text-field`.
+* **Options**: `density="compact"`, `variant="outlined"`
+
+### B. FormSetStringSecret (`set_type: 'string_secret'`)
+Password/secret input with visibility toggle icon (`mdi-eye` / `mdi-eye-off`).
+
+### C. FormSetStringArea (`set_type: 'string_area'`)
+Multi-line text input using `v-textarea`.
+
+### D. FormSetEnum (`set_type: 'enum'`)
+Select dropdown using `v-select` or `v-autocomplete`.
+* **Configuration**:
+  * `enum_values`: Array of string options, `{ title, value }` objects, or an async function `(header, formData) => Promise<any[]>`.
+  * `select_type: 'multiple'`: Enables multi-selection.
+
+### E. FormSetStrarrChips (`set_type: 'strarr_chips'`)
+Multi-item tag/chip input using `v-combobox` with removable chips.
+
+### F. FormSetBoolean (`set_type: 'boolean'`)
+Boolean toggle input using `v-switch` or `v-checkbox`.
+
+### G. FormSetInteger (`set_type: 'integer'`)
+Numeric input enforcing integer values.
+
+### H. FormSetPasswordConfirm (`set_type: 'password_confirm'`)
+Paired password and confirmation fields with automatic mismatch validation.
+
+### I. FormSetForm (`set_type: 'form'`)
+Nested sub-form rendering dynamic child schemas.
+* **Configuration**:
+  * `value`: Function `(header, formData) => Promise<SchemaHeader[]>` returning dynamic sub-form headers based on parent field values.
+
+---
+
+## 4. Validation Rules & Zod Integration
+
+Validation rules are defined in the schema headers using either simple validation functions or rules generated from shared Zod schemas (`shared/rules/`):
 
 ```typescript
-const headers = [
-  // 1. Basic String Line
-  { 
-    title: 'Account Name', 
-    key: 'name', 
-    set_type: 'string_line',
-    rules: [(v) => !!v || 'Name is required']
-  },
-  // 2. Select Dropdown (Enum)
-  { 
-    title: 'Provider', 
-    key: 'provider', 
-    set_type: 'enum', 
-    enum_values: ['Apprise', 'Email'] 
-  },
-  // 3. Dynamic Sub-form depending on 'provider' value
-  { 
-    title: 'Configuration Details', 
-    key: 'config', 
-    set_type: 'form',
-    value: async (header, formData) => {
-      if (formData.provider === 'Apprise') {
-        return [
-          { title: 'Template URL', key: 'template', set_type: 'string_line' },
-          { title: 'API Key', key: 'apikey', set_type: 'string_line' }
-        ];
-      }
-      return [];
-    }
-  }
-];
+{
+  title: 'Automation Name',
+  key: 'name',
+  set_type: 'string_line',
+  rules: [
+    (v: string) => !!v || 'Name is required',
+    (v: string) => (v && v.length <= 64) || 'Max 64 characters'
+  ]
+}
 ```

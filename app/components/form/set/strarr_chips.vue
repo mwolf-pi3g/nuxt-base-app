@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import strColor from '#ba/util/str_color'
+import strColor from '#ba/utils/str_color'
 
 const props = defineProps<{
   modelValue: any

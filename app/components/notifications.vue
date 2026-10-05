@@ -53,15 +53,42 @@ const generateZodRules = (token: any) => {
 }
 
 const schemaCache: Record<string, any> = {};
+let servicesCache: Record<string, string[]> | null = null;
 
 const getChannelConfigSchema = async (header: any, row: any) => {
-  if (!row?.provider || !row?.type) {
+  if (!row?.provider) {
     return [];
   }
 
   const providerLower = row.provider.toLowerCase();
+  const { apiGet } = await import('~/utils/fetch/wrappers');
+
+  if (!servicesCache) {
+    try {
+      const servicesRes = await apiGet('/api/user/notification/schema/services');
+      if (servicesRes && typeof servicesRes === 'object' && !Array.isArray(servicesRes)) {
+        servicesCache = {};
+        for (const [k, v] of Object.entries(servicesRes)) {
+          servicesCache[k.toLowerCase()] = Array.isArray(v) ? v : [];
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load notification services cache', e);
+    }
+  }
+
+  const allowedTypes = servicesCache?.[providerLower];
+  if (allowedTypes && allowedTypes.length > 0) {
+    if (!row.type || !allowedTypes.includes(row.type)) {
+      row.type = allowedTypes[0];
+    }
+  }
+
+  if (!row?.type) {
+    return [];
+  }
+
   const cacheKey = `${providerLower}:${row.type}`;
-  const { apiGet } = await import('~/util/fetch/wrappers');
 
   try {
     let res = schemaCache[cacheKey];
