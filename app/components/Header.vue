@@ -16,8 +16,8 @@
     </div>
 
     <v-spacer />
-    <span v-if="hasPerm('ui:admin') && user" class="font-weight-bold" style="color: red;">
-      {{ userState?.as_user || user.user }}
+    <span v-if="hasPerm('ui:admin') && (user as any)?.as_user" class="font-weight-bold" style="color: red;">
+      {{ (user as any).as_user }}
     </span>
     <v-spacer />
 
@@ -45,7 +45,6 @@
 <script setup lang="ts">
 import app_conf from '~/metadata/app.json';
 import nav_conf from '~/metadata/app_nav.json';
-import type { UserState } from '~/types/user_state';
 import hasPerm from '~/utils/hasPerm';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
@@ -69,7 +68,6 @@ onUnmounted(() => {
   $bus.off('loading:stop', onLoadingStop);
 });
 
-const userState = useState<UserState>('user');
 const route = useRoute();
 const router = useRouter();
 const { setLocale, locales } = useI18n();

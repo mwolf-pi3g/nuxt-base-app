@@ -31,23 +31,17 @@ import notificationsMetaFcn from '#ba/schemas/admin/notifications'
 import hasPerm from '#ba/utils/hasPerm'
 import AdminApp from '~/components/admin_app.vue'
 import { apiPost } from '~/utils/fetch/wrappers'
-import type { UserState } from '~/types/user_state'
 
 const tab = ref('core')
 const i18n = useI18n();
 const admin_core = ref<any[]>([]);
 
-const userState = useState<UserState>('user', () => ({ as_user: '' }))
+const { fetch: refreshSession } = useUserSession();
 
 const onSetIdent = async (item?: any) => {
-  const id = item.id;
-  const name = item.user || 'Unknown User';
-
-  console.log('setting ident to ' + id + ' (' + name + ')')
-  if (userState.value) {
-    userState.value = { ...userState.value, as_user: name }
-  }
-  await apiPost('/api/admin/ident/set', { id })
+  if (!item?.id) return;
+  await apiPost('/api/admin/ident/set', { id: item.id });
+  await refreshSession();
 }
 
 onMounted(async () => {

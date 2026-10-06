@@ -11,8 +11,8 @@
     <!-- Top: Username + Toggleable Pin + HR -->
     <div class="pa-3 pb-0 nav-header-container">
       <div class="d-flex align-center justify-space-between user-header px-1">
-        <span class="text-subtitle-2 font-weight-bold text-truncate user-display-name mr-2" :title="displayName">
-          {{ displayName }}
+        <span class="text-subtitle-2 font-weight-bold text-truncate user-display-name mr-2" :title="user?.user">
+          {{ user?.user }}
         </span>
         <v-btn
           icon
@@ -121,7 +121,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import defaultNavConf from '~/metadata/app_nav.json';
 import { apiPost } from '~/utils/fetch/wrappers';
-import type { UserState } from '~/types/user_state';
 import hasPerm from '~/utils/hasPerm';
 
 const navConf = defaultNavConf;
@@ -130,15 +129,10 @@ const { t } = useI18n();
 // Default state is unpinned (false) allowing side to collapse
 const isPinned = useState<boolean>('nav_drawer_pinned', () => false);
 
-const userState = useState<UserState>('user');
 const { loggedIn, user, clear } = useUserSession();
 const router = useRouter();
 const route = useRoute();
 const theme = useTheme();
-
-const displayName = computed(() => {
-  return userState.value?.as_user || (user.value as any)?.user || (user.value as any)?.username || (user.value as any)?.email || '';
-});
 
 const pinTooltip = computed(() => {
   return isPinned.value ? (t('common.unpin') || 'Unpin Drawer') : (t('common.pin') || 'Pin Drawer');
