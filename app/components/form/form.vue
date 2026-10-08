@@ -1,12 +1,12 @@
 <template>
   <component :is="noCard ? 'div' : 'v-card'" :variant="noCard ? undefined : 'outlined'" :class="noCard ? '' : 'pa-4 mt-4'">
     <v-form v-model="isValid" @submit.prevent="submit">
-      <template v-for="header in headers" :key="header.key">
+      <template v-for="header in resolvedHeaders" :key="header.key">
         <component
           v-if="customRegistry[header.set_type]"
           :is="customRegistry[header.set_type]"
           v-model="formData[header.key]"
-          :header="getResolvedHeader(header)"
+          :header="header"
           :rules="getRules(header.key)"
         />
         <FormSetStringLine
@@ -30,13 +30,13 @@
         <FormSetEnum
           v-else-if="header.set_type === 'enum'"
           v-model="formData[header.key]"
-          :header="getResolvedHeader(header)"
+          :header="header"
           :rules="getRules(header.key)"
         />
         <FormSetStrarrChips
           v-else-if="header.set_type === 'strarr_chips'"
           v-model="formData[header.key]"
-          :header="getResolvedHeader(header)"
+          :header="header"
           :rules="getRules(header.key)"
         />
         <FormSetPasswordConfirm
@@ -173,15 +173,29 @@ watch(
   { immediate: true, deep: true }
 )
 
-const getResolvedHeader = (header: any) => {
-  if (typeof header.enum_values === 'function') {
-    return {
-      ...header,
-      enum_values: resolvedEnumValues[header.key] || []
-    };
+const translateTitle = (val: string | [string, ...any[]] | undefined) => {
+  if (!val) return ''
+  if (Array.isArray(val)) {
+    const [key, ...args] = val
+    return te(key) ? t(key, ...args) : key
   }
-  return header;
+  return typeof val === 'string' && te(val) ? t(val) : val
 }
+
+const getResolvedHeader = (header: any) => {
+  const resolved = {
+    ...header,
+    title: translateTitle(header.title)
+  }
+  if (typeof header.enum_values === 'function') {
+    resolved.enum_values = resolvedEnumValues[header.key] || []
+  }
+  return resolved
+}
+
+const resolvedHeaders = computed(() => {
+  return props.headers.map(header => getResolvedHeader(header))
+})
 
 const getRules = (key: string) => {
   const rules = props.headers.find((h: any) => h.key === key)?.rules;

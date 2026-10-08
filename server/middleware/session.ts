@@ -12,7 +12,17 @@ export default defineEventHandler(async (event) => {
     // only auth allowed without session
     const publicPaths = ['/api/auth/login', '/api/auth/register', '/landing', '/login', '/register', '/', '/api/_auth/session'];
 
-    if (!(publicPaths.includes(event.path))) {
+    // Prefix-matched public paths. @nuxtjs/i18n lazy-loads message bundles from
+    // /_i18n/<build-hash>/<locale>/messages.json, and the hash changes on every build, so
+    // these cannot be exact matches. Without this the login page renders raw translation
+    // keys (frontend.auth.login_title) because SSR's message fetch is rejected before the
+    // visitor can possibly have a session.
+    const publicPathPrefixes = ['/_i18n/'];
+
+    const isPublic = publicPaths.includes(event.path)
+        || publicPathPrefixes.some((prefix) => event.path.startsWith(prefix));
+
+    if (!isPublic) {
         if (!session.user) {
             throw createError({
                 statusCode: 403,
