@@ -37,9 +37,9 @@ export const apiPatch = async <T = any>(url: string, body: any) => {
   }
 }
 
-export const apiDelete = async <T = any>(url: string) => {
+export const apiDelete = async <T = any>(url: string, body?: any) => {
   try {
-    const res = await $fetch<T>(url, { method: 'DELETE' });
+    const res = await $fetch<T>(url, { method: 'DELETE', body });
     handleApiAlert(res, 200);
     return res;
   } catch (error: any) {

@@ -190,8 +190,19 @@ const onCustomMultiClick = async (actionSpec: any) => {
 
 const onDeleteMany = async () => {
   if (!confirm(`Are you sure you want to delete ${selected.value.length} items?`)) return
+  const ids = selected.value.map(item => item.id);
   try {
-    await Promise.all(selected.value.map(item => apiDelete(`${props.meta.path_base}/${item.id}`)))
+    try {
+      // Attempt batch deletion in a single HTTP request
+      await apiDelete(props.meta.path_base, { ids });
+    } catch (err: any) {
+      // Fallback to parallel individual calls if batch endpoint is not implemented (404/405)
+      if (err?.statusCode === 404 || err?.statusCode === 405 || err?.status === 404 || err?.status === 405) {
+        await Promise.all(ids.map(id => apiDelete(`${props.meta.path_base}/${id}`)));
+      } else {
+        throw err;
+      }
+    }
     selected.value = []
     await loadData()
   } catch (e) {

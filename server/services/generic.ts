@@ -5,6 +5,7 @@ import { dbSearch } from "#bs/db/wrappers/db_search";
 import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbFindOneAndUpdate } from "#bs/db/wrappers/db_find_one_and_update";
 import { dbFindOneAndDelete } from "#bs/db/wrappers/db_find_one_and_delete";
+import { dbDeleteMany } from "#bs/db/wrappers/db_delete_many";
 import { accounts } from "hub:db:schema";
 import appDefaults from "#server/metadata/app_defaults.json";
 
@@ -193,6 +194,19 @@ export class genericService {
         const searchSpec = this.addOwner({ id });
         try {
             return await dbFindOneAndDelete(this.db, this.table, searchSpec);
+        } catch (e) {
+            throw createError({
+                status: 500,
+                statusMessage: `error ${this.table_name}.delete_failed`
+            });
+        }
+    }
+
+    async deleteMany(ids: string[]) {
+        if (!Array.isArray(ids) || ids.length === 0) return [];
+        const filterObj = this.addOwner({});
+        try {
+            return await dbDeleteMany(this.db, this.table, ids, filterObj);
         } catch (e) {
             throw createError({
                 status: 500,
