@@ -10,7 +10,7 @@ defineRouteMeta({
         description: 'Success response'
       },
       400: {
-        description: 'Missing files in body'
+        description: 'Missing ids in body'
       },
       403: {
         description: 'Not logged in'
@@ -31,9 +31,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event).catch(() => ({}));
-  const rawFiles: any[] = Array.isArray(body?.ids) ? body.ids : (Array.isArray(body?.files) ? body.files : []);
+  // ids are the artifact file names (same as item.id in the artifacts list)
+  const rawIds: any[] = Array.isArray(body?.ids) ? body.ids : [];
 
-  const files = rawFiles
+  const files = rawIds
     .map((f: any) => (typeof f === 'object' && f !== null ? (f.id || f.filename || f.name) : f))
     .filter((f: any) => typeof f === 'string' && f.trim().length > 0);
 

@@ -198,8 +198,8 @@ const onDeleteMany = async () => {
 
   try {
     try {
-      // Attempt batch deletion in a single HTTP request (providing both ids and files for compatibility)
-      await apiDelete(props.meta.path_base, { ids, files: ids });
+      // Attempt batch deletion in a single HTTP request (all batch routes read body.ids)
+      await apiDelete(props.meta.path_base, { ids });
     } catch (err: any) {
       // Fallback to parallel individual calls if batch endpoint is not implemented (404/405)
       if (err?.statusCode === 404 || err?.statusCode === 405 || err?.status === 404 || err?.status === 405) {
