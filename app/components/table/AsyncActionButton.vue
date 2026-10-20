@@ -1,15 +1,14 @@
 <template>
   <v-btn
     type="button"
+    icon
     :color="btnColor"
     :variant="btnVariant"
     :loading="state === 'running'"
     :disabled="state === 'running'"
-    :prepend-icon="btnIcon"
-    class="text-none"
     @click="execute"
   >
-    <span class="text-truncate" style="max-width: 250px;">{{ btnText }}</span>
+    <v-icon>{{ btnIcon }}</v-icon>
     <v-tooltip
       v-if="tooltipText"
       activator="parent"
@@ -89,29 +88,18 @@ const btnVariant = computed(() => {
 });
 
 const btnIcon = computed(() => {
-  if (state.value === 'running') return undefined;
   if (state.value === 'success') return 'mdi-check';
-  if (state.value === 'error') return 'mdi-alert-circle';
-  return props.icon;
-});
-
-const btnText = computed(() => {
-  if (state.value === 'running') {
-    return te('form.testing') ? t('form.testing') : 'Testing…';
-  }
-  if (state.value === 'success') {
-    return message.value || props.label;
-  }
-  if (state.value === 'error') {
-    return message.value || 'Error';
-  }
-  return props.label;
+  if (state.value === 'error') return 'mdi-alert-circle-outline';
+  return props.icon || 'mdi-connection';
 });
 
 const tooltipText = computed(() => {
-  if (state.value === 'error' || state.value === 'success') {
-    return message.value || undefined;
+  if (state.value === 'running') {
+    return te('form.testing') ? t('form.testing') : 'Testing…';
   }
-  return undefined;
+  if (state.value === 'success' || state.value === 'error') {
+    return message.value || (state.value === 'success' ? 'Connected' : 'Error');
+  }
+  return props.label || 'Test connection';
 });
 </script>
