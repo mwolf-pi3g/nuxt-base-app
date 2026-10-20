@@ -85,6 +85,7 @@
   "form": {
     "submit": "Submit",
     "cancel": "Cancel",
+    "testing": "Testing…",
     "notification": {
       "services": {
         "template": "Template",

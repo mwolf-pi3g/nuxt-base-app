@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">    
-import fake_data from '~/metadata/tables/fake_data'
+import fake_data from '~/schemas/fake_data'
 
 const { t } = useI18n()
 const fake_data_meta = fake_data(t);

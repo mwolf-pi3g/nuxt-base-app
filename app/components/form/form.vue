@@ -67,6 +67,16 @@
         />
       </template>
       <div v-if="!noSubmit" class="d-flex justify-end mt-4">
+        <template v-if="formActions && formActions.length > 0">
+          <TableAsyncActionButton
+            v-for="(action, i) in formActions"
+            :key="i"
+            :label="action.label"
+            :icon="action.icon"
+            :action="() => action.run({ ...formData })"
+            class="me-2"
+          />
+        </template>
         <v-btn v-if="cancelBtn" variant="text" class="me-2" @click="$emit('cancel')">
           {{ t('form.cancel') }}
         </v-btn>
@@ -96,11 +106,17 @@ const props = withDefaults(defineProps<{
   loading?: boolean
   noCard?: boolean
   noSubmit?: boolean
+  formActions?: Array<{
+    label: string
+    icon: string
+    run: (formData: any) => Promise<{ ok: boolean; message?: string }>
+  }>
 }>(), {
   cancelBtn: true,
   loading: false,
   noCard: false,
-  noSubmit: false
+  noSubmit: false,
+  formActions: () => []
 })
 
 
@@ -113,17 +129,21 @@ const isValid = ref(false)
 // Seed formData: start from initialData, then fill missing keys with header defaults
 const seedData = props.initialData && typeof props.initialData === 'object' ? props.initialData : {}
 props.headers.forEach(h => {
-  if (h.key && seedData[h.key] === undefined && h.set_type) {
-    if (h.default !== undefined) {
-      seedData[h.key] = Array.isArray(h.default) ? [...h.default] : h.default
-    } else if (h.set_type === 'string_line' || h.set_type === 'string_secret') {
-      seedData[h.key] = ''
-    } else if (h.select_type === 'multiple') {
-      seedData[h.key] = []
-    } else if (h.set_type === 'form') {
-      seedData[h.key] = {}
-    } else {
-      seedData[h.key] = null
+  if (h.key && h.set_type) {
+    if (h.set_type === 'form') {
+      if (!seedData[h.key] || typeof seedData[h.key] !== 'object' || Array.isArray(seedData[h.key])) {
+        seedData[h.key] = {}
+      }
+    } else if (seedData[h.key] === undefined) {
+      if (h.default !== undefined) {
+        seedData[h.key] = Array.isArray(h.default) ? [...h.default] : h.default
+      } else if (h.set_type === 'string_line' || h.set_type === 'string_secret') {
+        seedData[h.key] = ''
+      } else if (h.select_type === 'multiple') {
+        seedData[h.key] = []
+      } else {
+        seedData[h.key] = null
+      }
     }
   }
 })

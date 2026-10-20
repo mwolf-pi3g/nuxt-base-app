@@ -13,7 +13,8 @@ export const handleApiAlert = (data: any, statusCode: number) => {
         messageToEmit = rawMessage
       } else {
         let level = 'info'
-        if (statusCode >= 200 && statusCode < 300) level = 'success'
+        if (data?.ok === false) level = 'error'
+        else if (statusCode >= 200 && statusCode < 300) level = 'success'
         else if (statusCode >= 300 && statusCode < 500) level = 'warning'
         else if (statusCode >= 500) level = 'error'
 

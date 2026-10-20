@@ -63,7 +63,7 @@
           <!-- <FormWrapper class="mt-4" v-if="showForm" :key="editingItem ? editingItem.id : 'new'" :headers="formData"
             :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" /> -->
           <FormWrapper ref="formRef" :key="editingItem ? editingItem.id : 'new'" class="mt-4" v-if="showForm" :headers="formData"
-            :initial-data="editingItem" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" />
+            :initial-data="editingItem" :form-actions="meta.formActions" @submit="(data:any) => onFormSubmit(editingItem?.id, data)" @cancel="onFormCancel" />
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>
@@ -86,6 +86,11 @@ const props = defineProps<{
     customAdd?: any[];
     customActions?: any[];
     customMulti?: any[];
+    formActions?: Array<{
+      label: string;
+      icon: string;
+      run: (formData: any) => Promise<{ ok: boolean; message?: string }>;
+    }>;
   };
   model?: any[];
 }>()
@@ -156,7 +161,7 @@ const onActionClick = (actionSpec, item?: any) => {
   // form setup
   if (actionSpec.onFormSubmit) {
     if (item) {
-      editingItem.value = { ...item }
+      editingItem.value = JSON.parse(JSON.stringify(item))
     } else {
       editingItem.value = null
     }
