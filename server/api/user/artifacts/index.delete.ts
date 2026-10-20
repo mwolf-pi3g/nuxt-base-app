@@ -31,7 +31,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event).catch(() => ({}));
-  const files: string[] = Array.isArray(body?.files) ? body.files : (Array.isArray(body?.ids) ? body.ids : []);
+  const rawFiles: any[] = Array.isArray(body?.ids) ? body.ids : (Array.isArray(body?.files) ? body.files : []);
+
+  const files = rawFiles
+    .map((f: any) => (typeof f === 'object' && f !== null ? (f.id || f.filename || f.name) : f))
+    .filter((f: any) => typeof f === 'string' && f.trim().length > 0);
 
   if (!files || files.length === 0) {
     throw createError({
