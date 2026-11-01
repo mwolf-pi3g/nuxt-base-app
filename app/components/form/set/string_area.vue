@@ -2,13 +2,17 @@
   <v-textarea
     v-model="internalValue"
     :label="header.title"
+    :placeholder="header.opts?.placeholder"
+    :persistent-placeholder="!!header.opts?.placeholder"
     :rules="rules"
+    :counter="header.opts?.max_chars"
+    :persistent-counter="!!header.opts?.max_chars"
     variant="outlined"
     density="comfortable"
-    hide-details="auto"
+    :hide-details="header.opts?.max_chars ? false : 'auto'"
     class="mb-3"
-    :rows="header.rows || 3"
-    :auto-grow="header.auto_grow !== false"
+    :rows="header.opts?.rows || 3"
+    :auto-grow="header.opts?.auto_grow !== false"
   />
 </template>
 

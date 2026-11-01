@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 export const zod_rules = {
-  name: z.string({ invalid_type_error: "rules.account.name.type" })
-    .min(2, "rules.account.name.too_short")
-    .max(50, "rules.account.name.too_long"),
+  name: z.string({ invalid_type_error: "table.role.rules.name.type" })
+    .min(2, "table.role.rules.name.too_short")
+    .max(50, "table.role.rules.name.too_long"),
 
   permissions: z.array(
-    z.string({ invalid_type_error: "rules.account.permissions.item.type" }),
-    { errorMap: () => ({ message: "rules.account.permissions.type" }) }
+    z.string({ invalid_type_error: "table.role.rules.permissions.item.type" }),
+    { errorMap: () => ({ message: "table.role.rules.permissions.type" }) }
   )
     .refine(
       (perms) => {
@@ -19,7 +19,7 @@ export const zod_rules = {
         return perms.every((p) => allowed.includes(p));
       },
       {
-        message: "rules.account.permissions.invalid"
+        message: "table.role.rules.permissions.invalid"
       }
     )
     .default([]),

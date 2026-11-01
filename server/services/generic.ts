@@ -41,17 +41,21 @@ export class genericService {
             searchSpec.owner_id = this.user_id;
         }
         return searchSpec;
+    // Checks each field on its own. On update a field that isn't sent (undefined) keeps its stored value; any value that
+    // is sent is checked, including 0, '' and false. The error carries the rule's message (an i18n key) and the field.
     }
 
     validate(val: any, mode: 'create' | 'update' = 'create'): true | string {
         for (const key in this.zod_rules) {
             const rule = this.zod_rules[key as keyof typeof this.zod_rules];
-            if (mode === 'update' && !val[key]) continue;
+            if (mode === 'update' && val[key] === undefined) continue;
             const result = rule.safeParse(val[key]);
 
             if (!result.success) {
-                console.log(`validation error: ${key}`, result.error);
-                throw createError({ status: 422, statusMessage: `error ${this.table_name}.bad_payload` });
+                const message = result.error.issues[0]?.message;
+                // zod's own English messages (a rule without a message) are not i18n keys
+                const reason = message && /^[\w.]+$/.test(message) ? message : `${this.table_name}.bad_payload`;
+                throw createError({ status: 422, statusMessage: `error ${reason}`, data: { field: key } });
             }
         }
         return true;

@@ -43,10 +43,10 @@
               </div>
 
               <TableGetString v-else-if="header.get_type === 'string'" :model="item[header.key]" />
-              <TableGetEnum v-else-if="header.get_type === 'enum'" :model="item[header.key]", :enum_values="header.enum_values" />
+              <TableGetEnum v-else-if="header.get_type === 'enum'" :model="item[header.key]", :enum_values="header.opts?.enum_values" />
               <TableGetEnumTag v-else-if="header.get_type === 'enum_tag'" :model="item[header.key]"
-                :enum-values="header.enum_values" />
-              <TableGetListTag v-else-if="header.get_type === 'list_tag'" :model="item[header.key]" :color_delimiter="header.color_delimiter" :enum_values="header.enum_values"/>
+                :enum-values="header.opts?.enum_values" />
+              <TableGetListTag v-else-if="header.get_type === 'list_tag'" :model="item[header.key]" :color_delimiter="header.opts?.color_delimiter" :enum_values="header.opts?.enum_values"/>
               <TableGetBoolean v-else-if="header.get_type === 'boolean'" :model="item[header.key]" />
               <TableGetHidden v-else-if="header.get_type === 'hidden'" />
               <TableGetShortDate v-else-if="header.get_type === 'short_date'" :model="item[header.key]" />
@@ -89,7 +89,8 @@ const props = defineProps<{
     formActions?: Array<{
       label: string;
       icon: string;
-      run: (formData: any) => Promise<{ ok: boolean; message?: string }>;
+      successLabel?: string;
+      run: (formData: any) => Promise<{ ok: boolean }>;
     }>;
   };
   model?: any[];

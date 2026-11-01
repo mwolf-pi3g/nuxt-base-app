@@ -2,8 +2,10 @@
   <v-text-field
     v-model="internalValue"
     :label="header.title"
+    :placeholder="header.opts?.placeholder"
+    :persistent-placeholder="!!header.opts?.placeholder"
     :rules="rules"
-    :type="header.type || 'text'"
+    :type="header.opts?.type || 'text'"
     variant="outlined"
     density="comfortable"
     hide-details="auto"

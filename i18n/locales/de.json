@@ -25,49 +25,7 @@
       }
     }
   },
-  "rules": {
-    "apprise": {
-      "number": {
-        "min": "Muss mindestens {min} sein",
-        "max": "Darf höchstens {max} sein"
-      },
-      "string": {
-        "min": "Muss mindestens 1 Zeichen lang sein",
-        "max": "Darf höchstens 64 Zeichen lang sein",
-        "regex": "Ungültiges Format"
-      },
-      "invalid": "Ungültige Eingabe"
-    },
-    "account": {
-      "user": {
-        "type": "Benutzer muss ein String sein",
-        "invalid_email": "Ungültige E-Mail-Adresse"
-      },
-      "password": {
-        "type": "Passwort muss ein String sein",
-        "too_short": "Passwort zu kurz",
-        "too_long": "Passwort zu lang"
-      },
-      "lang": {
-        "invalid": "Ungültige Sprache ausgewählt"
-      },
-      "roles": {
-        "type": "Rollen müssen ein Array sein",
-        "item": {
-          "type": "Rolle muss ein String sein"
-        }
-      },
-      "limits": {
-        "type": "Limits muss ein String sein"
-      },
-      "validated": {
-        "type": "Bestätigt muss ein boolescher Wert sein"
-      },
-      "cron_active": {
-        "type": "Cron aktiv muss ein boolescher Wert sein"
-      }
-    }
-  },
+  "rules": {},
   "table": {
     "account": {
       "title": "Konten",
@@ -185,3 +143,5 @@
     "missing_path": "Artefaktpfad ist erforderlich"
   }
 }
+    "ok": "OK",
+    "failed_see_log": "Fehlgeschlagen, siehe Ereignisprotokoll",

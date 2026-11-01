@@ -1,61 +1,66 @@
 <template>
   <component :is="noCard ? 'div' : 'v-card'" :variant="noCard ? undefined : 'outlined'" :class="noCard ? '' : 'pa-4 mt-4'">
-    <v-form v-model="isValid" @submit.prevent="submit">
+    <v-form ref="formRef" v-model="isValid" @submit.prevent="submit">
       <template v-for="header in resolvedHeaders" :key="header.key">
         <component
           v-if="customRegistry[header.set_type]"
           :is="customRegistry[header.set_type]"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
+          :form-data="formData"
+        />
+        <FormSetNote
+          v-else-if="header.set_type === 'note'"
+          :header="header"
         />
         <FormSetStringLine
           v-else-if="header.set_type === 'string_line'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetStringSecret
           v-else-if="header.set_type === 'string_secret'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetStringArea
           v-else-if="header.set_type === 'string_area'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetEnum
           v-else-if="header.set_type === 'enum'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetStrarrChips
           v-else-if="header.set_type === 'strarr_chips'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetPasswordConfirm
           v-else-if="header.set_type === 'password_confirm'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetBoolean
           v-else-if="header.set_type === 'boolean'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
         <FormSetInteger
           v-else-if="header.set_type === 'integer'"
           v-model="formData[header.key]"
           :header="header"
-          :rules="getRules(header.key)"
+          :rules="getFieldRules(header.key)"
         />
 
         <FormSetForm
@@ -73,6 +78,7 @@
             :key="i"
             :label="action.label"
             :icon="action.icon"
+            :success-label="action.successLabel"
             :action="() => action.run({ ...formData })"
             class="me-2"
           />
@@ -89,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, shallowReactive } from 'vue'
+import { ref, reactive, computed, watch, shallowReactive, onMounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Component } from 'vue'
 
@@ -109,7 +115,8 @@ const props = withDefaults(defineProps<{
   formActions?: Array<{
     label: string
     icon: string
-    run: (formData: any) => Promise<{ ok: boolean; message?: string }>
+    successLabel?: string
+    run: (formData: any) => Promise<{ ok: boolean }>
   }>
 }>(), {
   cancelBtn: true,
@@ -125,6 +132,7 @@ const emit = defineEmits(['submit', 'cancel', 'valid'])
 const { t, te } = useI18n()
 
 const isValid = ref(false)
+const formRef = ref<any>(null)
 
 // Seed formData: start from initialData, then fill missing keys with header defaults
 const seedData = props.initialData && typeof props.initialData === 'object' ? props.initialData : {}
@@ -149,13 +157,20 @@ props.headers.forEach(h => {
 })
 
 const formData = reactive(seedData)
+
+// Editing a stored record: validate once so stored problems (e.g. a reference to something deleted) show right away
+onMounted(async () => {
+  if (!seedData.id) return
+  await nextTick()
+  formRef.value?.validate()
+})
 const resolvedSchemas = reactive<Record<string, any>>({})
 const nestedValids = reactive<Record<string, boolean>>({})
 
 const isFormValid = computed(() => {
   if (!isValid.value) return false
   for (const header of props.headers) {
-    if (header.set_type === 'form' && resolvedSchemas[header.key]) {
+    if (header.set_type === 'form' && resolvedSchemas[header.key] && !isHidden(header)) {
       if (nestedValids[header.key] !== true) {
         return false
       }
@@ -176,17 +191,12 @@ watch(
   async () => {
     for (const header of props.headers) {
       if (header.set_type === 'form') {
-        if (!('value' in header)) {
-          resolvedSchemas[header.key] = formData[header.key];
-        } else if (typeof header.value === 'function') {
-          resolvedSchemas[header.key] = await header.value(header, formData);
-        } else {
-          resolvedSchemas[header.key] = header.value;
-        }
+        const nested = header.opts?.nested_headers
+        resolvedSchemas[header.key] = typeof nested === 'function' ? await nested(header, formData) : nested;
       }
 
-      if (typeof header.enum_values === 'function') {
-        resolvedEnumValues[header.key] = await header.enum_values(header, formData);
+      if (typeof header.opts?.enum_values === 'function') {
+        resolvedEnumValues[header.key] = await header.opts.enum_values(header, formData);
       }
     }
   },
@@ -207,17 +217,20 @@ const getResolvedHeader = (header: any) => {
     ...header,
     title: translateTitle(header.title)
   }
-  if (typeof header.enum_values === 'function') {
-    resolved.enum_values = resolvedEnumValues[header.key] || []
+  if (typeof header.opts?.enum_values === 'function') {
+    resolved.opts = { ...header.opts, enum_values: resolvedEnumValues[header.key] || [] }
   }
   return resolved
 }
 
+// Optional header.hidden(formData): leave a field out for this record (e.g. what a built-in record can't change)
+const isHidden = (header: any) => typeof header.hidden === 'function' && !!header.hidden(formData)
+
 const resolvedHeaders = computed(() => {
-  return props.headers.map(header => getResolvedHeader(header))
+  return props.headers.filter(header => !isHidden(header)).map(header => getResolvedHeader(header))
 })
 
-const getRules = (key: string) => {
+const getFieldRules = (key: string) => {
   const rules = props.headers.find((h: any) => h.key === key)?.rules;
   if (!rules) return [];
   const ruleList = Array.isArray(rules) ? rules : [rules];

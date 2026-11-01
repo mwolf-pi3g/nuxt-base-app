@@ -107,40 +107,55 @@ const onCreated = (res: any) => {
 
 ## 3. Sub-components (`set_type` Registry)
 
-The form engine matches `header.set_type` to specialized input components located in `app/components/form/set/`:
+The form engine matches `header.set_type` to specialized input components located in `app/components/form/set/`.
+Options that only a widget uses go under `header.opts`; the root of a header holds what the form itself uses
+(`key`, `title`, `set_type`, `get_type`, `rules`, `default`, `hidden`).
 
 ### A. FormSetStringLine (`set_type: 'string_line'`)
 Single-line text input using `v-text-field`.
-* **Options**: `density="compact"`, `variant="outlined"`
+* **opts**: `type` (input type, e.g. `'password'`), `placeholder`
 
 ### B. FormSetStringSecret (`set_type: 'string_secret'`)
 Password/secret input with visibility toggle icon (`mdi-eye` / `mdi-eye-off`).
 
 ### C. FormSetStringArea (`set_type: 'string_area'`)
 Multi-line text input using `v-textarea`.
+* **opts**: `placeholder`, `rows` (default 3), `auto_grow` (default true), `max_chars` (shows a character counter at the lower right, red when exceeded; pair it with a rule that enforces the limit)
 
 ### D. FormSetEnum (`set_type: 'enum'`)
 Select dropdown using `v-select` or `v-autocomplete`.
-* **Configuration**:
+* **opts**:
   * `enum_values`: Array of string options, `{ title, value }` objects, or an async function `(header, formData) => Promise<any[]>`.
-  * `select_type: 'multiple'`: Enables multi-selection.
 
 ### E. FormSetStrarrChips (`set_type: 'strarr_chips'`)
 Multi-item tag/chip input using `v-combobox` with removable chips.
+* **opts**: `enum_values` (`{ id, name }` items), `color_delimiter` (chips are colored by the text before it, e.g. `':'`; the `list_tag` table getter reads the same opts)
 
 ### F. FormSetBoolean (`set_type: 'boolean'`)
 Boolean toggle input using `v-switch` or `v-checkbox`.
+* **opts**: `set_as_number` (stores 1/0 instead of true/false)
 
 ### G. FormSetInteger (`set_type: 'integer'`)
 Numeric input enforcing integer values.
+* **opts**: `min`, `max`, `step`
 
 ### H. FormSetPasswordConfirm (`set_type: 'password_confirm'`)
 Paired password and confirmation fields with automatic mismatch validation.
 
 ### I. FormSetForm (`set_type: 'form'`)
 Nested sub-form rendering dynamic child schemas.
-* **Configuration**:
-  * `value`: Function `(header, formData) => Promise<SchemaHeader[]>` returning dynamic sub-form headers based on parent field values.
+* **opts**:
+  * `nested_headers`: The sub-form's headers, or a function `(header, formData) => SchemaHeader[] | Promise<SchemaHeader[]>` returning them based on parent field values.
+
+### J. FormSetNote (`set_type: 'note'`)
+Display-only text; has no value and adds nothing to the submitted data. `title`, if set, is shown as a small label above it.
+* **opts**:
+  * `text`: An i18n key, or `[key, args]` for a message with parameters; text that isn't a key is shown as is. Line breaks are kept.
+  * `color`: A theme color (`'primary'`, `'error'`, ...) for the text; default is the normal text color.
+
+```typescript
+{ key: 'imap_hint', set_type: 'note', opts: { text: 'sources.types.imap.hint' } }
+```
 
 ---
 

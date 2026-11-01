@@ -25,10 +25,10 @@ const emit = defineEmits(['update:modelValue'])
 const { tm, rt } = useI18n()
 
 const items = computed(() => {
-  if (Array.isArray(props.header.enum_values)) {
-    return props.header.enum_values
+  if (Array.isArray(props.header.opts?.enum_values)) {
+    return props.header.opts?.enum_values
   }
-  const localized = tm(props.header.enum_values)
+  const localized = tm(props.header.opts?.enum_values)
   if (Array.isArray(localized)) {
     return localized.map((l: any) => rt(l))
   }

@@ -5,7 +5,7 @@
     item-value="id"
     :items="resolvedItems"
     :label="header.title"
-    :rules="rules"
+    :rules="idRules"
     multiple
     variant="outlined"
     density="comfortable"
@@ -48,13 +48,19 @@ const emit = defineEmits(['update:modelValue'])
 const maxChips = 3
 
 const resolvedItems = computed(() => {
-  const enum_values = props.header.enum_values
+  const enum_values = props.header.opts?.enum_values
   if (enum_values) {
     return enum_values
   }
   const vals = props.modelValue || []
   return vals.map((v: string) => ({ id: v, name: v }))
 })
+
+const toId = (v: any) => (v && typeof v === 'object' && 'id' in v ? v.id : v)
+
+// The select holds chip objects ({ name, color, id }); the rules check what is saved: the ids
+const idRules = computed(() => (props.rules || []).map((rule: any) =>
+  (val: any) => (typeof rule === 'function' ? rule((val || []).map(toId)) : rule)))
 
 const remove = (item: any) => {
   const val = item && typeof item === 'object' ? ('value' in item ? item.value : (item.id || item)) : item
@@ -67,7 +73,7 @@ const remove = (item: any) => {
 const internalValue = computed({
   get: () => {
     const enum_values = resolvedItems.value
-    const color_delimiter = props.header.color_delimiter
+    const color_delimiter = props.header.opts?.color_delimiter
     const vals = props.modelValue || []
     return vals.map((v: string) => {
       const found = enum_values.find((e: any) => e.id === v)
@@ -78,14 +84,13 @@ const internalValue = computed({
     })
   },
   set: (val) => {
-    const mapped = (val || []).map((v: any) => v && typeof v === 'object' && 'id' in v ? v.id : v)
-    emit('update:modelValue', mapped)
+    emit('update:modelValue', (val || []).map(toId))
   }
 })
 
 onMounted(() => {
   if (props.modelValue === undefined) {
-    emit('update:modelValue', internalValue.value)
+    emit('update:modelValue', internalValue.value.map(toId))
   }
 })
 </script>

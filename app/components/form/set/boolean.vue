@@ -25,7 +25,7 @@ const internalValue = computed({
     return props.modelValue && true
   },
   set: (val: boolean) => {
-    if (props.header.set_as_number) {
+    if (props.header.opts?.set_as_number) {
       emit('update:modelValue', val ? 1 : 0)
     } else {
       emit('update:modelValue', val)

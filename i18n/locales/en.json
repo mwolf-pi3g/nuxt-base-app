@@ -22,64 +22,6 @@
       "missing_number": "Password must contain a number",
       "missing_special": "Password must contain a special character",
       "mismatch": "Passwords do not match"
-    },
-    "account": {
-      "user": {
-        "type": "User identifier must be a string",
-        "invalid_email": "User identifier must be a valid email"
-      },
-      "email": {
-        "type": "Forward email must be a string",
-        "invalid": "Forward email is invalid"
-      },
-      "password": {
-        "type": "Password must be a string",
-        "too_short": "Password too short (min 12)",
-        "too_long": "Password too long"
-      },
-      "lang": {
-        "invalid": "Invalid language selected"
-      },
-      "roles": {
-        "type": "Roles must be an array",
-        "item": {
-          "type": "Role must be a string"
-        }
-      },
-      "limits": {
-        "type": "Limits must be a string"
-      },
-      "validated": {
-        "type": "Validated must be a boolean"
-      },
-      "cron_active": {
-        "type": "Cron Active must be a boolean"
-      }
-    },
-    "role": {
-      "name": {
-        "type": "Role name must be a string",
-        "too_short": "Role name too short",
-        "too_long": "Role name too long"
-      },
-      "tags": {
-        "type": "Tags must be an array",
-        "item": {
-          "type": "Tag must be a string"
-        }
-      }
-    },
-    "apprise": {
-      "number": {
-        "min": "Must be at least {min}",
-        "max": "Must be at most {max}"
-      },
-      "string": {
-        "min": "Must be at least 1 character",
-        "max": "Must be at most 64 characters",
-        "regex": "Invalid format"
-      },
-      "invalid": "Invalid input"
     }
   },
   "form": {
@@ -124,7 +66,21 @@
     "role": {
       "title": "Roles",
       "name": "Name",
-      "permissions": "Permissions"
+      "permissions": "Permissions",
+      "rules": {
+        "name": {
+          "type": "Role name must be text",
+          "too_short": "Role name needs at least 2 characters",
+          "too_long": "Role name is too long (max. 50 characters)"
+        },
+        "permissions": {
+          "type": "Permissions must be a list",
+          "item": {
+            "type": "Each permission must be text"
+          },
+          "invalid": "Unknown permission"
+        }
+      }
     },
     "fake_data": {
       "title": "Fake Data",
@@ -349,3 +305,5 @@
     "missing_path": "Artifact path is required"
   }
 }
+    "ok": "OK",
+    "failed_see_log": "Failed, see event log",

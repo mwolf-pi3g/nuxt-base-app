@@ -26,13 +26,13 @@ import { useI18n } from 'vue-i18n';
 const props = defineProps<{
   label: string;
   icon?: string;
-  action: () => Promise<{ ok: boolean; message?: string }>;
+  successLabel?: string;
+  action: () => Promise<{ ok: boolean }>;
 }>();
 
 const { t, te } = useI18n();
 
 const state = ref<'idle' | 'running' | 'success' | 'error'>('idle');
-const message = ref<string>('');
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 const clearTimer = () => {
@@ -47,26 +47,17 @@ const execute = async () => {
 
   clearTimer();
   state.value = 'running';
-  message.value = '';
 
   try {
     const res = await props.action();
-    if (res && res.ok) {
-      state.value = 'success';
-      message.value = res.message || '';
-    } else {
-      state.value = 'error';
-      message.value = res?.message || 'Error';
-    }
-  } catch (err: any) {
+    state.value = res?.ok ? 'success' : 'error';
+  } catch {
+    // details are in the event log (written server-side)
     state.value = 'error';
-    const raw = err?.data?.statusMessage || err?.data?.message || err?.message || 'Error';
-    message.value = typeof raw === 'string' && te(raw) ? t(raw) : String(raw);
   } finally {
     if (state.value === 'success' || state.value === 'error') {
       timer = setTimeout(() => {
         state.value = 'idle';
-        message.value = '';
       }, 5000);
     }
   }
@@ -97,8 +88,11 @@ const tooltipText = computed(() => {
   if (state.value === 'running') {
     return te('form.testing') ? t('form.testing') : 'Testing…';
   }
-  if (state.value === 'success' || state.value === 'error') {
-    return message.value || (state.value === 'success' ? 'Connected' : 'Error');
+  if (state.value === 'success') {
+    return props.successLabel || (te('common.ok') ? t('common.ok') : 'OK');
+  }
+  if (state.value === 'error') {
+    return te('common.failed_see_log') ? t('common.failed_see_log') : 'Failed, see event log';
   }
   return props.label || 'Test connection';
 });

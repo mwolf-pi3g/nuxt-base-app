@@ -7,9 +7,9 @@
     density="comfortable"
     hide-details="auto"
     class="mb-3"
-    :min="header.min"
-    :max="header.max"
-    :step="header.step || 1"
+    :min="header.opts?.min"
+    :max="header.opts?.max"
+    :step="header.opts?.step || 1"
   />
 </template>
 
