@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getExtensionFromMime } from '#bs/utils/get_extensions_from_mime_type';
+import { reportNotificationFailure } from '#bs/utils/telemetry/event';
 
 export class Local {
     /**
@@ -21,6 +22,23 @@ export class Local {
     }
 
     /**
+     * Provider entry point: saves the items and never throws. Write errors go to the owner's event log.
+     */
+    static async sendItems(
+        title: string,
+        items: Array<{ content: any; mime_type?: string; filename?: string; name?: string; metadata?: any }> | string,
+        options: { channel?: Record<string, any>; user_id?: string; [key: string]: any }
+    ): Promise<{ ok: boolean; files?: string[]; directory?: string }> {
+        try {
+            return { ok: true, ...(await Local.saveItems(title, items, options)) };
+        } catch (err: any) {
+            const channel = options?.channel;
+            await reportNotificationFailure(channel?.owner_id || options?.owner_id || options?.user_id, channel?.name || 'Local', err?.message || 'Local disk write failed');
+            return { ok: false };
+        }
+    }
+
+    /**
      * Saves notification items and artifacts directly to disk.
      * The first child folder within LOCAL_ARTIFACTS_DIR is named after the user ID.
      *
@@ -28,7 +46,7 @@ export class Local {
      * @param items Notification payloads or artifacts to write to disk
      * @param options Context containing channel configuration and user information
      */
-    static async sendItems(
+    private static async saveItems(
         title: string,
         items: Array<{ content: any; mime_type?: string; filename?: string; name?: string; metadata?: any }> | string,
         options: { channel?: Record<string, any>; user_id?: string; [key: string]: any }

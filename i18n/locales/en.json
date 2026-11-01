@@ -96,8 +96,35 @@
       "type": "Type",
       "is_default": "Is Default",
       "created_at": "Created At",
-      "add_whatsapp": "Add Whatsapp",
-      "set_default": "Set default"
+      "set_default": "Set default",
+      "test": "Send test notification",
+      "sent": "Sent",
+      "rules": {
+        "name": {
+          "type": "Name must be text",
+          "required": "Name is required",
+          "too_long": "Name is too long (max. 100 characters)"
+        },
+        "provider": {
+          "required": "Choose a provider"
+        },
+        "type": {
+          "required": "Choose a type",
+          "invalid": "This type is not offered by the provider"
+        },
+        "config": {
+          "type": "Configuration must be an object",
+          "template": "Choose one of the offered URL formats",
+          "required": "Required",
+          "number": "Must be a number",
+          "min": "Must be at least {min}",
+          "max": "Must be at most {max}",
+          "regex": "Invalid format",
+          "choice": "Choose one of the offered values",
+          "bool": "Must be yes or no",
+          "invalid": "Invalid input"
+        }
+      }
     },
     "common": {
       "actions": "Actions",
@@ -259,9 +286,13 @@
     "app": "App"
   },
   "events": {
-    "title": "Notifications",
-    "mark_all_read": "Mark all read",
-    "no_events": "No notifications"
+    "title": "Events",
+    "no_events": "No notifications",
+    "notification": {
+      "send_failed": "Notification to {channel} failed: {reason}",
+      "attachments_dropped": "{count} attachment(s) not sent to {channel}: the channel does not support attachments",
+      "test_ok": "Test notification sent via {channel}"
+    }
   },
   "user_events": {
     "read": {

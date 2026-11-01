@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import tableMetaFcn from '#ba/schemas/notification_channels'
-import { z } from 'zod'
+import { tokenRule, templateKeys } from '#b/shared/rules/notification_channels'
 
 const { t } = useI18n();
 const showWhatsapp = ref(false)
@@ -47,8 +47,8 @@ const generateZodRules = (token: any) => {
   }
 
   return (val: any) => {
-    const rv = schema.safeParse(val);
-    return rv.success || rv.error?.issues?.[0]?.message || t('rules.apprise.invalid');
+    const rv = rule.safeParse(val);
+    return rv.success || rv.error.issues[0]?.message || t('table.notification_channels.rules.config.invalid');
   };
 }
 
@@ -122,13 +122,7 @@ const getChannelConfigSchema = async (header: any, row: any) => {
     }
     const chosenTemplate = configData.template || templates[0] || '';
 
-    const templateTokens = new Set<string>();
-    const matches = chosenTemplate.match(/\{([a-zA-Z0-9_-]+)\}/g);
-    if (matches) {
-      for (const match of matches) {
-        templateTokens.add(match.slice(1, -1));
-      }
-    }
+    const templateTokens = new Set<string>(templateKeys(chosenTemplate));
 
     const schemaHeaders: any[] = [];
 
@@ -136,7 +130,7 @@ const getChannelConfigSchema = async (header: any, row: any) => {
       title: t('form.notification.services.template'),
       key: 'template',
       set_type: 'enum',
-      enum_values: templates
+      opts: { enum_values: templates }
     });
 
     const tokens = res.details.tokens || {};
@@ -160,13 +154,14 @@ const getChannelConfigSchema = async (header: any, row: any) => {
         title: t("form.notification.services." + (token.name.toLowerCase())),
         key: key,
         set_type: set_type,
-        rules: [generateZodRules(token)]
+        default: token.default,
+        rules: [configRule(token)]
       };
 
       if (set_type === 'enum' && token.values) {
         if (token.conditional_field) {
           const parentKey = token.conditional_field;
-          item.enum_values = (header: any, formData: any) => {
+          item.opts = { enum_values: (header: any, formData: any) => {
             const parentVal = formData ? formData[parentKey] : undefined;
 
             const trackerKey = `_last_${parentKey}_for_${key}`;
@@ -197,9 +192,9 @@ const getChannelConfigSchema = async (header: any, row: any) => {
               return options;
             }
             return [];
-          };
+          } };
         } else {
-          item.enum_values = token.values;
+          item.opts = { enum_values: token.values };
         }
       }
 

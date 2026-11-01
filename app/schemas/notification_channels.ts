@@ -1,4 +1,8 @@
-import { apiGet } from "~/utils/fetch/wrappers";
+import { apiGet, apiPost } from "~/utils/fetch/wrappers";
+import { zod_rules } from '#b/shared/rules/notification_channels';
+import { getRules } from '#b/shared/rules/getRules';
+
+const rules = getRules(zod_rules);
 
 const getHeaders = async (t: any, callbacks: any) => {
     const servicesRes = await apiGet('/api/user/notification/schema/services') || {};
@@ -25,10 +29,10 @@ const getHeaders = async (t: any, callbacks: any) => {
     };
 
     return [
-        { title: 'table.notification_channels.name', key: 'name', get_type: 'string', set_type: 'string_line' },
-        { title: 'table.notification_channels.provider', key: 'provider', get_type: 'string', set_type: 'enum', enum_values: providers },
-        { title: 'table.notification_channels.type', key: 'type', get_type: 'string', set_type: 'enum', enum_values: getTypesForProvider },
-        { title: 'table.notification_channels.config', key: 'config', set_type: 'form', value: callbacks?.getChannelConfigSchema },
+        { title: 'table.notification_channels.name', key: 'name', get_type: 'string', set_type: 'string_line', rules: rules.name },
+        { title: 'table.notification_channels.provider', key: 'provider', get_type: 'string', set_type: 'enum', opts: { enum_values: providers }, rules: rules.provider },
+        { title: 'table.notification_channels.type', key: 'type', get_type: 'string', set_type: 'enum', opts: { enum_values: getTypesForProvider }, rules: rules.type },
+        { title: 'table.notification_channels.config', key: 'config', set_type: 'form', opts: { nested_headers: callbacks?.getChannelConfigSchema } },
         { title: 'table.common.actions', key: 'actions', sortable: false }
     ];
 };

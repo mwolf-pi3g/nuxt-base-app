@@ -1,8 +1,30 @@
 import { getExtensionFromMime } from '#bs/utils/get_extensions_from_mime_type';
+import { appLimits } from '#bs/utils/app_limits';
+import { reportNotificationFailure, emitTelemetryEvent, EventScope, EventLevel } from '#bs/utils/telemetry/event';
+
+// Apprise API failure (424/400): its details log holds [level, timestamp, message] entries from the service plugin.
+const appriseTimeoutMs = () => appLimits().notifications.apprise_timeout_ms;
+
+function extractAppriseReason(err: any): string {
+    if (err?.name === 'TimeoutError' || /timeout|timed out/i.test(String(err?.message || ''))) {
+        return `Apprise did not respond within ${appriseTimeoutMs() / 1000}s`;
+    }
+    const data = err?.data;
+    if (!data) return `Apprise not reachable: ${err?.message || 'Connection failed'}`;
+
+    const lines = (Array.isArray(data.details) ? data.details : [])
+        .filter((d: any) => Array.isArray(d) && ['WARNING', 'ERROR'].includes(String(d[0]).toUpperCase()))
+        .map((d: any) => String(d[2] ?? '').trim())
+        .filter(Boolean);
+    const unique = [...new Set(lines)];
+
+    return unique.length > 0 ? unique.join(', ') : (data.error || err?.message || 'Apprise notification failed');
+}
 
 export class Apprise {
     static async getSchemas(): Promise<any[]> {
-        const appriseUrl = process.env.APPRISE_URL || 'http://localhost';
+        const appriseUrl = process.env.APPRISE_URL;
+        if (!appriseUrl) return [];
         const url = `${appriseUrl.replace(/\/$/, '')}/details`;
 
         try {
@@ -57,23 +79,29 @@ export class Apprise {
 
     static async sendItems(
         title: string,
-        items: Array<{ content: string; mime_type?: string }> | string,
+        items: Array<{ content: string; mime_type?: string; filename?: string }> | string,
         context?: any
-    ) {
+    ): Promise<{ ok: boolean }> {
         const channel = context?.channel;
+        const ownerId = channel?.owner_id || context?.owner_id || context?.user_id;
+        const channelName = channel?.name || channel?.type || 'Apprise';
         const formattedUrl = Apprise.getFormattedAppriseUrl(channel);
 
-        const appriseUrl = process.env.APPRISE_URL || 'http://localhost';
+        if (!formattedUrl) {
+            await reportNotificationFailure(ownerId, channelName, 'Missing channel URL configuration');
+            return { ok: false };
+        }
+
+        const appriseUrl = process.env.APPRISE_URL ?? '';
         const endpoint = `${appriseUrl.replace(/\/$/, '')}/notify`;
-        console.log("Endpoint: ", endpoint, formattedUrl);
 
         let messageText = '';
-        const attachmentItems: Array<{ content: string; mime_type?: string }> = [];
+        const attachmentItems: Array<{ content: string; mime_type?: string; filename?: string }> = [];
 
         if (typeof items === 'string') {
             messageText = items;
         } else if (Array.isArray(items)) {
-            const textItems: Array<{ content: string; mime_type?: string }> = [];
+            const textItems: Array<{ content: string; mime_type?: string; filename?: string }> = [];
             for (const item of items) {
                 if (item.mime_type && item.mime_type.toLowerCase().startsWith('text/')) {
                     textItems.push(item);
@@ -90,6 +118,8 @@ export class Apprise {
         }
 
         try {
+            if (!appriseUrl) throw new Error('APPRISE_URL is not set');
+
             if (attachmentItems.length > 0) {
                 const schemas = await Apprise.getSchemas();
                 const channelType = channel?.type;
@@ -116,24 +146,39 @@ export class Apprise {
                         }
 
                         const ext = getExtensionFromMime(mimeType);
-                        const filename = `attachment_${i + 1}.${ext}`;
+                        const filename = item?.filename || `attachment_${i + 1}.${ext}`;
                         formData.append('attach', blob, filename);
                     }
 
                     await $fetch(endpoint, {
+                        timeout: appriseTimeoutMs(),
                         method: 'POST',
+                        headers: {
+                            'Accept': 'application/json'
+                        },
                         body: formData
                     });
-                    return;
+                    return { ok: true };
                 } else {
-                    console.log(`Service ${channelType} does not support attachments.`);
+                    if (ownerId) {
+                        await emitTelemetryEvent({
+                            scope: EventScope.USER,
+                            owner_id: ownerId,
+                            level: EventLevel.WARN,
+                            category: 'notification',
+                            message: 'events.notification.attachments_dropped',
+                            metadata: { channel: channelName, count: attachmentItems.length }
+                        });
+                    }
                 }
             }
 
             await $fetch(endpoint, {
+                timeout: appriseTimeoutMs(),
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: {
                     urls: formattedUrl,
@@ -141,8 +186,10 @@ export class Apprise {
                     body: messageText || '',
                 }
             });
-        } catch (error) {
-            console.error("Apprise notification failed", error);
+            return { ok: true };
+        } catch (error: any) {
+            await reportNotificationFailure(ownerId, channelName, extractAppriseReason(error));
+            return { ok: false };
         }
     }
 }

@@ -40,7 +40,56 @@
     "role": {
       "title": "Rollen",
       "name": "Name",
-      "permissions": "Berechtigungen"
+      "permissions": "Berechtigungen",
+      "rules": {
+        "name": {
+          "type": "Rollenname muss Text sein",
+          "too_short": "Rollenname braucht mindestens 2 Zeichen",
+          "too_long": "Rollenname ist zu lang (max. 50 Zeichen)"
+        },
+        "permissions": {
+          "type": "Berechtigungen müssen eine Liste sein",
+          "item": {
+            "type": "Jede Berechtigung muss Text sein"
+          },
+          "invalid": "Unbekannte Berechtigung"
+        }
+      }
+    },
+    "notification_channels": {
+      "title": "Benachrichtigungskanäle",
+      "name": "Name",
+      "provider": "Anbieter",
+      "config": "Konfiguration",
+      "type": "Typ",
+      "test": "Test-Benachrichtigung senden",
+      "sent": "Gesendet",
+      "rules": {
+        "name": {
+          "type": "Name muss Text sein",
+          "required": "Name ist erforderlich",
+          "too_long": "Name ist zu lang (max. 100 Zeichen)"
+        },
+        "provider": {
+          "required": "Anbieter auswählen"
+        },
+        "type": {
+          "required": "Typ auswählen",
+          "invalid": "Dieser Typ wird vom Anbieter nicht angeboten"
+        },
+        "config": {
+          "type": "Konfiguration muss ein Objekt sein",
+          "template": "Eines der angebotenen URL-Formate auswählen",
+          "required": "Erforderlich",
+          "number": "Muss eine Zahl sein",
+          "min": "Muss mindestens {min} sein",
+          "max": "Darf höchstens {max} sein",
+          "regex": "Ungültiges Format",
+          "choice": "Einen der angebotenen Werte auswählen",
+          "bool": "Muss ja oder nein sein",
+          "invalid": "Ungültige Eingabe"
+        }
+      }
     },
     "common": {
       "actions": "Aktionen",
@@ -81,9 +130,13 @@
     "app": "App"
   },
   "events": {
-    "title": "Benachrichtigungen",
-    "mark_all_read": "Alle als gelesen markieren",
-    "no_events": "Keine Benachrichtigungen"
+    "title": "Ereignisse",
+    "no_events": "Keine Benachrichtigungen",
+    "notification": {
+      "send_failed": "Benachrichtigung an {channel} fehlgeschlagen: {reason}",
+      "attachments_dropped": "{count} Anhang/Anhänge nicht an {channel} gesendet: der Kanal unterstützt keine Anhänge",
+      "test_ok": "Test-Benachrichtigung über {channel} gesendet"
+    }
   },
   "user_events": {
     "read": {
