@@ -88,26 +88,15 @@ const triggerFileInput = () => {
 const exportAllData = async () => {
   loadingExport.value = true;
   try {
-    const [connRes, searchRes, filterRes, artifactRes, autoRes, notifRes] = await Promise.all([
-      apiGet('/api/v0.1/app/connections_imap/export'),
-      apiGet('/api/v0.1/app/imap_search/export'),
-      apiGet('/api/v0.1/app/llm_filter/export'),
-      apiGet('/api/v0.1/app/llm_create_artifact/export'),
-      apiGet('/api/v0.1/app/automation/export'),
-      apiGet('/api/user/notification/export')
-    ]);
+    // Base layer data only; apps override this component to add their own tables.
+    const notifRes = await apiGet('/api/user/notification/export');
 
     const backupBundle = {
       version: 'v0.1',
       type: 'user_info_backup',
       timestamp: new Date().toISOString(),
       tables: {
-        notification_channels: notifRes?.data?.data !== undefined ? notifRes.data.data : (notifRes?.data || []),
-        connections_imap: connRes?.data?.data !== undefined ? connRes.data.data : (connRes?.data || []),
-        imap_search: searchRes?.data?.data !== undefined ? searchRes.data.data : (searchRes?.data || []),
-        llm_filter: filterRes?.data?.data !== undefined ? filterRes.data.data : (filterRes?.data || []),
-        llm_create_artifact: artifactRes?.data?.data !== undefined ? artifactRes.data.data : (artifactRes?.data || []),
-        automations: autoRes?.data?.data !== undefined ? autoRes.data.data : (autoRes?.data || [])
+        notification_channels: notifRes?.data?.data !== undefined ? notifRes.data.data : (notifRes?.data || [])
       }
     };
 
@@ -158,32 +147,6 @@ const handleFileSelected = async (event: Event) => {
     const notifData = tables.notification_channels || tables.notification_config;
     if (notifData && (Array.isArray(notifData) ? notifData.length > 0 : true)) {
       await apiPost('/api/user/notification/import', notifData);
-    }
-
-    // 2. Connections IMAP
-    if (tables.connections_imap && (Array.isArray(tables.connections_imap) ? tables.connections_imap.length > 0 : true)) {
-      await apiPost('/api/v0.1/app/connections_imap/import', tables.connections_imap);
-    }
-
-    // 3. IMAP Search
-    if (tables.imap_search && (Array.isArray(tables.imap_search) ? tables.imap_search.length > 0 : true)) {
-      await apiPost('/api/v0.1/app/imap_search/import', tables.imap_search);
-    }
-
-    // 4. LLM Filter
-    if (tables.llm_filter && (Array.isArray(tables.llm_filter) ? tables.llm_filter.length > 0 : true)) {
-      await apiPost('/api/v0.1/app/llm_filter/import', tables.llm_filter);
-    }
-
-    // 5. LLM Create Artifact
-    if (tables.llm_create_artifact && (Array.isArray(tables.llm_create_artifact) ? tables.llm_create_artifact.length > 0 : true)) {
-      await apiPost('/api/v0.1/app/llm_create_artifact/import', tables.llm_create_artifact);
-    }
-
-    // 6. Automations
-    const automationsData = tables.automations || tables.automation;
-    if (automationsData && (Array.isArray(automationsData) ? automationsData.length > 0 : true)) {
-      await apiPost('/api/v0.1/app/automation/import', automationsData);
     }
 
     showSnackbar(t('userinfo_import_export.import_success'), 'success');

@@ -21,16 +21,6 @@
                     "path": "/sources"
                 },
                 {
-                    "name": "llm_filter",
-                    "icon": "mdi-filter-cog-outline",
-                    "path": "/llm_filter"
-                },
-                {
-                    "name": "llm_create_artifact",
-                    "icon": "mdi-file-code-outline",
-                    "path": "/llm_create_artifact"
-                },
-                {
                     "name": "notifications",
                     "icon": "mdi-message-outline",
                     "path": "/notifications"
