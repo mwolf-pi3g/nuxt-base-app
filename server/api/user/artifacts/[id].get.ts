@@ -60,7 +60,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const query = getQuery(event);
+  // Read the query from the raw URL: the router decodes the path, so a '#' in the file name (sent as %23)
+  // would turn '?raw=1' into a URL fragment and getQuery(event) would see no query at all.
+  const query = Object.fromEntries(new URL(event.node.req.url || '', 'http://localhost').searchParams);
 
   // If ?download=1 or ?raw=1, stream the file directly
   if (query.download || query.raw) {
