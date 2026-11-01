@@ -13,5 +13,17 @@
     ],
     "default_roles": [
         "user"
-    ]
+    ],
+    "api_token_prefix": "api_",
+    "limits": {
+        "notifications": {
+            "apprise_timeout_ms": 60000
+        },
+        "user_events": {
+            "retention_days": 30
+        },
+        "accounts": {
+            "max_api_tokens": 20
+        }
+    }
 }
