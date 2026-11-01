@@ -6,7 +6,7 @@ export async function resolveServiceContext(ctx?: any): Promise<string | undefin
       return ctx.ownerId || ctx.owner_id;
     }
     try {
-      const session = await getUserSession(ctx);
+      const session = await getAuthSession(ctx);
       return session?.user?.id;
     } catch {
       return undefined;

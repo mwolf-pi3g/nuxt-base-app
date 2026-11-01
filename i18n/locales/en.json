@@ -54,14 +54,37 @@
   "table": {
     "account": {
       "title": "Account | Accounts",
-      "user": "User",
+      "user": "Username",
       "lang": "Language",
       "password": "Password",
       "email": "Email",
       "roles": "Roles",
-      "limits": "Limits",
-      "validated": "Validated",
-      "cron_active": "Cron Active"
+      "cron_active": "Cron Active",
+      "rules": {
+        "user": {
+          "type": "Username must be text",
+          "required": "Username is required",
+          "too_long": "Username is too long (max. 128 characters)",
+          "invalid": "Username may only contain letters, digits and . _ - {'@'} +"
+        },
+        "password": {
+          "type": "Password must be text",
+          "too_short": "Password must be at least 12 characters",
+          "too_long": "Password is too long (max. 128 characters)"
+        },
+        "lang": {
+          "invalid": "Choose one of the offered languages"
+        },
+        "roles": {
+          "type": "Roles must be a list",
+          "item": {
+            "type": "Each role must be a role id"
+          }
+        },
+        "cron_active": {
+          "type": "Must be on or off"
+        }
+      }
     },
     "role": {
       "title": "Roles",
@@ -148,6 +171,25 @@
       "staging": "Staging",
       "set_staging": "Set as Staging Item",
       "clear_staging": "Remove from Staging"
+    },
+    "api_tokens": {
+      "title": "API tokens",
+      "manage": "API tokens",
+      "description": "Description",
+      "created_at": "Created",
+      "last_used_at": "Last used",
+      "created_title": "New API token",
+      "created_once": "Copy the token now. It is shown only this once and cannot be shown again.",
+      "copied": "Copied to the clipboard",
+      "not_found": "API token not found",
+      "rules": {
+        "description": {
+          "type": "Description must be text",
+          "required": "Description is required",
+          "too_long": "Description is too long (max. 100 characters)"
+        },
+        "too_many": "Too many API tokens: delete one first"
+      }
     }
   },
   "$vuetify": {
@@ -178,18 +220,19 @@
     "auth": {
       "login_title": "Sign In",
       "login_instructions": "Enter your credentials to access your account.",
-      "email": "Email Address",
       "password": "Password",
       "login_button": "Log In",
       "no_account": "No account? Create one here.",
       "signup_title": "Create Account",
       "signup_instructions": [
-        "Enter your details to register.",
-        "Check your email for a verification link.",
-        "Activate your account to log in."
+        "Enter your details to register."
       ],
       "confirm_password": "Confirm Password",
-      "have_account": "Already have an account? Log in."
+      "have_account": "Already have an account? Log in.",
+      "registration_disabled": "Registration is currently disabled. Please contact an administrator for an account.",
+      "username": "Username",
+      "initial_password_banner": "You are signing in with the start password (ADMIN_PASSWORD). Please set your own password.",
+      "change_password": "Change password"
     },
     "dashboard": {
       "last_issue": "Last issue",
@@ -199,10 +242,17 @@
   "auth": {
     "login": {
       "success": "Login successful",
-      "invalid_credentials": "Invalid email or password"
+      "invalid_credentials": "Invalid username or password"
     },
     "logout": {
       "success": "Logged out successfully"
+    },
+    "register": {
+      "disabled": "Registration is disabled"
+    },
+    "token": {
+      "invalid": "Invalid API token",
+      "not_allowed": "Not allowed with an API token"
     }
   },
   "account": {
@@ -269,7 +319,8 @@
     "bad_payload": "Invalid account data",
     "insert": {
       "bad_payload": "Invalid account data"
-    }
+    },
+    "not_found": "Account not found"
   },
   "roles": {
     "bad_payload": "Invalid role data",
@@ -312,13 +363,16 @@
     "last_issue": "Last issue"
   },
   "common": {
+    "ok": "OK",
+    "failed_see_log": "Failed, see event log",
     "last_run": "Last run",
     "inactive": "Inactive",
     "howto": "How To",
     "toggle_theme": "Toggle Theme",
     "logout": "Logout",
     "pin": "Pin Drawer",
-    "unpin": "Unpin Drawer"
+    "unpin": "Unpin Drawer",
+    "close": "Close"
   },
   "dashboard": {
     "last_issue": "Last issue",
@@ -334,7 +388,19 @@
     "not_found": "Artifact not found",
     "forbidden_path": "Access to artifact path is forbidden",
     "missing_path": "Artifact path is required"
+  },
+  "notification_channels": {
+    "not_found": "Notification channel not found"
+  },
+  "api_tokens": {
+    "read": {
+      "success": "API tokens loaded"
+    },
+    "create": {
+      "success": "API token created"
+    },
+    "delete": {
+      "success": "API token deleted"
+    }
   }
 }
-    "ok": "OK",
-    "failed_see_log": "Failed, see event log",

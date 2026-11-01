@@ -3,6 +3,7 @@
     <Header />
     <NavDrawer />
     <v-main class="bg-background fill-height">
+      <InitialPasswordBanner />
       <slot />
     </v-main>
     <Footer />

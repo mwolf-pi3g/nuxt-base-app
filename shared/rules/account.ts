@@ -1,31 +1,33 @@
 import { z } from 'zod';
 
 export const zod_rules = {
-  user: z.string({ invalid_type_error: "rules.account.user.type" })
-    .email("rules.account.user.invalid_email"),
+  // A username: letters, digits and . _ - @ + (so email addresses stay valid usernames)
+  user: z.string({ invalid_type_error: "table.account.rules.user.type" })
+    .min(1, "table.account.rules.user.required")
+    .max(128, "table.account.rules.user.too_long")
+    .regex(/^[A-Za-z0-9._@+-]+$/, "table.account.rules.user.invalid"),
 
-  password: z.string({ invalid_type_error: "rules.account.password.type" })
-    .min(12, "rules.account.password.too_short")
-    .max(128, "rules.account.password.too_long"),
+  password: z.string({ invalid_type_error: "table.account.rules.password.type" })
+    .min(12, "table.account.rules.password.too_short")
+    .max(128, "table.account.rules.password.too_long"),
 
-  lang: z.enum(['de', 'en'], { invalid_type_error: "rules.account.lang.invalid" })
+  lang: z.enum(['de', 'en'], { errorMap: () => ({ message: "table.account.rules.lang.invalid" }) })
     .default('en'),
 
   roles: z.array(
-    z.string({ invalid_type_error: "rules.account.roles.item.type" }),
-    { invalid_type_error: "rules.account.roles.type" }
+    z.string({ invalid_type_error: "table.account.rules.roles.item.type" }),
+    { invalid_type_error: "table.account.rules.roles.type" }
   ).default([]),
 
-  limits: z.string({ invalid_type_error: "rules.account.limits.type" })
-    .max(128, "rules.account.limits.too_long")
-    .optional()
-    .default('basic'),
-
-  validated: z.union([z.literal(0), z.literal(1)], {
-    errorMap: () => ({ message: "rules.account.validated.type" })
-  }).default(0),
-
   cron_active: z.union([z.literal(0), z.literal(1)], {
-    errorMap: () => ({ message: "rules.account.cron_active.type" })
+    errorMap: () => ({ message: "table.account.rules.cron_active.type" })
   }).default(1)
+};
+
+// API tokens: only the description is entered; the rest is made by the server
+export const token_rules = {
+  description: z.string({ invalid_type_error: "table.api_tokens.rules.description.type" })
+    .trim()
+    .min(1, "table.api_tokens.rules.description.required")
+    .max(100, "table.api_tokens.rules.description.too_long"),
 };

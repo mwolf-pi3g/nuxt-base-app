@@ -16,7 +16,7 @@ defineRouteMeta({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
+  const session = await getAuthSession(event);
   const userId = session.user?.id;
 
   if (!userId) {
@@ -27,10 +27,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const accountService = await getService(event);
-  const { id, user, lang, roles, limits, validated, cron_active } = await accountService.read(userId);
+  const { id, user, lang, roles, cron_active } = await accountService.read(userId);
 
   return {
-    data: [{ id, user, lang, roles, limits, validated, cron_active }],
+    data: [{ id, user, lang, roles, cron_active }],
     statusMessage: 'success account.read.success',
   };
 });

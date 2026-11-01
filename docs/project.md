@@ -7,7 +7,11 @@ Disclosure:  AI was used to create individual functions.  Feel free to point out
 Until I implement TanStack, there is no API result caching.
 On the server side, db wrappers work but are inefficient.
 
-default admin user: admin@admin.com / !1adminadmin
+Initial admin: no default password. On the first start the account `admin` (or `ADMIN_USER`) is created without a
+password of its own and signs in with `ADMIN_PASSWORD` (or the file named by `ADMIN_PASSWORD_FILE`, e.g. a Docker
+secret). A banner asks it to set its own password; once it has, the variable is no longer used for it and can be
+removed. While an account still has no password of its own, the server refuses to start without the variable (or
+with one that isn't 12 to 128 characters) and says why in the log.
 
 ## Features
 - Table / Form components, schemas, validation
@@ -37,7 +41,6 @@ default admin user: admin@admin.com / !1adminadmin
 - [ ] create custom triggers for atomic ops.  Eg: on delete account, delete all related records
     when deleting key, delete key in foreign rows.
         roles, notification_channels
-- [ ] if user changes email, validated = false, resend email
 
 ## Frontend
 

@@ -4,7 +4,6 @@ declare module '#auth-utils' {
     user: string;
     roles: string[];
     permissions: string[];
-    limits: string;
     lang: string;
     cron_active?: number;
   }

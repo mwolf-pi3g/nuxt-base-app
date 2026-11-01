@@ -10,7 +10,12 @@
         </div>
       </v-card-subtitle>
 
+      <v-alert v-if="!registrationEnabled" type="info" variant="tonal" class="mb-4">
+        {{ t('frontend.auth.registration_disabled') }}
+      </v-alert>
+
       <Form
+        v-if="registrationEnabled"
         :headers="registerSchema.headers"
         :cancel-btn="false"
         :loading="loading"
@@ -27,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { apiPost } from '~/utils/fetch/wrappers'
 import Form from '~/components/form/form.vue'
 import getSchema from '~/schemas/register'
@@ -38,6 +43,9 @@ const registerSchema = getSchema(t)
 definePageMeta({
   layout: 'default'
 })
+
+const { data: registration } = await useFetch<{ enabled: boolean }>('/api/auth/registration')
+const registrationEnabled = computed(() => registration.value?.enabled === true)
 
 const loading = ref(false)
 

@@ -6,8 +6,6 @@ import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbFindOneAndUpdate } from "#bs/db/wrappers/db_find_one_and_update";
 import { dbFindOneAndDelete } from "#bs/db/wrappers/db_find_one_and_delete";
 import { dbDeleteMany } from "#bs/db/wrappers/db_delete_many";
-import { accounts } from "hub:db:schema";
-import appDefaults from "#server/metadata/app_defaults.json";
 
 export class genericService {
     db: any;
@@ -41,10 +39,10 @@ export class genericService {
             searchSpec.owner_id = this.user_id;
         }
         return searchSpec;
-    // Checks each field on its own. On update a field that isn't sent (undefined) keeps its stored value; any value that
-    // is sent is checked, including 0, '' and false. The error carries the rule's message (an i18n key) and the field.
     }
 
+    // Checks each field on its own. On update a field that isn't sent (undefined) keeps its stored value; any value that
+    // is sent is checked, including 0, '' and false. The error carries the rule's message (an i18n key) and the field.
     validate(val: any, mode: 'create' | 'update' = 'create'): true | string {
         for (const key in this.zod_rules) {
             const rule = this.zod_rules[key as keyof typeof this.zod_rules];
@@ -61,38 +59,6 @@ export class genericService {
         return true;
     }
 
-    async prepopulate() {
-        if (!this.user_id) return;
-
-        const exampleContent = appDefaults?.example_content;
-        if (!exampleContent) return;
-
-        const tableKey = this.table_name;
-        const contentForTable = (exampleContent as any)[tableKey];
-        if (!contentForTable) return;
-
-        let userLang = 'en';
-        try {
-            const account = await dbFindOne(this.db, accounts, { id: this.user_id });
-            if (account && account.lang) {
-                userLang = account.lang;
-            }
-        } catch (e) {
-            console.error("Failed to retrieve user language preference", e);
-        }
-
-        let itemsToCopy = contentForTable[userLang];
-        if (!itemsToCopy && userLang !== 'en') {
-            itemsToCopy = contentForTable['en'];
-        }
-
-        if (itemsToCopy && Array.isArray(itemsToCopy)) {
-            for (const item of itemsToCopy) {
-                await this.create({ ...item });
-            }
-        }
-    }
-
     async read(id?: string) {
         try {
             if (id) {
@@ -100,12 +66,7 @@ export class genericService {
                 return await dbFindOne(this.db, this.table, searchSpec);
             }
             const searchSpec = this.addOwner({});
-            let results = await dbFindAll(this.db, this.table, searchSpec);
-            if (results.length === 0) {
-                await this.prepopulate();
-                results = await dbFindAll(this.db, this.table, searchSpec);
-            }
-            return results;
+            return await dbFindAll(this.db, this.table, searchSpec);
         } catch (e) {
             throw createError({
                 status: 500,

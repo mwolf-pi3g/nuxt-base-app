@@ -1,4 +1,7 @@
 import { zod_rules } from '#b/shared/rules/account';
+import { getRules } from '#b/shared/rules/getRules'
+
+const rules = getRules(zod_rules)
 import { apiGet } from '~/utils/fetch/wrappers'
 
 const getHeaders = async (t: any) => {
@@ -18,8 +21,8 @@ const getHeaders = async (t: any) => {
             set_type: "string_line",
             actions: ["update"],
             rules: [
-                (v: string) => !!v || 'rules.invalid_field',
-                (v: string) => zod_rules.user.safeParse(v).success || 'account.user.invalid_email'
+                (v: string) => !!v || 'table.account.rules.user.required',
+                rules.user
             ]
         },
 
@@ -30,7 +33,7 @@ const getHeaders = async (t: any) => {
             actions: ["setPassword"],
             rules: [
                 (v: string) => !!v || 'rules.password.required',
-                (v: string) => zod_rules.password.safeParse(v).success || 'account.password.too_short'
+                rules.password
             ]
         },
         {
@@ -38,32 +41,21 @@ const getHeaders = async (t: any) => {
             key: 'lang',
             get_type: "string",
             set_type: "enum",
-            enum_values: ["de", "en"],
+            opts: { enum_values: ["de", "en"] },
+            rules: rules.lang,
             actions: ["update"]
         },
         {
             title: 'table.account.roles',
             key: 'roles',
             get_type: "list_tag",
-            enum_values: rolesList, color_delimiter: ":"
+            opts: { enum_values: rolesList, color_delimiter: ":" }
         },
         {
-            title: 'table.account.limits',
-            key: 'limits',
-            get_type: "string"
-        },
-        {
-            title: 'table.account.validated',
-            key: 'validated',
-            get_type: "boolean"
-        },
-        {
+            // Shown only: cron is switched on and off in the dashboard
             title: 'table.account.cron_active',
             key: 'cron_active',
-            get_type: "boolean",
-            set_type: "boolean",
-            set_as_number: true,
-            actions: ["update"]
+            get_type: "boolean"
         },
         {
             title: 'table.common.actions',
@@ -87,7 +79,8 @@ export default async function (t: any, callbacks?: any) {
                 tooltip: t('form.actions.setPassword'),
                 onFormSubmit: callbacks?.onSetPassword,
                 action: "setPassword", // POST editingItem
-            }
+            },
+            { icon: 'mdi-key-variant', tooltip: t('table.api_tokens.manage'), onActionClick: callbacks?.onShowTokens },
         ]
     }
 }

@@ -79,7 +79,7 @@ const parseFilterList = (val: any): string | string[] | undefined => {
 };
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
+  const session = await getAuthSession(event);
   const userId = session.user?.id;
 
   if (!userId) {

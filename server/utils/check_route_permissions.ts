@@ -30,7 +30,7 @@ function checkSinglePerm(userPerms: string[], req: string): boolean {
  * Returns true if authorized, or throws a 403 Forbidden error if not.
  */
 export async function checkRoutePermissions(event: H3Event, requiredPermissions: string[]): Promise<boolean> {
-  const session = await getUserSession(event)
+  const session = await getAuthSession(event)
   const userPerms = session?.user?.permissions
 
   if (!requiredPermissions || requiredPermissions.length === 0) {

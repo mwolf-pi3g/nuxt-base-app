@@ -16,7 +16,7 @@
         />
 
         <v-card-actions class="justify-center">
-          <v-btn variant="text" to="/register"  class="text-none">
+          <v-btn v-if="registrationEnabled" variant="text" to="/register"  class="text-none">
             {{ $t('frontend.auth.no_account') }}
           </v-btn>
         </v-card-actions>
@@ -46,6 +46,9 @@ definePageMeta({
 
 const { fetch: fetchSession } = useUserSession()
 const loading = ref(false)
+
+const { data: registration } = await useFetch<{ enabled: boolean }>('/api/auth/registration')
+const registrationEnabled = computed(() => registration.value?.enabled === true)
 
 const handleLogin = async (data: any) => {
   if (!data.user || !data.password) return

@@ -10,9 +10,12 @@ export const accounts = sqliteTable('accounts', {
         .$type<string[]>()
         .notNull()
         .default([]),
-    limits: text('limits').default('free'),
-    validated: integer('validated').default(0), // 0 or 1 
     cron_active: integer('cron_active').default(1), // 0 or 1 
+    // API tokens: { id, description, hash (sha256 of the token), created_at, last_used_at }. The token itself is never stored.
+    tokens: text('tokens', { mode: 'json' })
+        .$type<{ id: string; description: string; hash: string; created_at: string; last_used_at: string | null }[]>()
+        .notNull()
+        .default([]),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });

@@ -86,6 +86,7 @@ const props = defineProps<{
     customAdd?: any[];
     customActions?: any[];
     customMulti?: any[];
+    onCreated?: (res: any) => void;   // gets the create response (e.g. to show what the server generated)
     formActions?: Array<{
       label: string;
       icon: string;
@@ -222,7 +223,8 @@ const onDeleteMany = async () => {
 }
 
 const onCreate = async (id: string, data: any) => {
-  await apiPost(props.meta.path_base, data)
+  const res = await apiPost(props.meta.path_base, data)
+  props.meta.onCreated?.(res)
 }
 
 const onUpdate = async (id: string, data: any) => {

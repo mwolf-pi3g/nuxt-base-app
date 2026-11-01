@@ -1,5 +1,4 @@
 import { getService } from '#bs/services/core/account';
-import { permissionsByRoles } from '#bs/utils/permissions_by_roles';
 
 defineRouteMeta({
   openAPI: {
@@ -23,20 +22,9 @@ export default defineEventHandler(async (event) => {
   const accountService = await getService();
   const account = await accountService.authenticate(user, password);
 
-  // Resolve role names into concrete permission strings
-  const permissions = await permissionsByRoles(account.roles);
-
-  // Set session
+  // Set session (the user object holds the permissions resolved from the roles)
   await setUserSession(event, {
-    user: {
-      id: account.id,
-      user: account.user,
-      roles: account.roles,
-      permissions,
-      limits: account.limits,
-      lang: account.lang,
-      cron_active: account.cron_active
-    },
+    user: await accountService.sessionUser(account),
     loggedInAt: new Date().toISOString()
   });
 
