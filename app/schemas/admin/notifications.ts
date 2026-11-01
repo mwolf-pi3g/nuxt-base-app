@@ -24,9 +24,6 @@ export default function (t: any, callbacks?: SchemaCallbacks) {
         path_base: '/api/admin/notification',
         features,
         readOnMount: true,
-        customAdd: [
-            // { icon: 'mdi-whatsapp', tooltip: t('table.notification_channels.add_whatsapp') as string, onClick: callbacks?.onAddWhatsapp }
-        ],
         // customActions: [
         //   { icon: 'mdi-star-box', tooltip: t('table.notification_channels.set_default') as string, onClick: callbacks?.onSetDefault }
         // ]

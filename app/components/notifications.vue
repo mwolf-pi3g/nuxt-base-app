@@ -1,11 +1,5 @@
 <template>
     <Table :meta="tableMeta" v-if="tableMeta" />
-
-    <!-- <v-row class="mt-6" v-if="showWhatsapp">
-      <v-col cols="12" md="6" lg="5">
-        <NotificationChannelsWhatsapp @cancel="showWhatsapp = false" />
-      </v-col>
-    </v-row> -->
 </template>
 
 <script setup lang="ts">
@@ -13,39 +7,14 @@ import tableMetaFcn from '#ba/schemas/notification_channels'
 import { tokenRule, templateKeys } from '#b/shared/rules/notification_channels'
 
 const { t } = useI18n();
-const showWhatsapp = ref(false)
-
-// const onAddWhatsapp = () => {
-//   showWhatsapp.value = true
-// }
 
 // const onSetDefault = (item: any) => {
 // }
 
-const generateZodRules = (token: any) => {
-  let schema: z.ZodTypeAny;
-
-  if (token.type === 'bool') {
-    schema = z.boolean();
-  } else if (token.type === 'choice:int' || token.type === 'int') {
-    let numSchema = z.coerce.number();
-    if (typeof token.min === 'number') {
-      numSchema = numSchema.min(token.min, t('rules.apprise.number.min', { min: token.min }));
-    }
-    if (typeof token.max === 'number') {
-      numSchema = numSchema.max(token.max, t('rules.apprise.number.max', { max: token.max }));
-    }
-    schema = numSchema;
-  } else {
-    let strSchema = z.string().trim().min(1, t('rules.apprise.string.min')).max(64, t('rules.apprise.string.max'));
-    if (token.regex && Array.isArray(token.regex)) {
-      const pattern = token.regex[0];
-      const flags = token.regex[1] || '';
-      strSchema = strSchema.regex(new RegExp(pattern, flags), t('rules.apprise.string.regex'));
-    }
-    schema = strSchema;
-  }
-
+// Rule of a config field, shared with the server. A field that depends on another (conditional_field) only offers
+// the values valid for it, so its dependency is checked by the server alone.
+const configRule = (token: any) => {
+  const rule = tokenRule(token, undefined, (key, params) => t(key, params || {}));
   return (val: any) => {
     const rv = rule.safeParse(val);
     return rv.success || rv.error.issues[0]?.message || t('table.notification_channels.rules.config.invalid');
@@ -212,7 +181,6 @@ const tableMeta = ref(null);
 
 onMounted(async () => {
    tableMeta.value = await tableMetaFcn(useI18n().t, {
-    // onAddWhatsapp,
     // onSetDefault,
     form:{ getChannelConfigSchema}
   })

@@ -37,15 +37,20 @@ const getHeaders = async (t: any, callbacks: any) => {
     ];
 };
 
-export default async function (t: any, callbacks?: { onAddWhatsapp?: () => void, onSetDefault?: (item: any) => void, form?: any }) {
+export default async function (t: any, callbacks?: { onSetDefault?: (item: any) => void, form?: any }) {
     return {
         title: 'table.notification_channels.title',
         path_base: '/api/user/notification',
         readOnMount: true,
         features: ['create', "update", 'delete'],
         headers: await getHeaders(t, callbacks?.form),
-        customAdd: [
-            // { icon: 'mdi-whatsapp', tooltip: t('table.notification_channels.add_whatsapp') as string, onClick: callbacks?.onAddWhatsapp }
+        formActions: [
+            {
+                label: t('table.notification_channels.test'),
+                icon: 'mdi-connection',
+                successLabel: t('table.notification_channels.sent'),
+                run: (data: any) => apiPost('/api/user/notification/test', data)
+            }
         ],
     }
 }
