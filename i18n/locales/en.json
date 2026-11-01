@@ -350,9 +350,9 @@
       "success": "User events loaded successfully",
       "not_logged_in": "Not authorized to read user events"
     },
-    "update": {
-      "success": "User events updated successfully",
-      "not_logged_in": "Not authorized to update user events"
+    "delete": {
+      "success": "Events deleted",
+      "not_logged_in": "Not authorized to delete user events"
     },
     "id": {
       "required": "Event ID is required"

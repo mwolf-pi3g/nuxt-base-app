@@ -125,6 +125,7 @@ export const emitTelemetryEvent = async (event: TelemetryEvent): Promise<void> =
           owner_id: event.owner_id,
           level: event.level,
           message: event.message,
+          category: event.category || null,
           metadata: event.metadata ?? {},
           createdAt: event.timestamp || new Date()
         });

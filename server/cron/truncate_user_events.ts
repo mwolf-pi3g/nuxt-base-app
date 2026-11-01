@@ -1,18 +1,21 @@
 import { defineCronHandler } from '#nuxt/cron'
 import { db } from 'hub:db'
 import { userEvents } from '#bs/db/schema'
-import { lt, eq, or } from 'drizzle-orm'
+import { lt } from 'drizzle-orm'
+import { appLimits } from '#bs/utils/app_limits'
 
 export default defineCronHandler(() => '0 0 0 * * *', async () => {
   console.log('CRON: Truncating user events start: ' + new Date().toISOString())
 
   try {
-    const cutoffDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    const retentionDays = appLimits().user_events.retention_days
+    const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000)
+    // Events stay until the user deletes them (bell, dashboard) or they are older than the retention
     const deletedEvents = await db.delete(userEvents)
-      .where(or(eq(userEvents.read, 1), lt(userEvents.createdAt, cutoffDate)))
+      .where(lt(userEvents.createdAt, cutoffDate))
       .returning()
 
-    console.log(`[Truncate User Events] Successfully deleted ${deletedEvents.length} user event(s) (read events or older than 30 days before ${cutoffDate.toISOString()}).`)
+    console.log(`[Truncate User Events] Successfully deleted ${deletedEvents.length} user event(s) (older than ${retentionDays} days, before ${cutoffDate.toISOString()}).`)
   } catch (error) {
     console.error('[Truncate User Events] Truncating user events failed with error:', error)
   }

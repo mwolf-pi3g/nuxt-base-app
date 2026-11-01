@@ -50,6 +50,8 @@ export const userEvents = sqliteTable('user_events', {
     owner_id: text('owner_id').notNull(),
     level: text('level').notNull(),
     message: text('message').notNull(),
+    // What the event is about (the category given to emitTelemetryEvent); the bell can leave categories out
+    category: text('category'),
     metadata: text('metadata', { mode: 'json' })
         .$type<Record<string, any>>()
         .default({}),

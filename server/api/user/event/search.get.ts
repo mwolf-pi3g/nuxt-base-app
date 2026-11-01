@@ -23,16 +23,16 @@ defineRouteMeta({
         description: 'Filter by event level (single string, array, or comma-separated list)'
       },
       {
-        name: 'read',
+        name: 'category',
         in: 'query',
-        schema: {
-          oneOf: [
-            { type: 'integer' },
-            { type: 'string' },
-            { type: 'array', items: { type: 'integer' } }
-          ]
-        },
-        description: 'Filter by read status (0 or 1, or comma-separated list)'
+        schema: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
+        description: 'Only events of these categories (single string, array, or comma-separated list)'
+      },
+      {
+        name: 'excludeCategory',
+        in: 'query',
+        schema: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
+        description: 'All events except these categories (events without a category are included); ignored with category'
       },
       {
         name: 'id',
@@ -142,14 +142,14 @@ export default defineEventHandler(async (event) => {
     searchSpec.id = parsedId;
   }
 
-  const rawRead = (query as any)['read[]'] ?? query.read;
-  if (rawRead !== undefined && rawRead !== '') {
-    const parsed = parseFilterList(rawRead);
-    if (Array.isArray(parsed)) {
-      searchSpec.read = parsed.map(s => (s === '1' || s === 'true') ? 1 : 0);
-    } else if (parsed !== undefined) {
-      searchSpec.read = (parsed === '1' || parsed === 'true') ? 1 : 0;
-    }
+  // category: only these categories; excludeCategory: all others (events without a category included)
+  const parsedCategory = parseFilterList((query as any)['category[]'] ?? query.category);
+  if (parsedCategory !== undefined) {
+    searchSpec.category = parsedCategory;
+  }
+  const parsedExclude = parseFilterList((query as any)['excludeCategory[]'] ?? query.excludeCategory);
+  if (parsedExclude !== undefined && searchSpec.category === undefined) {
+    searchSpec.category = { notIn: Array.isArray(parsedExclude) ? parsedExclude : [parsedExclude] };
   }
 
   const eventService = new genericService(db, userEvents, {}, userId);

@@ -5,7 +5,7 @@ import { eq, and, inArray } from 'drizzle-orm';
 defineRouteMeta({
   openAPI: {
     tags: ['User Events'],
-    description: 'Mark user event messages as read by ID or array of IDs.',
+    description: 'Delete own user events by ID or array of IDs (events of other users are never touched).',
     responses: {
       200: {
         description: 'Success response'
@@ -21,18 +21,18 @@ defineRouteMeta({
 });
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
+  const session = await getAuthSession(event);
   const userId = session.user?.id;
 
   if (!userId) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'error user_events.update.not_logged_in',
+      statusMessage: 'error user_events.delete.not_logged_in',
     });
   }
 
   const body = await readBody(event).catch(() => ({}));
-  const rawIds = body?.ids ?? body?.id ?? body?.message_id ?? body?.messageId;
+  const rawIds = body?.ids ?? body?.id;
 
   let idList: string[] = [];
   if (Array.isArray(rawIds)) {
@@ -48,14 +48,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const updated = await db
-    .update(userEvents)
-    .set({ read: 1 })
+  const deleted = await db
+    .delete(userEvents)
     .where(and(inArray(userEvents.id, idList), eq(userEvents.owner_id, userId)))
-    .returning();
+    .returning({ id: userEvents.id });
 
   return {
-    data: updated,
-    statusMessage: 'success user_events.update.success',
+    data: deleted,
+    statusMessage: 'success user_events.delete.success',
   };
 });

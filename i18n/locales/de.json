@@ -185,9 +185,9 @@
       "success": "Benutzer-Ereignisse erfolgreich geladen",
       "not_logged_in": "Nicht berechtigt, Benutzer-Ereignisse zu lesen"
     },
-    "update": {
-      "success": "Benutzer-Ereignisse erfolgreich aktualisiert",
-      "not_logged_in": "Nicht berechtigt, Benutzer-Ereignisse zu aktualisieren"
+    "delete": {
+      "success": "Ereignisse gelöscht",
+      "not_logged_in": "Keine Berechtigung, Ereignisse zu löschen"
     },
     "id": {
       "required": "Ereignis-ID ist erforderlich"

@@ -1,4 +1,4 @@
-import { eq, and, or, gt, lt, isNull, sql, inArray } from 'drizzle-orm';
+import { eq, and, or, gt, lt, isNull, sql, inArray, notInArray } from 'drizzle-orm';
 import { createError } from 'h3';
 
 export interface DbSearchOptions {
@@ -126,6 +126,9 @@ export const dbSearch = async (
       const val = activeSpec[key];
       if (val === null) {
         conditions.push(isNull(table[key]));
+      } else if (val && typeof val === 'object' && Array.isArray(val.notIn)) {
+        // { notIn: [...] }: every other value, empty (null) included
+        if (val.notIn.length > 0) conditions.push(or(isNull(table[key]), notInArray(table[key], val.notIn)));
       } else if (Array.isArray(val)) {
         if (val.length === 0) {
           conditions.push(sql`0 = 1`);
