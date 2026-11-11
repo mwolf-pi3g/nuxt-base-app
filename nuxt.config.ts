@@ -54,6 +54,13 @@ export default defineNuxtConfig({
     vuetifyOptions: {
       theme: {
         defaultTheme: 'light',
+        // Named shades of the status colors (e.g. bg-warning-lighten-5, text-error-darken-1), computed from each
+        // theme's colors: tints and borders use these instead of colors mixed in component CSS
+        variations: {
+          colors: ['success', 'warning', 'error', 'info', 'secondary'],
+          lighten: 5,
+          darken: 1,
+        },
         themes: {
           light: {
             colors: {
