@@ -51,6 +51,14 @@
     }
   },
   "table": {
+    "delete_confirm": {
+      "title": "Delete?",
+      "one": "“{name}” will be deleted.",
+      "one_unnamed": "This entry will be deleted.",
+      "many": "{count} entries will be deleted.",
+      "undone": "This can't be undone.",
+      "delete": "Delete"
+    },
     "account": {
       "title": "Account | Accounts",
       "user": "Username",

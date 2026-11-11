@@ -67,12 +67,36 @@
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>
+
+    <!-- Delete confirmation (one row or the selected rows) -->
+    <v-dialog v-model="confirmDelete.open" max-width="440">
+      <v-card class="rounded-lg">
+        <v-card-item>
+          <template #prepend>
+            <v-avatar color="error" variant="tonal" size="40" class="me-2">
+              <v-icon color="error">mdi-delete-alert-outline</v-icon>
+            </v-avatar>
+          </template>
+          <v-card-title>{{ i18n.t('table.delete_confirm.title') }}</v-card-title>
+        </v-card-item>
+        <v-card-text class="text-body-1 text-medium-emphasis">
+          {{ confirmDelete.text }} {{ i18n.t('table.delete_confirm.undone') }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="confirmDelete.open = false">{{ i18n.t('form.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" :loading="confirmDelete.busy" @click="confirmDelete.run">
+            {{ i18n.t('table.delete_confirm.delete') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import FormWrapper from '~/components/form/form.vue'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { apiGet, apiDelete, apiPost, apiPatch } from '~/utils/fetch/wrappers'
 
 const props = defineProps<{
@@ -176,14 +200,38 @@ const onActionClick = (actionSpec, item?: any) => {
   }
 }
 
-const onDelete = async (item: any) => {
-  if (!confirm('Are you sure you want to delete this item?')) return
-  try {
-    await apiDelete(`${props.meta.path_base}/${item.id}`)
-    await loadData()
-  } catch (e) {
-    console.error(e)
-  }
+// The delete confirmation: what will be deleted (a row's name if it has one, else how many) and what to run on OK
+const confirmDelete = reactive<{ open: boolean; busy: boolean; text: string; run: () => Promise<void> }>({
+  open: false, busy: false, text: '', run: async () => {},
+})
+const askDelete = (text: string, action: () => Promise<void>) => {
+  Object.assign(confirmDelete, {
+    open: true,
+    busy: false,
+    text,
+    run: async () => {
+      confirmDelete.busy = true
+      try {
+        await action()
+      } finally {
+        confirmDelete.busy = false
+        confirmDelete.open = false
+      }
+    },
+  })
+}
+const rowName = (item: any) => item?.name || item?.title || item?.subject || item?.user || item?.description || ''
+
+const onDelete = (item: any) => {
+  const name = rowName(item)
+  askDelete(name ? i18n.t('table.delete_confirm.one', { name }) : i18n.t('table.delete_confirm.one_unnamed'), async () => {
+    try {
+      await apiDelete(`${props.meta.path_base}/${item.id}`)
+      await loadData()
+    } catch (e) {
+      console.error(e)
+    }
+  })
 }
 
 
@@ -195,8 +243,11 @@ const onCustomMultiClick = async (actionSpec: any) => {
   }
 };
 
-const onDeleteMany = async () => {
-  if (!confirm(`Are you sure you want to delete ${selected.value.length} items?`)) return
+const onDeleteMany = () => {
+  askDelete(i18n.t('table.delete_confirm.many', { count: selected.value.length }), deleteSelected)
+}
+
+const deleteSelected = async () => {
   const ids = selected.value
     .map(item => (typeof item === 'object' && item !== null ? (item.id || item.filename || item.name) : item))
     .filter((id): id is string => typeof id === 'string' && id.trim().length > 0);

@@ -27,6 +27,14 @@
   },
   "rules": {},
   "table": {
+    "delete_confirm": {
+      "title": "Löschen?",
+      "one": "„{name}“ wird gelöscht.",
+      "one_unnamed": "Dieser Eintrag wird gelöscht.",
+      "many": "{count} Einträge werden gelöscht.",
+      "undone": "Das lässt sich nicht rückgängig machen.",
+      "delete": "Löschen"
+    },
     "account": {
       "title": "Konten",
       "user": "Benutzername",
