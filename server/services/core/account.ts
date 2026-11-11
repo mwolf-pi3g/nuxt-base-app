@@ -9,7 +9,7 @@ import { generateApiToken, hashApiToken } from "#bs/utils/api_token";
 import { appLimits } from "#bs/utils/app_limits";
 import { permissionsByRoles } from "#bs/utils/permissions_by_roles";
 import { dbJsonFindAllAndDelete } from "#bs/db/wrappers/db_json_find_all_and_delete";
-import { dbRead } from "#bs/db/wrappers/db_read";
+import { dbCount } from "#bs/db/wrappers/db_count";
 import { dbFindOne } from "#bs/db/wrappers/db_find_one";
 import { dbFindAll } from "#bs/db/wrappers/db_find_all";
 import { dbCreate } from "#bs/db/wrappers/db_create";
@@ -33,7 +33,7 @@ const LAST_USED_RESOLUTION_MS = 60_000;
 class accountAdminService extends genericService {
     async init() {
         // Seeding Admin Account
-        const existingAccounts = await dbRead(db, accounts);
+        const existingAccounts = await dbFindAll(db, accounts, {});
         const adminRole = await dbFindAll(db, roles, { name: 'admin' }); // should exist by default
         const adminRoleId = adminRole[0]?.id;
 
@@ -53,7 +53,7 @@ class accountAdminService extends genericService {
         }
 
         // Accounts without their own password can't sign in without a valid ADMIN_PASSWORD: don't start
-        const waiting = (await dbRead(db, accounts)).filter((a: any) => !hasOwnPassword(a)).map((a: any) => a.user);
+        const waiting = (await dbFindAll(db, accounts, {}, { cols: ['user', 'password'] })).filter((a: any) => !hasOwnPassword(a)).map((a: any) => a.user);
         if (waiting.length > 0) {
             let password: string | undefined;
             try {
@@ -91,9 +91,8 @@ class accountAdminService extends genericService {
                     statusMessage: 'error accounts.roles.invalid_type'
                 });
             }
-            const dbRoles = await dbRead(db, roles);
-            const dbRoleIds = dbRoles.map((r: any) => r.id);
-            const allExist = body.roles.every((r: string) => dbRoleIds.includes(r));
+            const wanted = [...new Set(body.roles as string[])];
+            const allExist = (await dbCount(db, roles, { id: wanted })) === wanted.length;
             if (!allExist) {
                 throw createError({
                     status: 400,

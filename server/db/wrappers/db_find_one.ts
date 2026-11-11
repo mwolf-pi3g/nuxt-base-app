@@ -1,19 +1,16 @@
-import { eq, and } from 'drizzle-orm';
+import type { Table } from 'drizzle-orm';
+import { whereOf, type Filter, type Row } from './filter';
 import { getValidator } from '#bs/db/validator/validator';
 
 /**
- * Filter a database table by an object, and return at most one result.
- * Throws if multiple results are found.
+ * The row matching the filter (./filter.ts), or null. Throws if more than one matches (two are read to know).
  */
-export const dbFindOne = async (db: any, table: any, filterObj: Record<string, any>) => {
-  const conditions = Object.keys(filterObj).map(key => eq(table[key], filterObj[key]));
-  const results = await db.select().from(table).where(and(...conditions));
-  if (results.length > 1) {
-    throw new Error(`dbFindOne: Expected at most 1 result, found ${results.length}`);
+export const dbFindOne = async <T extends Table>(db: any, table: T, filter: Filter<T>): Promise<Row<T> | null> => {
+  const where = whereOf(table, filter);
+  const rows = await (where ? db.select().from(table).where(where) : db.select().from(table)).limit(2) as Row<T>[];
+  if (rows.length > 1) {
+    throw new Error(`dbFindOne: Expected at most 1 result, found more`);
   }
-
-  if (results.length === 0) return null;
-
-  const validator = getValidator(table, 'select');
-  return validator(results[0]);
+  if (rows.length === 0) return null;
+  return getValidator(table, 'select')(rows[0]);
 };

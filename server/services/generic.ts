@@ -6,6 +6,14 @@ import { dbCreate } from "#bs/db/wrappers/db_create";
 import { dbFindOneAndUpdate } from "#bs/db/wrappers/db_find_one_and_update";
 import { dbFindOneAndDelete } from "#bs/db/wrappers/db_find_one_and_delete";
 import { dbDeleteMany } from "#bs/db/wrappers/db_delete_many";
+import { dbCount } from "#bs/db/wrappers/db_count";
+import type { Filter } from "#bs/db/wrappers/filter";
+
+/** An error that already says what went wrong (a 4xx from validation or a filter) is passed on; anything else becomes `fallback`. */
+const keepCause = (e: any, fallback: string) => {
+    if (e?.statusCode || e?.status) return e;
+    return createError({ status: 500, statusMessage: fallback });
+};
 
 export class genericService {
     db: any;
@@ -68,10 +76,26 @@ export class genericService {
             const searchSpec = this.addOwner({});
             return await dbFindAll(this.db, this.table, searchSpec);
         } catch (e) {
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.read_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.read_failed`);
+        }
+    }
+
+    /** The owner's rows matching the filter (db/wrappers/filter.ts), optionally only some columns. No limit. */
+    async find(filter: Filter = {}, opts: { cols?: string[] } = {}) {
+        try {
+            const where = this.addOwner({ ...filter });
+            return opts.cols ? await dbFindAll(this.db, this.table, where, { cols: opts.cols }) : await dbFindAll(this.db, this.table, where);
+        } catch (e) {
+            throw keepCause(e, `error ${this.table_name}.read_failed`);
+        }
+    }
+
+    /** How many of the owner's rows match the filter. */
+    async count(filter: Filter = {}) {
+        try {
+            return await dbCount(this.db, this.table, this.addOwner({ ...filter }));
+        } catch (e) {
+            throw keepCause(e, `error ${this.table_name}.read_failed`);
         }
     }
 
@@ -99,13 +123,7 @@ export class genericService {
         try {
             return await dbSearch(this.db, this.table, spec, options);
         } catch (e: any) {
-            if (e.statusCode || e.status) {
-                throw e;
-            }
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.search_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.search_failed`);
         }
     }
 
@@ -120,15 +138,11 @@ export class genericService {
                 payload[key] = await hooks.postValidate[key](payload[key]);
             }
         }
-        console.log("after hooks: ", payload, this.user_id);
 
         try {
             return await dbCreate(this.db, this.table, payload);
         } catch (e) {
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.create_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.create_failed`);
         }
     }
 
@@ -148,10 +162,7 @@ export class genericService {
         try {
             return await dbFindOneAndUpdate(this.db, this.table, searchSpec, payload);
         } catch (e) {
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.update_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.update_failed`);
         }
     }
 
@@ -160,10 +171,7 @@ export class genericService {
         try {
             return await dbFindOneAndDelete(this.db, this.table, searchSpec);
         } catch (e) {
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.delete_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.delete_failed`);
         }
     }
 
@@ -173,10 +181,7 @@ export class genericService {
         try {
             return await dbDeleteMany(this.db, this.table, ids, filterObj);
         } catch (e) {
-            throw createError({
-                status: 500,
-                statusMessage: `error ${this.table_name}.delete_failed`
-            });
+            throw keepCause(e, `error ${this.table_name}.delete_failed`);
         }
     }
 

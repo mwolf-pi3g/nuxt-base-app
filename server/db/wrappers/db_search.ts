@@ -1,5 +1,6 @@
-import { eq, and, or, gt, lt, isNull, sql, inArray, notInArray } from 'drizzle-orm';
+import { eq, and, or, gt, lt, isNull, sql } from 'drizzle-orm';
 import { createError } from 'h3';
+import { whereOf } from './filter';
 
 export interface DbSearchOptions {
   cursor?: string;
@@ -121,27 +122,9 @@ export const dbSearch = async (
   // 4 & 2. Construct WHERE conditions (Search Spec AND Cursor Condition)
   const conditions: any[] = [];
 
-  for (const key of Object.keys(activeSpec)) {
-    if (activeSpec[key] !== undefined && table[key]) {
-      const val = activeSpec[key];
-      if (val === null) {
-        conditions.push(isNull(table[key]));
-      } else if (val && typeof val === 'object' && Array.isArray(val.notIn)) {
-        // { notIn: [...] }: every other value, empty (null) included
-        if (val.notIn.length > 0) conditions.push(or(isNull(table[key]), notInArray(table[key], val.notIn)));
-      } else if (Array.isArray(val)) {
-        if (val.length === 0) {
-          conditions.push(sql`0 = 1`);
-        } else if (val.length === 1) {
-          conditions.push(eq(table[key], val[0]));
-        } else {
-          conditions.push(inArray(table[key], val));
-        }
-      } else {
-        conditions.push(eq(table[key], val));
-      }
-    }
-  }
+  // The filter dialect of all wrappers (./filter.ts)
+  const specWhere = whereOf(table, activeSpec);
+  if (specWhere) conditions.push(specWhere);
 
   // Keyset cursor seek with NULLS LAST
   if (decodedCursor) {

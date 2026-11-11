@@ -14,12 +14,8 @@ export async function permissionsByRoles(roleIds: string[]): Promise<string[]> {
 
     const allLeafPerms = new Set<string>()
 
-    // Fetch each role from the DB by ID
-    for (const roleId of roleIds) {
-        const matches = await dbFindAll(db, roles, { id: roleId })
-        if (matches.length === 0) continue
-
-        const role = matches[0]
+    // All of the account's roles in one query (unknown ids simply match nothing)
+    for (const role of await dbFindAll(db, roles, { id: roleIds }, { cols: ['permissions'] })) {
         const perms: string[] = role.permissions || []
 
         for (const perm of perms) {

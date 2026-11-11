@@ -1,30 +1,13 @@
-import { inArray, and, eq } from 'drizzle-orm';
+import type { Table } from 'drizzle-orm';
+import { whereOf, type Filter, type Row } from './filter';
 import { getValidator } from '#bs/db/validator/validator';
 
 /**
- * Delete multiple records from a database table by IDs, optionally scoping to ownerId
+ * Deletes the rows with these ids that also match the filter (./filter.ts; e.g. { owner_id }) and returns them.
  */
-export const dbDeleteMany = async (db: any, table: any, ids: string[], filterObj?: Record<string, any>) => {
+export const dbDeleteMany = async <T extends Table>(db: any, table: T, ids: string[], filter: Filter<T> = {} as Filter<T>): Promise<Row<T>[]> => {
   if (!Array.isArray(ids) || ids.length === 0) return [];
-
-  const conditions = [inArray(table.id, ids)];
-
-  if (filterObj) {
-    for (const [key, val] of Object.entries(filterObj)) {
-      if (val !== undefined && table[key]) {
-        conditions.push(eq(table[key], val));
-      }
-    }
-  }
-
-  const results = await db.delete(table).where(and(...conditions)).returning();
-
-  if (!results || results.length === 0) return [];
-
-  try {
-    const validator = getValidator(table, 'select');
-    return results.map((r: any) => validator(r));
-  } catch {
-    return results;
-  }
+  const rows = await db.delete(table).where(whereOf(table, { ...filter, id: ids } as Filter<T>)).returning();
+  const validator = getValidator(table, 'select');
+  return rows.map((r: any) => validator(r));
 };
