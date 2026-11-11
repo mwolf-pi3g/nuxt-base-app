@@ -90,8 +90,6 @@ class notificationService extends genericService {
 
         const normalized = providerName.toLowerCase();
         if (!this.providers[normalized]) {
-            console.log(`Provider ${providerName} not found`);
-            console.log(`Available providers: ${Object.keys(this.providers).join(', ')}`);
             throw createError({
                 status: 400,
                 statusMessage: `error notification_channels.invalid_provider`
