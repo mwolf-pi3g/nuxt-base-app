@@ -29,5 +29,6 @@ export const token_rules = {
   description: z.string({ invalid_type_error: "table.api_tokens.rules.description.type" })
     .trim()
     .min(1, "table.api_tokens.rules.description.required")
-    .max(100, "table.api_tokens.rules.description.too_long"),
+    .max(100, "table.api_tokens.rules.description.too_long")
+    .regex(/^[^\p{Cc}]*$/u, "table.api_tokens.rules.description.control"),   // no control characters
 };

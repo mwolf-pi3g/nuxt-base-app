@@ -99,6 +99,7 @@
       "permissions": "Permissions",
       "rules": {
         "name": {
+          "control": "Remove control characters (e.g. line breaks)",
           "type": "Role name must be text",
           "too_short": "Role name needs at least 2 characters",
           "too_long": "Role name is too long (max. 50 characters)"
@@ -182,6 +183,7 @@
       "not_found": "API token not found",
       "rules": {
         "description": {
+          "control": "Remove control characters (e.g. line breaks)",
           "type": "Description must be text",
           "required": "Description is required",
           "too_long": "Description is too long (max. 100 characters)"
@@ -390,5 +392,8 @@
     "delete": {
       "success": "API token deleted"
     }
+  },
+  "request": {
+    "too_large": "The request is too large"
   }
 }
