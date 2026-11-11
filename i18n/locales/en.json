@@ -8,7 +8,6 @@
     "Preferences": "Preferences",
     "notifications": "Notifications",
     "account": "Account",
-    "artifacts": "Artifacts",
     "Basic": "Basic"
   },
   "rules": {
@@ -157,15 +156,6 @@
     "automation": {
       "active": "Active",
       "last_issue": "Last issue"
-    },
-    "artifacts": {
-      "title": "Artifacts",
-      "id": "File",
-      "extension": "Type",
-      "size": "Size (Bytes)",
-      "updatedAt": "Modified",
-      "view": "View File",
-      "download": "Download File"
     },
     "email": {
       "staging": "Staging",
@@ -377,17 +367,6 @@
   "dashboard": {
     "last_issue": "Last issue",
     "no_recent_automations": "No Recent Automations Run"
-  },
-  "artifacts": {
-    "read": {
-      "success": "Artifacts loaded successfully"
-    },
-    "delete": {
-      "success": "Artifact deleted successfully"
-    },
-    "not_found": "Artifact not found",
-    "forbidden_path": "Access to artifact path is forbidden",
-    "missing_path": "Artifact path is required"
   },
   "notification_channels": {
     "not_found": "Notification channel not found"
