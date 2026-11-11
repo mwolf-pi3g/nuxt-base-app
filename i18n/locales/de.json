@@ -169,7 +169,8 @@
       "send_failed": "Benachrichtigung an {channel} fehlgeschlagen: {reason}",
       "attachments_dropped": "{count} Anhang/Anhänge nicht an {channel} gesendet: der Kanal unterstützt keine Anhänge",
       "test_ok": "Test-Benachrichtigung über {channel} gesendet"
-    }
+    },
+    "show_older": "Ältere anzeigen"
   },
   "user_events": {
     "read": {

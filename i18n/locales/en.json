@@ -333,7 +333,8 @@
       "send_failed": "Notification to {channel} failed: {reason}",
       "attachments_dropped": "{count} attachment(s) not sent to {channel}: the channel does not support attachments",
       "test_ok": "Test notification sent via {channel}"
-    }
+    },
+    "show_older": "Show older"
   },
   "user_events": {
     "read": {
