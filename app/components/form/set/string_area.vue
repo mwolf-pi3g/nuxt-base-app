@@ -13,11 +13,27 @@
     class="mb-3"
     :rows="header.opts?.rows || 3"
     :auto-grow="header.opts?.auto_grow !== false"
-  />
+  >
+    <!-- Optional opts.action: an icon button in the field; its run(value) may return a new value for the field -->
+    <template v-if="action" #append-inner>
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+        density="comfortable"
+        :color="action.color || 'primary'"
+        :loading="running"
+        :title="action.tooltip"
+        @click.stop="runAction"
+      >
+        <v-icon>{{ action.icon }}</v-icon>
+      </v-btn>
+    </template>
+  </v-textarea>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps<{
   modelValue: any
@@ -34,6 +50,23 @@ const internalValue = computed({
   },
   set: (val) => emit('update:modelValue', val)
 })
+
+const action = computed(() => props.header.opts?.action as
+  { icon: string; tooltip?: string; color?: string; run: (value: string) => Promise<string | void> } | undefined)
+const running = ref(false)
+
+const runAction = async () => {
+  if (!action.value || running.value) return
+  running.value = true
+  try {
+    const next = await action.value.run(internalValue.value ?? '')
+    if (typeof next === 'string') internalValue.value = next
+  } catch (err) {
+    console.error('Field action failed:', err)
+  } finally {
+    running.value = false
+  }
+}
 
 onMounted(() => {
   if (props.modelValue === undefined) {

@@ -121,6 +121,12 @@ Password/secret input with visibility toggle icon (`mdi-eye` / `mdi-eye-off`).
 ### C. FormSetStringArea (`set_type: 'string_area'`)
 Multi-line text input using `v-textarea`.
 * **opts**: `placeholder`, `rows` (default 3), `auto_grow` (default true), `max_chars` (shows a character counter at the lower right, red when exceeded; pair it with a rule that enforces the limit)
+* **opts.action**: an icon button inside the field, e.g. to generate or improve its text: `{ icon, tooltip?, color?, run(value) }`. `run` gets the current text and may return a promise; a string it resolves to replaces the field's value (anything else leaves it unchanged). The button spins while `run` is pending; errors are logged.
+  ```javascript
+  { key: 'filter_prompt', set_type: 'string_area', opts: {
+      action: { icon: 'mdi-creation', tooltip: 'Suggest', run: async (current) => (await apiPost('/api/suggest', { current })).data.text },
+  } }
+  ```
 
 ### D. FormSetEnum (`set_type: 'enum'`)
 Select dropdown using `v-select` or `v-autocomplete`.
