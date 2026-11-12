@@ -240,6 +240,7 @@
     }
   },
   "auth": {
+    "not_authorized": "You are not allowed to do this",
     "login": {
       "success": "Login successful",
       "invalid_credentials": "Invalid username or password"

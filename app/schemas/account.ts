@@ -2,17 +2,8 @@ import { zod_rules } from '#b/shared/rules/account';
 import { getRules } from '#b/shared/rules/getRules'
 
 const rules = getRules(zod_rules)
-import { apiGet } from '~/utils/fetch/wrappers'
 
 const getHeaders = async (t: any) => {
-    let rolesList: any[] = []
-    try {
-        const res = await apiGet('/api/admin/role')
-        rolesList = (res?.data || []).map((r: any) => ({ id: r.id, name: r.name }))
-    } catch (e) {
-        console.error('Failed to fetch roles for accounts schema:', e)
-    }
-
     return [
         {
             title: 'table.account.user',
@@ -46,10 +37,11 @@ const getHeaders = async (t: any) => {
             actions: ["update"]
         },
         {
+            // Names from /api/user/account (a user may not read the role list, an admin route)
             title: 'table.account.roles',
-            key: 'roles',
+            key: 'role_names',
             get_type: "list_tag",
-            opts: { enum_values: rolesList, color_delimiter: ":" }
+            opts: { color_delimiter: ":" }
         },
         {
             // Shown only: cron is switched on and off in the dashboard

@@ -221,6 +221,7 @@
     "no_recent_automations": "Keine kürzlich ausgeführten Automatisierungen"
   },
   "auth": {
+    "not_authorized": "Dafür fehlt Ihnen die Berechtigung",
     "register": {
       "disabled": "Die Registrierung ist deaktiviert"
     },
