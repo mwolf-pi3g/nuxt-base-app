@@ -8,6 +8,7 @@ const BASE_LIMITS = {
     user_events: { retention_days: 30 },            // events older than this are deleted nightly (users delete the others)
     accounts: { max_api_tokens: 20 },
     http: { max_body_mb: 5 },                       // larger request bodies are refused (413); raise it for big imports
+    stream: { max_per_user: 10 },                   // open live update streams per user (one per tab); the oldest closes
 };
 
 type Limits = typeof BASE_LIMITS & Record<string, any>;

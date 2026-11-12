@@ -107,6 +107,7 @@ const props = defineProps<{
     features: string[];
     readOnMount: boolean;
     read_options?: string;
+    live?: string[];                  // live update event names (useUserStream): the rows reload when one arrives
     customAdd?: any[];
     customActions?: any[];
     customMulti?: any[];
@@ -336,6 +337,18 @@ const actions = computed(() => {
 
   return a
 })
+
+// Live updates: reload the rows when one of meta.live arrives (and after every reconnect). The selection keeps the
+// rows that are still there (matched by id); an open form or delete confirmation edits its own copy and is untouched.
+if (props.meta.live?.length && props.meta.path_base) {
+  useUserStream(props.meta.live, async () => {
+    if (props.model) return                      // rows handed in by the page: the page reloads them
+    const rows = await loadData()
+    if (!rows || selected.value.length === 0) return
+    const byId = new Map(rows.map((r: any) => [r.id, r]))
+    selected.value = selected.value.map((r: any) => byId.get(r?.id)).filter(Boolean)
+  })
+}
 
 onMounted(async () => {
   localModel.value = props.model;

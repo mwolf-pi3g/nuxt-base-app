@@ -1,5 +1,6 @@
 import { db } from "hub:db";
 import { userEvents } from "hub:db:schema";
+import { notifyUser } from "../user_stream";
 
 export enum EventScope {
   SYSTEM = 'system', // Technical runtime logs (stdout/stderr only)
@@ -129,6 +130,7 @@ export const emitTelemetryEvent = async (event: TelemetryEvent): Promise<void> =
           metadata: event.metadata ?? {},
           createdAt: event.timestamp || new Date()
         });
+        notifyUser(event.owner_id, 'events');        // live updates: the bell and event lists reload
       } catch (dbError) {
         console.error('[Telemetry] Failed to persist user event:', dbError);
       }

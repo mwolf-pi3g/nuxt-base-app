@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
     .delete(userEvents)
     .where(and(inArray(userEvents.id, idList), eq(userEvents.owner_id, userId)))
     .returning({ id: userEvents.id });
+  if (deleted.length > 0) notifyUser(userId, 'events');   // other tabs of the user reload their lists
 
   return {
     data: deleted,

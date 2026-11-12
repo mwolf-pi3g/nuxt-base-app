@@ -1,22 +1,28 @@
 <template>
   <v-menu v-model="menuOpen" :close-on-content-click="false" location="bottom end" offset="8">
     <template v-slot:activator="{ props }">
-      <v-btn icon v-bind="props" class="mx-1">
+      <v-btn icon v-bind="props" class="mx-1" :color="streamDown ? 'error' : undefined">
         <v-badge
-          :model-value="badgeCount > 0"
+          :model-value="!streamDown && badgeCount > 0"
           :content="badgeContent"
           :color="mostSevereColor"
           location="top end"
           offset-x="3"
           offset-y="3"
         >
-          <v-icon>mdi-bell-outline</v-icon>
+          <v-icon>{{ streamDown ? 'mdi-bell-alert-outline' : 'mdi-bell-outline' }}</v-icon>
         </v-badge>
       </v-btn>
     </template>
 
     <v-card min-width="380" max-width="460" rounded="lg" elevation="6">
+      <!-- No live updates: one message instead of a list that may be out of date -->
+      <div v-if="streamDown" class="d-flex align-center ga-3 pa-4">
+        <v-icon color="error">mdi-lan-disconnect</v-icon>
+        <span class="text-body-2">{{ t('events.stream_down') }}</span>
+      </div>
       <EventList
+        v-else
         :title="$t('events.title')"
         :events="events"
         :loading="loading"
@@ -45,10 +51,10 @@
 </template>
 
 <script setup lang="ts">
-// The bell: the user's events, newest first. Events stay until the user deletes them (select rows, delete) or they
+// The bell: the user's events, newest first, updated live (useUserStream; red with one message while it can't connect). Events stay until the user deletes them (select rows, delete) or they
 // pass the retention (server/cron/truncate_user_events.ts). The badge counts the warnings and errors.
 // App config userEvents (app/app.config.ts) leaves categories out and adds summary lines for them.
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { apiGet } from '~/utils/fetch/wrappers'
 import EventList from './event_list.vue'
 import type { EventLevel } from './event_level_filter.vue'
@@ -75,7 +81,8 @@ const activeSummaries = computed(() => summaries.value.filter(s => s.count > 0))
 const events = ref<UserEventItem[]>([])
 const loading = ref(false)
 const menuOpen = ref(false)
-let timer: ReturnType<typeof setInterval> | null = null
+const streamState = useUserStreamState()
+const streamDown = computed(() => streamState.value === 'down')
 
 // 'warning' is stored by older code; it is the same level as 'warn'
 const levelOf = (level?: string): EventLevel => {
@@ -114,7 +121,7 @@ const getEventColor = (level: string) => {
 // The events of the categories the bell shows, newest first, 100 at a time: `older` appends the next 100 (the
 // server's cursor); otherwise the newest 100 replace the list. The level filter works on what is loaded.
 const cursor = ref<string | null>(null)
-let browsingOlder = false     // older events loaded: the timer leaves the list alone until the bell is opened again
+let browsingOlder = false     // older events loaded: live updates leave the list alone until the bell is opened again
 const fetchEvents = async (older = false) => {
   if (older && !cursor.value) return
   try {
@@ -165,23 +172,17 @@ const openSummary = (summary: Summary) => {
   router.push(summary.to)
 }
 
-// Opening the bell shows the newest events again; the timer too, unless older ones were loaded meanwhile
-const refresh = (fromTimer = false) => {
-  if (!(fromTimer && browsingOlder)) fetchEvents()
+// Opening the bell shows the newest events again; a live update too, unless older ones were loaded meanwhile
+const refresh = (live = false) => {
+  if (!(live && browsingOlder)) fetchEvents()
   fetchSummaries()
 }
 
 // Opening the bell shows the current state
 watch(menuOpen, (open) => { if (open) refresh() })
 
-onMounted(() => {
-  refresh()
-  timer = setInterval(() => refresh(true), 60000)
-})
+onMounted(() => refresh())
 
-onUnmounted(() => {
-  if (timer) {
-    clearInterval(timer)
-  }
-})
+// Live updates (no polling): a stored or deleted event, and every (re)connect of the stream
+useUserStream(['events'], () => refresh(true))
 </script>

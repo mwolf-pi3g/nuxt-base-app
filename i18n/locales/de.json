@@ -173,6 +173,7 @@
     "app": "App"
   },
   "events": {
+    "stream_down": "Keine Verbindung für Live-Updates. Neuer Versuch läuft im Hintergrund.",
     "title": "Ereignisse",
     "no_events": "Keine Benachrichtigungen",
     "notification": {
@@ -181,6 +182,10 @@
       "test_ok": "Test-Benachrichtigung über {channel} gesendet"
     },
     "show_older": "Ältere anzeigen"
+  },
+  "user_stream": {
+    "not_logged_in": "Nicht angemeldet",
+    "token_not_allowed": "API-Tokens können keinen Live-Update-Stream öffnen"
   },
   "user_events": {
     "read": {

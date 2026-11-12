@@ -337,6 +337,7 @@
     "app": "App"
   },
   "events": {
+    "stream_down": "Can't connect for live updates. Retrying in the background.",
     "title": "Events",
     "no_events": "No notifications",
     "notification": {
@@ -345,6 +346,10 @@
       "test_ok": "Test notification sent via {channel}"
     },
     "show_older": "Show older"
+  },
+  "user_stream": {
+    "not_logged_in": "Not signed in",
+    "token_not_allowed": "API tokens cannot open a live update stream"
   },
   "user_events": {
     "read": {
